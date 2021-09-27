@@ -1,5 +1,6 @@
 #include "View\View.h"
 #include "Controller\Controller.h"
+#include "Model\Model.h"
 
 void main() 
 {
