@@ -36,7 +36,7 @@ public:
 	
 	Person(Person& other) = delete;
 	void operator=(const Person&) = delete;
-	static Person* GetInstance();
+	static Person* getInstance();
 
 protected:
 	Person() 
@@ -48,7 +48,7 @@ protected:
 
 Person* Person::person_ = nullptr;
 
-Person* Person::GetInstance() 
+Person* Person::getInstance() 
 {
 	if (person_ == nullptr) { person_ = new Person(); }
 	return person_;
