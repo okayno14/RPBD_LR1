@@ -10,4 +10,5 @@ void main()
 	Person* person = Person::getInstance();
 	Person* person2 = Person::getInstance();
 	delete person;
+	/////////////////////======
 }
