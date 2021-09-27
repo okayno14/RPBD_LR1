@@ -1,9 +1,9 @@
 #pragma once
-#pragma once
 #include <windows.h>
 #include <odbcinst.h>
 #include <sqlext.h>
 #include <sql.h>
+#include <iostream>
 
 #define strSZ 20
 
@@ -57,8 +57,62 @@ Person* Person::getInstance()
 
 class DataBase
 {
+protected:
+	SQLHENV handleEnv;
+	SQLHDBC handleDBC;
 
+	SQLRETURN retcode;
+
+	SQLWCHAR* dsn;
+	SQLWCHAR* user;
+	SQLWCHAR* password;
+
+	static DataBase* database_;
+
+	DataBase()
+	{
+		dsn = (SQLWCHAR*)L"Phonebook";
+		user = (SQLWCHAR*)L"postgres";
+		password = (SQLWCHAR*)L"123";
+
+		retcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &handleEnv);
+		checkErr();
+
+		retcode = SQLSetEnvAttr(handleEnv, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
+		checkErr();
+
+		retcode = SQLAllocHandle(SQL_HANDLE_DBC, handleEnv, &handleDBC);
+		checkErr();
+
+		retcode = SQLConnect(handleDBC, dsn, SQL_NTS, user, SQL_NTS, password, SQL_NTS);
+		checkErr();
+		//установить атрибуты коннекта
+	}
+
+	void checkErr() 
+	{
+		if (retcode < 0) throw "Ошибка подключения\n";
+	}
+
+public:	
+	
+	static DataBase* getInstance();
+	~DataBase() 
+	{
+		retcode = SQLDisconnect(handleDBC);
+
+		retcode = SQLFreeHandle(SQL_HANDLE_DBC,handleDBC);
+
+		retcode = SQLFreeHandle(SQL_HANDLE_ENV,handleEnv);
+	}
 };
+
+DataBase* DataBase::database_ = nullptr;
+DataBase* DataBase::getInstance() 
+{
+	if (database_ == nullptr) { database_ = new DataBase(); }
+	return database_;
+}
 
 class ControllerInterface
 {

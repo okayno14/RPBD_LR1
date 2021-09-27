@@ -2,12 +2,19 @@
 #include "Controller\Controller.h"
 #include "Model\Model.h"
 
-void main() 
+int main() 
 {
 	ConsoleApp con;
-	con.main();
+	try { DataBase* dbc = DataBase::getInstance(); }
+	catch (const char* msg) { cout << msg;  return -1; }
+	
+	
+	con.run();
 
-	Person* person = Person::getInstance();
-	Person* person2 = Person::getInstance();
-	delete person;
+	//Person* person = Person::getInstance();
+	//Person* person2 = Person::getInstance();
+	//delete person;
+
+	return 0;
+	
 }

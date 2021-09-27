@@ -18,6 +18,8 @@ public:
 		MainMenu = 0;
 		UntMenu = 0;
 		ch = 0;
+		system("chcp 1251 > nul");
+		system("color 0F");
 	}
 
 	void Main_menu_output()
@@ -38,11 +40,8 @@ public:
 		Main_menu_output();
 	}
 
-	void main()
+	void run()
 	{
-		setlocale(LC_ALL, "Russian");
-		system("chcp 1251 > nul");
-		system("color 0F");
 		Main_menu_output();
 		
 
