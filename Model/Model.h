@@ -13,20 +13,56 @@ public:
 	SQLWCHAR streetName[strSZ];
 	SQLINTEGER home;
 	SQLINTEGER appartement;
+
+	Address(Address& other) = delete;
+	void operator=(const Address&) = delete;
+	static Address* getInstance();
 private:
 	SQLINTEGER id;
 	SQLINTEGER idStreet;
+	static Address* address_;
+protected:
+	Address() 
+	{
+		id = -1;
+		idStreet = -1;
+	}
 };
+
+Address* Address::address_ = nullptr;
+Address* Address::getInstance() 
+{
+	if (address_ == nullptr) address_ = new Address;
+	return address_;
+}
 
 class PhoneNumber
 {
 public:
 	SQLWCHAR number[strSZ];
 	SQLWCHAR typeName[strSZ];
+	
+	PhoneNumber(PhoneNumber& other) = delete;
+	void operator=(const PhoneNumber&) = delete;
+	static PhoneNumber* getInstance();
 private:
 	SQLINTEGER id;
 	SQLINTEGER idType;
+	static PhoneNumber* phoneNumber_;
+protected:
+	PhoneNumber() 
+	{
+		id = -1;
+		idType = -1;
+	}
 };
+
+PhoneNumber* PhoneNumber::phoneNumber_ = nullptr;
+PhoneNumber* PhoneNumber::getInstance() 
+{
+	if (phoneNumber_ == nullptr) phoneNumber_ = new PhoneNumber();
+	return phoneNumber_;
+}
 
 class Person
 {
@@ -34,27 +70,29 @@ public:
 	SQLWCHAR name[strSZ];
 	SQLWCHAR lastName[strSZ];
 	SQLWCHAR fatherName[strSZ];
-	Address address;
+	Address* address;
 	SQLINTEGER phoneCount;
-	PhoneNumber* phoneNumbers;
-	~Person() { delete[] phoneNumbers; }
-
+	PhoneNumber* phoneNumber;
 	static Person* person_;
-
+	
 	Person(Person& other) = delete;
 	void operator=(const Person&) = delete;
 	static Person* getInstance();
+
+private:
+	SQLINTEGER id;
+	SQLINTEGER idAddress;
 
 protected:
 
 	Person()
 	{
 		phoneCount = 1;
-		phoneNumbers = new PhoneNumber[phoneCount];
+		phoneNumber = PhoneNumber::getInstance();
+		address = Address::getInstance();
+		id = -1;
+		idAddress = -1;
 	}
-private:
-	SQLINTEGER id;
-	SQLINTEGER idAddress;
 };
 
 Person* Person::person_ = nullptr;

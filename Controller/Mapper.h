@@ -20,5 +20,15 @@ class AddressMapper : public AbstractMapper
 
 class PhoneMapper :public AbstractMapper 
 {
-
+private:
+	PhoneNumber* buf;
+public:
+	PhoneMapper(PhoneNumber* buf) 
+	{
+		this->buf = buf;
+	}
+	void findObj() override 
+	{
+		
+	}
 };
