@@ -68,6 +68,8 @@ protected:
 	SQLWCHAR* password;
 
 	static DataBase* database_;
+	DataBase(DataBase& other) = delete;
+	void operator=(const DataBase&) = delete;
 
 	DataBase()
 	{
@@ -114,15 +116,4 @@ DataBase* DataBase::getInstance()
 	return database_;
 }
 
-class ControllerInterface
-{
-public:
-	Person& watchRecord() {};
-	void removeRecord() {};
-	void editRecord() {};
-	void addRecord() {};
-private:
-	Person& findByAllAtributes() {};
-	Person& findBy4() {};
-	Person& findById() {};
-};
+

@@ -92,6 +92,4 @@ public:
 		}
 		system("pause");
 	}
-
-
 };
