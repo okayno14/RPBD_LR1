@@ -13,6 +13,9 @@ public:
 	SQLWCHAR streetName[strSZ];
 	SQLINTEGER home;
 	SQLINTEGER appartement;
+private:
+	SQLINTEGER id;
+	SQLINTEGER idStreet;
 };
 
 class PhoneNumber
@@ -20,6 +23,9 @@ class PhoneNumber
 public:
 	SQLWCHAR number[strSZ];
 	SQLWCHAR typeName[strSZ];
+private:
+	SQLINTEGER id;
+	SQLINTEGER idType;
 };
 
 class Person
@@ -40,11 +46,15 @@ public:
 	static Person* getInstance();
 
 protected:
+
 	Person()
 	{
 		phoneCount = 1;
 		phoneNumbers = new PhoneNumber[phoneCount];
 	}
+private:
+	SQLINTEGER id;
+	SQLINTEGER idAddress;
 };
 
 Person* Person::person_ = nullptr;
@@ -115,5 +125,3 @@ DataBase* DataBase::getInstance()
 	if (database_ == nullptr) { database_ = new DataBase(); }
 	return database_;
 }
-
-
