@@ -15,6 +15,8 @@
 
 int main() 
 {
+	
+	ConsoleApp con;
 	/*ConsoleApp con;
 	try { DataBaseConnection* dbc = DataBaseConnection::getInstance(); }
 	catch (const char* msg) { cout << msg;  return -1; }

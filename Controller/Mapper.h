@@ -17,10 +17,9 @@ public:
 	
 protected:
 	SQLRETURN retcode;
-	stringstream err;	
 	SQLHSTMT hstmt;
-
-	SQLWCHAR info[SQL_MAX_MESSAGE_LENGTH] = L"default";
+	
+	SQLWCHAR err[SQL_MAX_MESSAGE_LENGTH] = L"default";
 	SQLSMALLINT infoL;
 
 	DataBaseConnection* db;
@@ -35,12 +34,24 @@ protected:
 					SQL_HANDLE_STMT,
 					hstmt,
 					1,
-					SQL_DIAG_SQLSTATE,
-					info,
+					/*SQL_DIAG_SQLSTATE*/SQL_DIAG_MESSAGE_TEXT,
+					err,
 					SQL_MAX_MESSAGE_LENGTH,
-					&infoL);					
+					&infoL);	
+
+				wprintf(L"%s\n", err);
+				
+				SQLGetDiagFieldW(
+					SQL_HANDLE_STMT,
+					hstmt,
+					1,
+					SQL_DIAG_SQLSTATE,
+					err,
+					SQL_MAX_MESSAGE_LENGTH,
+					&infoL);
+				
 			////Код для отлова ошибки
-				throw info;
+				throw err;
 		}
 	}
 };
@@ -88,7 +99,7 @@ public:
 				0, 
 				&idT, 
 				0, 
-				NULL);
+				/*NULL*/&y);
 				
 				checkErr();
 			retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));

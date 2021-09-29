@@ -18,7 +18,8 @@ public:
 		MainMenu = 0;
 		UntMenu = 0;
 		ch = 0;
-		system("chcp 1251 > nul");
+		setlocale(LC_ALL, "Russian");
+		//system("chcp 1251 > nul");
 		system("color 0F");
 	}
 
