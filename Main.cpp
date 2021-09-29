@@ -26,10 +26,15 @@ int main()
 	
 	
 	unordered_map<int,char> t;*/
-
-	PhoneNumber pn;
-	PhoneMapper pnMap(&pn);
-	pnMap.findObj(2);
+	
+	
+	try 
+		{ 
+			PhoneNumber pn;
+			PhoneMapper pnMap(&pn);
+			pnMap.findObj(2); 
+		}
+	catch (wchar_t* msg) { wprintf(L"%s\n", msg); }	
 
 	
 	return 0;	

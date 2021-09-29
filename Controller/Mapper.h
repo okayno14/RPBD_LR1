@@ -14,23 +14,35 @@ public:
 	//virtual void updateObj();
 	//virtual void deleteObj();
 	virtual void findObj(int id) {};
-	//SQLRETURN retcode;
-	//stringstream err;
-	//void checkErr() 
-	//{
-	//	if (retcode != 0) 
-	//	{
-	//		////Код для отлова ошибки
-	//			SQLWCHAR info[SQL_MAX_MESSAGE_LENGTH];
-	//			SQLSMALLINT infoL;
-	//			SQLGetDiagField(SQL_HANDLE_STMT, hstmt, 1, SQL_DIAG_SQLSTATE, info, sizeof(info), &infoL);
-	//			err << info << endl;				
-	//			SQLGetDiagField(SQL_HANDLE_STMT, hstmt, 1, SQL_DIAG_MESSAGE_TEXT, info, sizeof(info), &infoL);
-	//			err << info << endl;
-	//			throw err.str();
-	//		////Код для отлова ошибки
-	//	}
-	//}
+	
+protected:
+	SQLRETURN retcode;
+	stringstream err;	
+	SQLHSTMT hstmt;
+
+	SQLWCHAR info[SQL_MAX_MESSAGE_LENGTH] = L"default";
+	SQLSMALLINT infoL;
+
+	DataBaseConnection* db;
+	SQLWCHAR* statementText;
+	
+	void checkErr() 
+	{
+		if (retcode < 0) 
+		{
+			////Код для отлова ошибки
+				SQLGetDiagFieldW(
+					SQL_HANDLE_STMT,
+					hstmt,
+					1,
+					SQL_DIAG_SQLSTATE,
+					info,
+					SQL_MAX_MESSAGE_LENGTH,
+					&infoL);					
+			////Код для отлова ошибки
+				throw info;
+		}
+	}
 };
 
 //class PersonMapper : public AbstractMapper 
@@ -47,21 +59,13 @@ class PhoneMapper :public AbstractMapper
 {
 private:
 	PhoneNumber* buf;
-	DataBaseConnection* db;
-	
-	SQLHSTMT hstmt;
-	SQLLEN idLenOrInd;
-	
-	SQLWCHAR* statementText;
-
-	SQLRETURN retcode;
-
 public:
 	PhoneMapper(PhoneNumber* buf = nullptr) 
 	{
 		this->buf = buf;
 		db = DataBaseConnection::getInstance();
 		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()) ,&hstmt);
+			checkErr();
 	}
 	~PhoneMapper() {SQLFreeHandle(SQL_HANDLE_STMT, hstmt);}
 	void setBuf(PhoneNumber* buf) { this->buf = buf; }
@@ -71,6 +75,9 @@ public:
 			SQLINTEGER idT = (SQLINTEGER) id;
 			statementText = (SQLWCHAR*)L"SELECT * FROM phoneNumber WHERE id = ?";
 			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+				checkErr();
+			
+			SQLLEN y;
 			retcode = SQLBindParameter(
 				hstmt, 
 				1,
@@ -82,8 +89,12 @@ public:
 				&idT, 
 				0, 
 				NULL);
+				
+				checkErr();
 			retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+				checkErr();
 			retcode = SQLBindCol(hstmt,2,SQL_C_SLONG, &(buf->idType),0,&(buf->idTypeLen));
+				checkErr();
 			retcode = SQLBindCol(
 				hstmt,
 				3, 
@@ -91,14 +102,19 @@ public:
 				&(buf->number),
 				sizeof(SQLWCHAR) * strSZ,
 				&(buf->numberLen));
+				checkErr();
 			retcode = SQLExecute(hstmt);
+				checkErr();
 			retcode = SQLFetch(hstmt);
+				checkErr();
 			retcode = SQLCloseCursor(hstmt);
+				checkErr();
 		//Всё кроме типа телефона
 		
 		//Запись типа телефона
 			statementText = (SQLWCHAR*) L"SELECT * FROM type_of_phone WHERE id = ?";
 			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+				checkErr();
 			retcode = SQLBindParameter(
 				hstmt,
 				1,
@@ -110,6 +126,8 @@ public:
 				&(buf->idType),
 				0,
 				NULL);
+			
+				checkErr();
 			retcode = SQLBindCol(
 				hstmt,
 				2,
@@ -117,15 +135,14 @@ public:
 				&(buf->typeName),
 				sizeof(SQLWCHAR) * strSZ,
 				&(buf->typeNameLen));
+				
+				checkErr();
 			retcode = SQLExecute(hstmt);
+				checkErr();
 			retcode = SQLFetch(hstmt);
+				checkErr();
 			retcode = SQLCloseCursor(hstmt);
+				checkErr();
 		//Запись типа телефона
-
-
-
-		
-
-
 	}
 };

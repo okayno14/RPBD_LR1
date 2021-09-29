@@ -124,9 +124,7 @@ public:
 	~DataBaseConnection() 
 	{
 		retcode = SQLDisconnect(hDBC);
-
 		retcode = SQLFreeHandle(SQL_HANDLE_DBC,hDBC);
-
 		retcode = SQLFreeHandle(SQL_HANDLE_ENV,handleEnv);
 	}
 };
