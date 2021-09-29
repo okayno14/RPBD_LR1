@@ -4,6 +4,8 @@
 #include <sqlext.h>
 #include <sql.h>
 #include <iostream>
+#include <vector>
+#include <unordered_map>
 
 #define strSZ 20
 
@@ -14,27 +16,16 @@ public:
 	SQLINTEGER home;
 	SQLINTEGER appartement;
 
-	Address(Address& other) = delete;
-	void operator=(const Address&) = delete;
-	static Address* getInstance();
+	Address(int id = -1, int idStreet = -1)
+	{
+		this->id = id;
+		this->idStreet = idStreet;
+	}
+	friend class AddressMapper;
 private:
 	SQLINTEGER id;
 	SQLINTEGER idStreet;
-	static Address* address_;
-protected:
-	Address() 
-	{
-		id = -1;
-		idStreet = -1;
-	}
 };
-
-Address* Address::address_ = nullptr;
-Address* Address::getInstance() 
-{
-	if (address_ == nullptr) address_ = new Address;
-	return address_;
-}
 
 class PhoneNumber
 {
@@ -42,27 +33,22 @@ public:
 	SQLWCHAR number[strSZ];
 	SQLWCHAR typeName[strSZ];
 	
-	PhoneNumber(PhoneNumber& other) = delete;
-	void operator=(const PhoneNumber&) = delete;
-	static PhoneNumber* getInstance();
+	
+	PhoneNumber(int id =-1, int idType=-1)
+	{
+		this->id = id;
+		this->idType = idType;
+	}
+	SQLINTEGER* getId() { return &id; }
+	friend class PhoneMapper;
 private:
 	SQLINTEGER id;
+	SQLLEN idLen;
 	SQLINTEGER idType;
-	static PhoneNumber* phoneNumber_;
-protected:
-	PhoneNumber() 
-	{
-		id = -1;
-		idType = -1;
-	}
+	SQLLEN idTypeLen;
+	SQLLEN numberLen;
+	SQLLEN typeNameLen;
 };
-
-PhoneNumber* PhoneNumber::phoneNumber_ = nullptr;
-PhoneNumber* PhoneNumber::getInstance() 
-{
-	if (phoneNumber_ == nullptr) phoneNumber_ = new PhoneNumber();
-	return phoneNumber_;
-}
 
 class Person
 {
@@ -72,54 +58,34 @@ public:
 	SQLWCHAR fatherName[strSZ];
 	Address* address;
 	SQLINTEGER phoneCount;
-	PhoneNumber* phoneNumber;
-	static Person* person_;
-	
-	Person(Person& other) = delete;
-	void operator=(const Person&) = delete;
-	static Person* getInstance();
+	vector<PhoneNumber*> phoneNumbers;	
 
+	Person(int id=-1,int idAddress=-1)
+	{
+		phoneCount = 0;
+		this->id = id;
+		this->idAddress = idAddress;		
+	}
+	friend class PersonMapper;
 private:
 	SQLINTEGER id;
 	SQLINTEGER idAddress;
-
-protected:
-
-	Person()
-	{
-		phoneCount = 1;
-		phoneNumber = PhoneNumber::getInstance();
-		address = Address::getInstance();
-		id = -1;
-		idAddress = -1;
-	}
 };
 
-Person* Person::person_ = nullptr;
-
-Person* Person::getInstance()
-{
-	if (person_ == nullptr) { person_ = new Person(); }
-	return person_;
-}
-
-class DataBase
+class DataBaseConnection
 {
 protected:
 	SQLHENV handleEnv;
-	SQLHDBC handleDBC;
-
 	SQLRETURN retcode;
-
 	SQLWCHAR* dsn;
 	SQLWCHAR* user;
 	SQLWCHAR* password;
+	//Сделать доступ через get и заприватить
+	SQLHDBC hDBC;
 
-	static DataBase* database_;
-	DataBase(DataBase& other) = delete;
-	void operator=(const DataBase&) = delete;
-
-	DataBase()
+	static DataBaseConnection* database_;
+	
+	DataBaseConnection() : status{1}
 	{
 		dsn = (SQLWCHAR*)L"Phonebook";
 		user = (SQLWCHAR*)L"postgres";
@@ -131,35 +97,58 @@ protected:
 		retcode = SQLSetEnvAttr(handleEnv, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
 		checkErr();
 
-		retcode = SQLAllocHandle(SQL_HANDLE_DBC, handleEnv, &handleDBC);
+		retcode = SQLAllocHandle(SQL_HANDLE_DBC, handleEnv, &hDBC);
 		checkErr();
 
-		retcode = SQLConnect(handleDBC, dsn, SQL_NTS, user, SQL_NTS, password, SQL_NTS);
+		retcode = SQLConnect(hDBC, dsn, SQL_NTS, user, SQL_NTS, password, SQL_NTS);
 		checkErr();
 		//установить атрибуты коннекта
 	}
 
 	void checkErr() 
 	{
-		if (retcode < 0) throw "Ошибка подключения\n";
+		if (retcode < 0) 
+		{ 
+			status = 0;
+			throw "Ошибка подключения к СУБД\n"; 
+		}
 	}
 
 public:	
-	
-	static DataBase* getInstance();
-	~DataBase() 
-	{
-		retcode = SQLDisconnect(handleDBC);
 
-		retcode = SQLFreeHandle(SQL_HANDLE_DBC,handleDBC);
+	bool status;
+	SQLHDBC* getHDBC() { return &hDBC; }
+	DataBaseConnection(DataBaseConnection& other) = delete;
+	void operator=(const DataBaseConnection&) = delete;
+	static DataBaseConnection* getInstance();
+	~DataBaseConnection() 
+	{
+		retcode = SQLDisconnect(hDBC);
+
+		retcode = SQLFreeHandle(SQL_HANDLE_DBC,hDBC);
 
 		retcode = SQLFreeHandle(SQL_HANDLE_ENV,handleEnv);
 	}
 };
 
-DataBase* DataBase::database_ = nullptr;
-DataBase* DataBase::getInstance() 
+DataBaseConnection* DataBaseConnection::database_ = nullptr;
+DataBaseConnection* DataBaseConnection::getInstance() 
 {
-	if (database_ == nullptr) { database_ = new DataBase(); }
+	if (database_ == nullptr) { database_ = new DataBaseConnection(); }
 	return database_;
 }
+
+class Model 
+{
+private:
+	unordered_map<int,Address> addressTable;
+	//AddressMapper
+	unordered_map<int,PhoneNumber> phoneNumberTable;
+	//PhoneNumberMapper
+	unordered_map<int, Person> personTable;
+	//PersonMapper
+	ConsoleApp* conApp;
+public:
+	Model(ConsoleApp* conApp = nullptr) { this->conApp = conApp; }
+	void setConApp(ConsoleApp* conApp) { this->conApp = conApp; }	
+};
