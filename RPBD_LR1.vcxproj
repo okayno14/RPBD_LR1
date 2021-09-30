@@ -143,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller\Controller.h" />
+    <ClInclude Include="Model\Mapper.h" />
     <ClInclude Include="Model\Model.h" />
     <ClInclude Include="View\View.h" />
   </ItemGroup>

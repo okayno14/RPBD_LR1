@@ -18,6 +18,9 @@ public:
 		MainMenu = 0;
 		UntMenu = 0;
 		ch = 0;
+		setlocale(LC_ALL, "Russian");
+		//system("chcp 1251 > nul");
+		system("color 0F");
 	}
 
 	void Main_menu_output()
@@ -26,7 +29,7 @@ public:
 		cout << "2 - Добавить запись в телефонную книгу" << endl;
 		cout << "3 - Изменить запись в телефонной книге" << endl;
 		cout << "4 - Удаление записи" << endl;
-		cout << "Press 9 to exit" << endl;
+		cout << "Нажмите 9 для выхода" << endl;
 	}
 
 	void clear()
@@ -38,11 +41,8 @@ public:
 		Main_menu_output();
 	}
 
-	void main()
+	void run()
 	{
-		setlocale(LC_ALL, "Russian");
-		system("chcp 1251 > nul");
-		system("color 0F");
 		Main_menu_output();
 		
 
@@ -93,6 +93,4 @@ public:
 		}
 		system("pause");
 	}
-
-
 };
