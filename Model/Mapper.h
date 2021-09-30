@@ -1,5 +1,5 @@
 #pragma once
-#include "..\Model\Model.h"
+#include "Model.h"
 #include <windows.h>
 #include <odbcinst.h>
 #include <sqlext.h>
@@ -97,7 +97,7 @@ public:
 			0,
 			&idT,
 			0,
-			/*NULL*/&y);
+			NULL);
 
 		checkErr();
 		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));

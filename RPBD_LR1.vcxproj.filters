@@ -30,8 +30,8 @@
     <ClInclude Include="Controller\Controller.h">
       <Filter>Controller</Filter>
     </ClInclude>
-    <ClInclude Include="Controller\Mapper.h">
-      <Filter>Controller</Filter>
+    <ClInclude Include="Model\Mapper.h">
+      <Filter>Model</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

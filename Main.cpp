@@ -1,7 +1,7 @@
 #include "View\View.h"
 #include "Controller\Controller.h"
 #include "Model\Model.h"
-#include "Controller\Mapper.h"
+#include "Model\Mapper.h"
 
 #include <windows.h>
 #include <odbcinst.h>
