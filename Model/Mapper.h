@@ -11,7 +11,7 @@ class AbstractMapper
 {
 public:
 	virtual void insertObj() {};
-	//virtual void updateObj() {};
+	virtual void updateObj() {};
 	virtual void deleteObj() {};
 	virtual void findObj(int id) {};
 
@@ -165,47 +165,6 @@ public:
 	
 	void insertObj() override
 	{
-		//Тип телефона и ид типа
-			statementText = (SQLWCHAR*)L"INSERT INTO type_of_phone VALUES (?,?)";
-		
-			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-			checkErr();
-
-			retcode = SQLBindParameter(
-				hstmt,
-				1,
-				SQL_PARAM_INPUT,
-				SQL_C_SLONG,
-				SQL_INTEGER,
-				4,
-				0,
-				&(buf->idType),
-				0,
-				NULL);
-			checkErr();
-			retcode = SQLBindParameter
-			(
-				hstmt,
-				2,
-				SQL_PARAM_INPUT,
-				SQL_C_WCHAR,
-				SQL_WCHAR,
-				sizeof(SQLWCHAR) * strSZ,
-				0,
-				buf->typeName,
-				sizeof(SQLWCHAR) * strSZ,
-				NULL
-			);
-			checkErr();
-
-			retcode = SQLExecute(hstmt);
-			checkErr();
-
-			SQLLEN rc;
-			retcode = SQLRowCount(hstmt, &rc);
-			checkErr();
-		//Тип телефона и ид типа
-
 		//id idType номер телефона
 			statementText = (SQLWCHAR*) L"INSERT INTO phoneNumber (idtype, number) VALUES (?,?)";
 
@@ -242,7 +201,7 @@ public:
 			retcode = SQLExecute(hstmt);
 			checkErr();
 
-			rc;
+			SQLLEN rc;
 			retcode = SQLRowCount(hstmt, &rc);
 			checkErr();
 
@@ -307,31 +266,47 @@ public:
 			retcode = SQLRowCount(hstmt, &rc);
 			checkErr();
 		//Удаляем из phoneNumber
-		
-		//Удаляем из type_of_phone
-			statementText = (SQLWCHAR*)L"DELETE FROM type_of_phone WHERE id = ?";
-		
-			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-			checkErr();
-		
-			retcode = SQLBindParameter(
-				hstmt,
-				1,
-				SQL_PARAM_INPUT,
-				SQL_C_SLONG,
-				SQL_INTEGER,
-				4,
-				0,
-				&(buf->idType),
-				0,
-				NULL);
-			checkErr();
-
-			retcode = SQLExecute(hstmt);
-			checkErr();
-
-			retcode = SQLRowCount(hstmt, &rc);
-			checkErr();
-		//Удаляем из type_of_phone
 	};
+
+	void updateObj() override 
+	{
+		statementText = (SQLWCHAR*)L"UPDATE type_of_phone SET typename = ? WHERE id = ?";
+		
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		retcode = SQLBindParameter
+		(
+			hstmt,
+			1,
+			SQL_PARAM_INPUT,
+			SQL_C_WCHAR,
+			SQL_WCHAR,
+			sizeof(SQLWCHAR) * strSZ,
+			0,
+			buf->typeName,
+			sizeof(SQLWCHAR) * strSZ,
+			NULL
+		);
+		checkErr();
+		retcode = SQLBindParameter(
+			hstmt,
+			2,
+			SQL_PARAM_INPUT,
+			SQL_C_SLONG,
+			SQL_INTEGER,
+			4,
+			0,
+			&(buf->idType),
+			0,
+			NULL);
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		SQLLEN rc;
+		retcode = SQLRowCount(hstmt, &rc);
+		checkErr();
+	}
 };

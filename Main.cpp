@@ -41,7 +41,7 @@ int main()
 	try
 	{
 		PhoneNumber pn;
-		pn.idType = 228;
+		pn.idType = 2;
 		wcscpy_s(pn.typeName,L"prekok");
 		wcscpy_s(pn.number,L"8(800)555-35-35");
 		PhoneMapper pnMap(&pn);
