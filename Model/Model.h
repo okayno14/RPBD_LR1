@@ -41,7 +41,7 @@ public:
 	}
 	SQLINTEGER* getId() { return &id; }
 	friend class PhoneMapper;
-private:
+//private:
 	SQLINTEGER id;
 	SQLLEN idLen;
 	SQLINTEGER idType;

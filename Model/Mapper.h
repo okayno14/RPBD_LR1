@@ -10,9 +10,9 @@
 class AbstractMapper
 {
 public:
-	//virtual void insertObj();
-	//virtual void updateObj();
-	//virtual void deleteObj();
+	virtual void insertObj() {};
+	//virtual void updateObj() {};
+	virtual void deleteObj() {};
 	virtual void findObj(int id) {};
 
 protected:
@@ -64,7 +64,7 @@ protected:
 //
 //};
 
-class PhoneMapper :public AbstractMapper
+class PhoneMapper: public AbstractMapper
 {
 private:
 	PhoneNumber* buf;
@@ -162,4 +162,176 @@ public:
 			checkErr();
 		//Запись типа телефона
 	}
+	
+	void insertObj() override
+	{
+		//Тип телефона и ид типа
+			statementText = (SQLWCHAR*)L"INSERT INTO type_of_phone VALUES (?,?)";
+		
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindParameter(
+				hstmt,
+				1,
+				SQL_PARAM_INPUT,
+				SQL_C_SLONG,
+				SQL_INTEGER,
+				4,
+				0,
+				&(buf->idType),
+				0,
+				NULL);
+			checkErr();
+			retcode = SQLBindParameter
+			(
+				hstmt,
+				2,
+				SQL_PARAM_INPUT,
+				SQL_C_WCHAR,
+				SQL_WCHAR,
+				sizeof(SQLWCHAR) * strSZ,
+				0,
+				buf->typeName,
+				sizeof(SQLWCHAR) * strSZ,
+				NULL
+			);
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			SQLLEN rc;
+			retcode = SQLRowCount(hstmt, &rc);
+			checkErr();
+		//Тип телефона и ид типа
+
+		//id idType номер телефона
+			statementText = (SQLWCHAR*) L"INSERT INTO phoneNumber (idtype, number) VALUES (?,?)";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindParameter(
+				hstmt,
+				1,
+				SQL_PARAM_INPUT,
+				SQL_C_SLONG,
+				SQL_INTEGER,
+				4,
+				0,
+				&(buf->idType),
+				0,
+				NULL);
+			checkErr();
+			retcode = SQLBindParameter
+			(
+				hstmt,
+				2,
+				SQL_PARAM_INPUT,
+				SQL_C_WCHAR,
+				SQL_WCHAR,
+				sizeof(SQLWCHAR) * strSZ,
+				0,
+				buf->number,
+				sizeof(SQLWCHAR) * strSZ,
+				NULL
+			);
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			rc;
+			retcode = SQLRowCount(hstmt, &rc);
+			checkErr();
+
+			statementText = (SQLWCHAR*)L"SELECT id FROM phoneNumber where number = ?";
+			
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindParameter
+			(
+				hstmt,
+				1,
+				SQL_PARAM_INPUT,
+				SQL_C_WCHAR,
+				SQL_WCHAR,
+				sizeof(SQLWCHAR) * strSZ,
+				0,
+				buf->number,
+				sizeof(SQLWCHAR) * strSZ,
+				NULL
+			);
+			checkErr();
+
+			retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLFetch(hstmt);
+			checkErr();
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		//id idType номер телефона
+	}
+
+	void deleteObj() override 
+	{
+		//Удаляем из phoneNumber
+			statementText = (SQLWCHAR*) L"DELETE FROM phoneNumber WHERE id = ?";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindParameter(
+				hstmt,
+				1,
+				SQL_PARAM_INPUT,
+				SQL_C_SLONG,
+				SQL_INTEGER,
+				4,
+				0,
+				&(buf->id),
+				0,
+				NULL);
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			SQLLEN rc;
+			retcode = SQLRowCount(hstmt, &rc);
+			checkErr();
+		//Удаляем из phoneNumber
+		
+		//Удаляем из type_of_phone
+			statementText = (SQLWCHAR*)L"DELETE FROM type_of_phone WHERE id = ?";
+		
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+		
+			retcode = SQLBindParameter(
+				hstmt,
+				1,
+				SQL_PARAM_INPUT,
+				SQL_C_SLONG,
+				SQL_INTEGER,
+				4,
+				0,
+				&(buf->idType),
+				0,
+				NULL);
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLRowCount(hstmt, &rc);
+			checkErr();
+		//Удаляем из type_of_phone
+	};
 };
