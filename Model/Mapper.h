@@ -270,28 +270,14 @@ public:
 
 	void updateObj() override 
 	{
-		statementText = (SQLWCHAR*)L"UPDATE type_of_phone SET typename = ? WHERE id = ?";
+		statementText = (SQLWCHAR*)L"UPDATE phoneNumber SET idtype = ?, number = ? WHERE id = ?";
 		
 		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 		checkErr();
 
-		retcode = SQLBindParameter
-		(
-			hstmt,
-			1,
-			SQL_PARAM_INPUT,
-			SQL_C_WCHAR,
-			SQL_WCHAR,
-			sizeof(SQLWCHAR) * strSZ,
-			0,
-			buf->typeName,
-			sizeof(SQLWCHAR) * strSZ,
-			NULL
-		);
-		checkErr();
 		retcode = SQLBindParameter(
 			hstmt,
-			2,
+			1,
 			SQL_PARAM_INPUT,
 			SQL_C_SLONG,
 			SQL_INTEGER,
@@ -301,7 +287,35 @@ public:
 			0,
 			NULL);
 		checkErr();
+		
+		retcode = SQLBindParameter
+		(
+			hstmt,
+			2,
+			SQL_PARAM_INPUT,
+			SQL_C_WCHAR,
+			SQL_WCHAR,
+			sizeof(SQLWCHAR) * strSZ,
+			0,
+			buf->number,
+			sizeof(SQLWCHAR) * strSZ,
+			NULL
+		);
+		checkErr();
 
+		retcode = SQLBindParameter(
+			hstmt,
+			3,
+			SQL_PARAM_INPUT,
+			SQL_C_SLONG,
+			SQL_INTEGER,
+			4,
+			0,
+			&(buf->id),
+			0,
+			NULL);
+		checkErr();
+		
 		retcode = SQLExecute(hstmt);
 		checkErr();
 

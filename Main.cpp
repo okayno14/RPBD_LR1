@@ -42,10 +42,13 @@ int main()
 	{
 		PhoneNumber pn;
 		pn.idType = 2;
-		wcscpy_s(pn.typeName,L"prekok");
 		wcscpy_s(pn.number,L"8(800)555-35-35");
 		PhoneMapper pnMap(&pn);
 		pnMap.insertObj();
+		
+		wcscpy_s(pn.number, L"2281488");
+		pnMap.updateObj();
+
 		pnMap.deleteObj();
 		cout << pn.id<<endl;
 	}
