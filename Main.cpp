@@ -36,7 +36,7 @@ int main()
 			PhoneMapper pnMap(&pn);
 			pnMap.findObj(2); 
 		}
-	catch (wchar_t* msg) { wprintf(L"%s\n", msg); }	
+	catch (wstring msg) { wcout << msg; }
 
 	
 	return 0;	
