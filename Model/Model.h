@@ -72,3 +72,21 @@ private:
 	Person& findBy4() {};
 	Person& findById() {};
 };
+
+
+
+class Model
+{
+public:
+	bool FindByNames(SQLWCHAR* lastNameContact, 
+		SQLWCHAR* firstNameContact,
+		SQLWCHAR* fatherNameContact);
+	bool EditPerson();//peregruzit
+
+	bool AddPerson();//peregruzit
+	bool RemovePerson();//
+	bool FindBy4();//
+	bool FindAddress();//
+	//bool FindPhoneNumber();
+
+};
