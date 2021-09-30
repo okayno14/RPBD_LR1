@@ -89,7 +89,7 @@ public:
 		
 			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 			checkErr();
-
+			
 			retcode = SQLBindParameter(
 				hstmt,
 				1,
