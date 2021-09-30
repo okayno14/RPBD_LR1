@@ -38,6 +38,19 @@ int main()
 		}
 	catch (wstring msg) { wcout << msg; }
 
+	try
+	{
+		PhoneNumber pn;
+		pn.idType = 228;
+		wcscpy_s(pn.typeName,L"prekok");
+		wcscpy_s(pn.number,L"8(800)555-35-35");
+		PhoneMapper pnMap(&pn);
+		pnMap.insertObj();
+		pnMap.deleteObj();
+		cout << pn.id<<endl;
+	}
+	catch (wstring msg) { wcout << msg; }
+	
 	
 	return 0;	
 }
