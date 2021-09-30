@@ -13,8 +13,13 @@ class Address
 {
 public:
 	SQLWCHAR streetName[strSZ];
+	SQLLEN streetNameLen;
+
 	SQLINTEGER home;
+	SQLLEN homeLen;
+
 	SQLINTEGER appartement;
+	SQLLEN appartementLen;
 
 	Address(int id = -1, int idStreet = -1)
 	{
@@ -24,7 +29,10 @@ public:
 	friend class AddressMapper;
 private:
 	SQLINTEGER id;
+	SQLLEN idLen;
+
 	SQLINTEGER idStreet;
+	SQLLEN idStreetLen;
 };
 
 class PhoneNumber

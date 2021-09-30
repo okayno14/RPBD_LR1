@@ -51,6 +51,14 @@ int main()
 
 		pnMap.deleteObj();
 		cout << pn.id<<endl;
+
+		Address ad;
+		AddressMapper adMap(&ad);
+
+		adMap.findObj(1);
+
+
+
 	}
 	catch (wstring msg) { wcout << msg; }
 	
