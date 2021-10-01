@@ -59,7 +59,9 @@ int main()
 		ad.appartement = 1337;
 		wcscpy_s(ad.streetName, L"Marksa");
 
-		//adMap.insertObj();
+		adMap.insertObj();
+
+		adMap.deleteObj();
 
 		//adMap.findObj();
 		

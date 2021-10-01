@@ -209,15 +209,28 @@ public:
 	
 		//Вставка квартиры и дома
 
-		findObj();
-
-		//Проверить, есть ои улица из буфера в БД
-		//Если нет, то вставить в бд и вернуть в буфер idStreet
-		//Если есть, то вернуть в буфер idStreet
+		findObj(); //записывает в обьект его id
 
 	};
 	virtual void updateObj() override {};
-	virtual void deleteObj()  override {};
+	virtual void deleteObj()  override 
+	{
+		statementText = (SQLWCHAR*)L"DELETE FROM address WHERE id = ?";
+		
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		retcode = SQLBindParameter(hstmt,1,SQL_PARAM_INPUT,SQL_C_SLONG,SQL_INTEGER,4,0,&(buf->id),0,NULL);
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		SQLLEN a;
+		retcode = SQLRowCount(hstmt,&a);
+		checkErr();
+
+	};
 	virtual void findObj(int id) override 
 	{
 		SQLINTEGER idT = (SQLINTEGER)id;
