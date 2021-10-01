@@ -390,14 +390,14 @@ public:
 		SQLLEN finded;
 		retcode = SQLRowCount(hstmt, &finded);
 		checkErr();
-		if (finded > 1) return false;
-
+		
 		retcode = SQLFetch(hstmt);
 		checkErr();
 		retcode = SQLCloseCursor(hstmt);
 		checkErr();
 
-		return true;
+		if (finded > 1) return false;
+		else return true;
 	};
 };
 
@@ -534,14 +534,16 @@ public:
 			SQLLEN finded;
 			retcode = SQLRowCount(hstmt, &finded);
 			checkErr();
-			if (finded > 1) return false;
+			
 
 			retcode = SQLFetch(hstmt);
 			checkErr();
 			retcode = SQLCloseCursor(hstmt);
 			checkErr();
 
-			return true;
+
+			if (finded > 1) return false;
+			else return true;
 		//Поиск обьекта в таблице по номеру телефона
 	};
 	
