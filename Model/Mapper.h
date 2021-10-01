@@ -14,7 +14,7 @@ public:
 	virtual void updateObj() {};
 	virtual void deleteObj() {};
 	virtual void findObj(int id) {};
-	virtual bool findObj() { return false; };
+	virtual bool findObj() = 0;
 
 protected:
 	SQLRETURN retcode;
@@ -127,7 +127,7 @@ public:
 		//Проверка и вставка улицы
 		SQLLEN a;
 		if (findStreet()==false)
-			{
+		{
 				statementText = (SQLWCHAR*)L"INSERT INTO street (streetname) VALUES (?)";
 
 				retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
@@ -155,7 +155,7 @@ public:
 				checkErr();
 
 				findStreet();
-			}
+		}
 		//Проверка и вставка улицы
 
 		//Вставка квартиры и дома
@@ -212,7 +212,64 @@ public:
 		findObj(); //записывает в обьект его id
 
 	};
-	virtual void updateObj() override {};
+	virtual void updateObj() override 
+	{
+		SQLLEN a;
+		
+		/*Если пользователь переписал название улицы, то
+		нужно сгенерировать новый обьект улицы и записать его ид в буфер, иначе ничего не делать*/
+		if (findStreet() == false)
+		{
+			statementText = (SQLWCHAR*)L"INSERT INTO street (streetname) VALUES (?)";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindParameter
+			(
+				hstmt,
+				1,
+				SQL_PARAM_INPUT,
+				SQL_C_WCHAR,
+				SQL_WCHAR,
+				sizeof(SQLWCHAR) * strSZ,
+				0,
+				buf->streetName,
+				sizeof(SQLWCHAR) * strSZ,
+				NULL
+			);
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLRowCount(hstmt, &a);
+			checkErr();
+
+			findStreet();
+		}
+
+		/*делаем апдейт дома, квартиры, идУлицы*/
+		statementText = (SQLWCHAR*)L"UPDATE address SET idstreet = ?, home = ?, appartement = ? WHERE id = ?";
+		
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		retcode = SQLBindParameter(	hstmt,1,SQL_PARAM_INPUT,SQL_C_SLONG,SQL_INTEGER,4,0,&(buf->idStreet),0,NULL);
+		checkErr();
+		retcode = SQLBindParameter(hstmt, 2, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->home), 0, NULL);
+		checkErr();
+		retcode = SQLBindParameter(hstmt, 3, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->appartement), 0, NULL);
+		checkErr();
+		retcode = SQLBindParameter(hstmt, 4, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->id), 0, NULL);
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+				
+		retcode = SQLRowCount(hstmt, &a);
+		checkErr();
+	};
 	virtual void deleteObj()  override 
 	{
 		statementText = (SQLWCHAR*)L"DELETE FROM address WHERE id = ?";

@@ -61,7 +61,11 @@ int main()
 
 		adMap.insertObj();
 
-		adMap.deleteObj();
+		//adMap.deleteObj();
+
+		wcscpy_s(ad.streetName, L"Pokryshkina");
+		
+		adMap.updateObj();
 
 		//adMap.findObj();
 		
