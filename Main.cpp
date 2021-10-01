@@ -60,7 +60,7 @@ int main()
 		PhoneNumber pn;
 		PhoneMapper pnMap(&pn);
 		wcscpy_s(pn.number, L"7(999)652-97-19");
-		pnMap.findObj();
+		pnMap.findObj(10);
 	}
 	catch (wstring msg) { wcout << msg; }
 	

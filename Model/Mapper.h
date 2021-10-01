@@ -194,84 +194,67 @@ public:
 	
 	void findObj(int id) override
 	{
-		//Всё кроме типа телефона
-			SQLINTEGER idT = (SQLINTEGER)id;
-			//statementText = (SQLWCHAR*)L"SELECT * FROM phoneNumber WHERE id = ?";
 		
-			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-			checkErr();
-			
-			retcode = SQLBindParameter(
-				hstmt,
-				1,
-				SQL_PARAM_INPUT,
-				SQL_C_SLONG,
-				SQL_INTEGER,
-				4,
-				0,
-				&idT,
-				0,
-				NULL);
-			checkErr();
-		
-			retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
-			checkErr();
-			retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idType), 0, &(buf->idTypeLen));
-			checkErr();
-			retcode = SQLBindCol(
-				hstmt,
-				3,
-				SQL_C_WCHAR,
-				&(buf->number),
-				sizeof(SQLWCHAR) * strSZ,
-				&(buf->numberLen));
-			checkErr();
-		
-			retcode = SQLExecute(hstmt);
-			checkErr();
-		
-			retcode = SQLFetch(hstmt);
-			checkErr();
-			retcode = SQLCloseCursor(hstmt);
-			checkErr();
-		//Всё кроме типа телефона
+		SQLINTEGER idT = (SQLINTEGER)id;
+		buf->id = idT;
 
-		//Запись типа телефона
-			statementText = (SQLWCHAR*)L"SELECT * FROM type_of_phone WHERE id = ?";
+		statementText =
+			(SQLWCHAR*)L"SELECT"
+			" phoneNumber.number, type_of_phone.id, type_of_phone.typename "
+			" FROM"
+			" phoneNumber INNER JOIN type_of_phone"
+			" ON"
+			" phonenumber.idtype = type_of_phone.id "
+			" WHERE phoneNumber.id = ?";
 		
-			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-			checkErr();
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+			
+		retcode = SQLBindParameter(
+			hstmt,
+			1,
+			SQL_PARAM_INPUT,
+			SQL_C_SLONG,
+			SQL_INTEGER,
+			4,
+			0,
+			&idT,
+			0,
+			NULL);
+		checkErr();
 		
-			retcode = SQLBindParameter(
-				hstmt,
-				1,
-				SQL_PARAM_INPUT,
-				SQL_C_SLONG,
-				SQL_INTEGER,
-				4,
-				0,
-				&(buf->idType),
-				0,
-				NULL);
-			checkErr();
+		retcode = SQLBindCol(
+			hstmt,
+			1,
+			SQL_C_WCHAR,
+			&(buf->number),
+			sizeof(SQLWCHAR) * strSZ,
+			&(buf->numberLen));
+		checkErr();
+		retcode = SQLBindCol(
+			hstmt,
+			2,
+			SQL_C_SLONG,
+			&(buf->idType),
+			0,
+			&(buf->idTypeLen));
+		checkErr();
+		retcode = SQLBindCol(
+			hstmt,
+			3,
+			SQL_C_WCHAR,
+			&(buf->typeName),
+			sizeof(SQLWCHAR) * strSZ,
+			&(buf->typeNameLen));
+		checkErr();
 		
-			retcode = SQLBindCol(
-				hstmt,
-				2,
-				SQL_C_WCHAR,
-				&(buf->typeName),
-				sizeof(SQLWCHAR) * strSZ,
-				&(buf->typeNameLen));
-			checkErr();
+		retcode = SQLExecute(hstmt);
+		checkErr();
 		
-			retcode = SQLExecute(hstmt);
-			checkErr();
-		
-			retcode = SQLFetch(hstmt);
-			checkErr();
-			retcode = SQLCloseCursor(hstmt);
-			checkErr();
-		//Запись типа телефона
+		retcode = SQLFetch(hstmt);
+		checkErr();
+		retcode = SQLCloseCursor(hstmt);
+		checkErr();		
 	}
 
 	void findObj() override 
