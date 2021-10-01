@@ -14,6 +14,7 @@ public:
 	virtual void updateObj() {};
 	virtual void deleteObj() {};
 	virtual void findObj(int id) {};
+	virtual void findObj() {};
 
 protected:
 	SQLRETURN retcode;
@@ -75,7 +76,12 @@ public:
 	void setBuf(Address* buf) { this->buf = buf; }
 	void insertObj() override 
 	{
-		
+		statementText = (SQLWCHAR*)L"";
+
+		//Проверить, есть ои улица из буфера в БД
+		//Если нет, то вставить в бд и вернуть в буфер idStreet
+		//Если есть, то вернуть в буфер idStreet
+
 	};
 	virtual void updateObj() override {};
 	virtual void deleteObj()  override {};
@@ -163,6 +169,7 @@ public:
 			checkErr();
 		//запись улицы и idStreet
 	};
+	virtual void findObj() override {};
 };
 
 class PhoneMapper: public AbstractMapper
@@ -263,6 +270,81 @@ public:
 			checkErr();
 		//Запись типа телефона
 	}
+
+	void findObj() override 
+	{
+		//Поиск обьекта в таблице по номеру телефона
+			statementText = (SQLWCHAR*)L"SELECT id, idtype FROM phoneNumber WHERE number = ?";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindParameter
+			(
+				hstmt,
+				1,
+				SQL_PARAM_INPUT,
+				SQL_C_WCHAR,
+				SQL_WCHAR,
+				sizeof(SQLWCHAR) * strSZ,
+				0,
+				buf->number,
+				sizeof(SQLWCHAR) * strSZ,
+				NULL
+			);
+			checkErr();
+
+			retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+			checkErr();
+			retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idType), 0, &(buf->idTypeLen));
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLFetch(hstmt);
+			checkErr();
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		//Поиск обьекта в таблице по номеру телефона
+
+		//Запись типа телефона
+			statementText = (SQLWCHAR*)L"SELECT typename FROM type_of_phone WHERE id = ?";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindParameter(
+				hstmt,
+				1,
+				SQL_PARAM_INPUT,
+				SQL_C_SLONG,
+				SQL_INTEGER,
+				4,
+				0,
+				&(buf->idType),
+				0,
+				NULL);
+			checkErr();
+
+			retcode = SQLBindCol(
+				hstmt,
+				1,
+				SQL_C_WCHAR,
+				&(buf->typeName),
+				sizeof(SQLWCHAR) * strSZ,
+				&(buf->typeNameLen));
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLFetch(hstmt);
+			checkErr();
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		//Запись типа телефона
+	};
 	
 	void insertObj() override
 	{

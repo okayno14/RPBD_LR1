@@ -40,7 +40,7 @@ int main()
 
 	try
 	{
-		PhoneNumber pn;
+		/*PhoneNumber pn;
 		pn.idType = 2;
 		wcscpy_s(pn.number,L"8(800)555-35-35");
 		PhoneMapper pnMap(&pn);
@@ -55,10 +55,12 @@ int main()
 		Address ad;
 		AddressMapper adMap(&ad);
 
-		adMap.findObj(1);
+		adMap.findObj(1);*/
 
-
-
+		PhoneNumber pn;
+		PhoneMapper pnMap(&pn);
+		wcscpy_s(pn.number, L"7(999)652-97-19");
+		pnMap.findObj();
 	}
 	catch (wstring msg) { wcout << msg; }
 	
