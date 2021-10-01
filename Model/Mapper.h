@@ -122,40 +122,47 @@ public:
 		}
 
 	};
+	void checkStreet() 
+	{
+		SQLLEN a;
+		if (findStreet() == false)
+		{
+			statementText = (SQLWCHAR*)L"INSERT INTO street (streetname) VALUES (?)";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindParameter
+			(
+				hstmt,
+				1,
+				SQL_PARAM_INPUT,
+				SQL_C_WCHAR,
+				SQL_WCHAR,
+				sizeof(SQLWCHAR) * strSZ,
+				0,
+				buf->streetName,
+				sizeof(SQLWCHAR) * strSZ,
+				NULL
+			);
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLRowCount(hstmt, &a);
+			checkErr();
+
+			findStreet();
+		}
+	}
+	
 	void insertObj() override 
 	{
-		//Проверка и вставка улицы
 		SQLLEN a;
-		if (findStreet()==false)
-		{
-				statementText = (SQLWCHAR*)L"INSERT INTO street (streetname) VALUES (?)";
-
-				retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-				checkErr();
-
-				retcode = SQLBindParameter
-				(
-					hstmt,
-					1,
-					SQL_PARAM_INPUT,
-					SQL_C_WCHAR,
-					SQL_WCHAR,
-					sizeof(SQLWCHAR) * strSZ,
-					0,
-					buf->streetName,
-					sizeof(SQLWCHAR) * strSZ,
-					NULL
-				);
-				checkErr();
-
-				retcode = SQLExecute(hstmt);
-				checkErr();
-				
-				retcode = SQLRowCount(hstmt, &a);
-				checkErr();
-
-				findStreet();
-		}
+		//Проверка и вставка улицы
+		checkStreet();
+		
 		//Проверка и вставка улицы
 
 		//Вставка квартиры и дома
@@ -218,36 +225,7 @@ public:
 		
 		/*Если пользователь переписал название улицы, то
 		нужно сгенерировать новый обьект улицы и записать его ид в буфер, иначе ничего не делать*/
-		if (findStreet() == false)
-		{
-			statementText = (SQLWCHAR*)L"INSERT INTO street (streetname) VALUES (?)";
-
-			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-			checkErr();
-
-			retcode = SQLBindParameter
-			(
-				hstmt,
-				1,
-				SQL_PARAM_INPUT,
-				SQL_C_WCHAR,
-				SQL_WCHAR,
-				sizeof(SQLWCHAR) * strSZ,
-				0,
-				buf->streetName,
-				sizeof(SQLWCHAR) * strSZ,
-				NULL
-			);
-			checkErr();
-
-			retcode = SQLExecute(hstmt);
-			checkErr();
-
-			retcode = SQLRowCount(hstmt, &a);
-			checkErr();
-
-			findStreet();
-		}
+		checkStreet();
 
 		/*делаем апдейт дома, квартиры, идУлицы*/
 		statementText = (SQLWCHAR*)L"UPDATE address SET idstreet = ?, home = ?, appartement = ? WHERE id = ?";

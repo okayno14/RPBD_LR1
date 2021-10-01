@@ -55,8 +55,8 @@ int main()
 		Address ad;
 		AddressMapper adMap(&ad);
 
-		ad.home = 1488;
-		ad.appartement = 1337;
+		ad.home = 7;
+		ad.appartement = 6;
 		wcscpy_s(ad.streetName, L"Marksa");
 
 		adMap.insertObj();
@@ -66,6 +66,8 @@ int main()
 		wcscpy_s(ad.streetName, L"Pokryshkina");
 		
 		adMap.updateObj();
+
+		adMap.deleteObj();
 
 		//adMap.findObj();
 		
