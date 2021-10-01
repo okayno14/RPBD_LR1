@@ -14,7 +14,7 @@ public:
 	virtual void updateObj() {};
 	virtual void deleteObj() {};
 	virtual void findObj(int id) {};
-	virtual void findObj() {};
+	virtual bool findObj() { return false; };
 
 protected:
 	SQLRETURN retcode;
@@ -141,9 +141,82 @@ public:
 		retcode = SQLCloseCursor(hstmt);
 		checkErr();
 	};
-	virtual void findObj() override 
+	virtual bool findObj() override 
 	{
-		
+		statementText =
+			(SQLWCHAR*)L"SELECT"
+			" address.id,"
+			" address.idStreet"
+			" FROM"
+			" address INNER JOIN street"
+			" ON"
+			" address.idstreet = street.id"
+			" WHERE"
+			" address.home = ? and"
+			" address.appartement = ? and"
+			" street.streetname = ? ;";
+
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		retcode = SQLBindParameter(
+			hstmt,
+			1,
+			SQL_PARAM_INPUT,
+			SQL_C_SLONG,
+			SQL_INTEGER,
+			4,
+			0,
+			&(buf->home),
+			0,
+			NULL);
+		checkErr();
+		retcode = SQLBindParameter(
+			hstmt,
+			2,
+			SQL_PARAM_INPUT,
+			SQL_C_SLONG,
+			SQL_INTEGER,
+			4,
+			0,
+			&(buf->appartement),
+			0,
+			NULL);
+		checkErr();
+		retcode = SQLBindParameter
+		(
+			hstmt,
+			3,
+			SQL_PARAM_INPUT,
+			SQL_C_WCHAR,
+			SQL_WCHAR,
+			sizeof(SQLWCHAR) * strSZ,
+			0,
+			buf->streetName,
+			sizeof(SQLWCHAR) * strSZ,
+			NULL
+		);
+		checkErr();
+
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), sizeof(SQLWCHAR) * strSZ, &(buf->idLen));
+		checkErr();
+		retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idStreet), sizeof(SQLWCHAR) * strSZ, &(buf->idStreetLen));
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		SQLLEN finded;
+		retcode = SQLRowCount(hstmt, &finded);
+		checkErr();
+		if (finded > 1) return false;
+
+		retcode = SQLFetch(hstmt);
+		checkErr();
+		retcode = SQLCloseCursor(hstmt);
+		checkErr();
+
+		return true;
 	};
 };
 
@@ -229,7 +302,7 @@ public:
 		checkErr();		
 	}
 
-	void findObj() override 
+	bool findObj() override 
 	{
 		//Поиск обьекта в таблице по номеру телефона
 		
@@ -277,10 +350,17 @@ public:
 			retcode = SQLExecute(hstmt);
 			checkErr();
 
+			SQLLEN finded;
+			retcode = SQLRowCount(hstmt, &finded);
+			checkErr();
+			if (finded > 1) return false;
+
 			retcode = SQLFetch(hstmt);
 			checkErr();
 			retcode = SQLCloseCursor(hstmt);
 			checkErr();
+
+			return true;
 		//Поиск обьекта в таблице по номеру телефона
 	};
 	

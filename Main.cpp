@@ -55,7 +55,13 @@ int main()
 		Address ad;
 		AddressMapper adMap(&ad);
 
-		adMap.findObj(1);
+		ad.home = 40;
+		ad.appartement = 37;
+		wcscpy_s(ad.streetName, L"Voennaya");
+
+		adMap.findObj();
+		
+		//adMap.findObj(1);
 
 		/*PhoneNumber pn;
 		PhoneMapper pnMap(&pn);
