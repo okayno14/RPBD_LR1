@@ -74,9 +74,142 @@ public:
 	}
 	~AddressMapper() { SQLFreeHandle(SQL_HANDLE_STMT, hstmt); }
 	void setBuf(Address* buf) { this->buf = buf; }
+	
+	bool findStreet()
+	{
+		statementText = (SQLWCHAR*)L"SELECT id FROM street WHERE streetname = ?";
+
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		retcode = SQLBindParameter(
+			hstmt,
+			1,
+			SQL_PARAM_INPUT,
+			SQL_C_WCHAR,
+			SQL_WCHAR,
+			sizeof(SQLWCHAR) * strSZ,
+			0,
+			buf->streetName,
+			sizeof(SQLWCHAR) * strSZ,
+			NULL
+		);
+		checkErr();
+
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->idStreet), 0, &(buf->idStreetLen));
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		SQLLEN finded;
+		retcode = SQLRowCount(hstmt, &finded);
+		checkErr();
+
+		retcode = SQLFetch(hstmt);
+		checkErr();
+
+		retcode = SQLCloseCursor(hstmt);
+		checkErr();
+		
+		if (finded == 1) 
+		{
+			return true;
+		}
+		else 
+		{
+			return false;
+		}
+
+	};
 	void insertObj() override 
 	{
-		statementText = (SQLWCHAR*)L"";
+		//Проверка и вставка улицы
+		SQLLEN a;
+		if (findStreet()==false)
+			{
+				statementText = (SQLWCHAR*)L"INSERT INTO street (streetname) VALUES (?)";
+
+				retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+				checkErr();
+
+				retcode = SQLBindParameter
+				(
+					hstmt,
+					1,
+					SQL_PARAM_INPUT,
+					SQL_C_WCHAR,
+					SQL_WCHAR,
+					sizeof(SQLWCHAR) * strSZ,
+					0,
+					buf->streetName,
+					sizeof(SQLWCHAR) * strSZ,
+					NULL
+				);
+				checkErr();
+
+				retcode = SQLExecute(hstmt);
+				checkErr();
+				
+				retcode = SQLRowCount(hstmt, &a);
+				checkErr();
+
+				findStreet();
+			}
+		//Проверка и вставка улицы
+
+		//Вставка квартиры и дома
+			statementText = (SQLWCHAR*)L"INSERT INTO address (home, appartement, idStreet) VALUES (?,?,?)";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+			
+			retcode = SQLBindParameter(
+				hstmt,
+				1,
+				SQL_PARAM_INPUT,
+				SQL_INTEGER,
+				SQL_C_SLONG,
+				4,
+				0,
+				&(buf->home),
+				0,
+				NULL);
+			checkErr();
+			retcode = SQLBindParameter(
+				hstmt,
+				2,
+				SQL_PARAM_INPUT,
+				SQL_INTEGER,
+				SQL_C_SLONG,
+				4,
+				0,
+				&(buf->appartement),
+				0,
+				NULL);
+			checkErr();
+			retcode = SQLBindParameter(
+				hstmt,
+				3,
+				SQL_PARAM_INPUT,
+				SQL_INTEGER,
+				SQL_C_SLONG,
+				4,
+				0,
+				&(buf->idStreet),
+				0,
+				NULL);
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();	
+			
+			retcode = SQLRowCount(hstmt, &a);
+			checkErr();
+	
+		//Вставка квартиры и дома
+
+		findObj();
 
 		//Проверить, есть ои улица из буфера в БД
 		//Если нет, то вставить в бд и вернуть в буфер idStreet
@@ -154,7 +287,7 @@ public:
 			" WHERE"
 			" address.home = ? and"
 			" address.appartement = ? and"
-			" street.streetname = ? ;";
+			" street.streetname = ?";
 
 		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 		checkErr();

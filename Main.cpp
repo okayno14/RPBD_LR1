@@ -55,11 +55,13 @@ int main()
 		Address ad;
 		AddressMapper adMap(&ad);
 
-		ad.home = 40;
-		ad.appartement = 37;
-		wcscpy_s(ad.streetName, L"Voennaya");
+		ad.home = 1488;
+		ad.appartement = 1337;
+		wcscpy_s(ad.streetName, L"Marksa");
 
-		adMap.findObj();
+		//adMap.insertObj();
+
+		//adMap.findObj();
 		
 		//adMap.findObj(1);
 
