@@ -88,86 +88,58 @@ public:
 	virtual void findObj(int id) override 
 	{
 		SQLINTEGER idT = (SQLINTEGER)id;
-		//запись id дома и квартиры
-			statementText = (SQLWCHAR*)L"SELECT * FROM address WHERE id = ?";
+					
+		statementText = (SQLWCHAR*)
+		L"SELECT "
+		" *"
+		" FROM"
+		" address INNER JOIN street"
+		" ON"
+		" address.idStreet = street.id"
+		" WHERE address.id = ?";
 
-			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-			checkErr();
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
 
-			retcode = SQLBindParameter
-			(
-				hstmt,
-				1,
-				SQL_PARAM_INPUT,
-				SQL_C_SLONG,
-				SQL_INTEGER,
-				4,
-				0,
-				&idT,
-				0,
-				NULL
-			);
-			checkErr();
+		retcode = SQLBindParameter
+		(
+			hstmt,
+			1,
+			SQL_PARAM_INPUT,
+			SQL_C_SLONG,
+			SQL_INTEGER,
+			4,
+			0,
+			&idT,
+			0,
+			NULL
+		);
+		checkErr();
 
-			retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
-			checkErr();
-			retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idStreet), 0, &(buf->idStreetLen));
-			checkErr();
-			retcode = SQLBindCol(hstmt, 3, SQL_C_SLONG, &(buf->home), 0, &(buf->homeLen));
-			checkErr();
-			retcode = SQLBindCol(hstmt, 4, SQL_C_SLONG, &(buf->appartement), 0, &(buf->appartementLen));
-			checkErr();
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+		checkErr();
+		retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idStreet), 0, &(buf->idStreetLen));
+		checkErr();
+		retcode = SQLBindCol(hstmt, 3, SQL_C_SLONG, &(buf->home), 0, &(buf->homeLen));
+		checkErr();
+		retcode = SQLBindCol(hstmt, 4, SQL_C_SLONG, &(buf->appartement), 0, &(buf->appartementLen));
+		checkErr();
+		retcode = SQLBindCol(
+			hstmt,
+			6,
+			SQL_C_WCHAR,
+			&(buf->streetName),
+			sizeof(SQLWCHAR) * strSZ,
+			&(buf->streetNameLen));
+		checkErr();
 
-			retcode = SQLExecute(hstmt);
-			checkErr();
+		retcode = SQLExecute(hstmt);
+		checkErr();
 
-			retcode = SQLFetch(hstmt);
-			checkErr();
-			retcode = SQLCloseCursor(hstmt);
-			checkErr();
-
-		//запись id дома и квартиры
-		
-		//запись улицы и idStreet
-			statementText = (SQLWCHAR*)L"SELECT * FROM street WHERE id = ?";
-
-			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-			checkErr();
-
-			retcode = SQLBindParameter
-			(
-				hstmt,
-				1,
-				SQL_PARAM_INPUT,
-				SQL_C_SLONG,
-				SQL_INTEGER,
-				4,
-				0,
-				&(buf->idStreet),
-				0,
-				NULL
-			);
-			checkErr();
-
-			retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->idStreet), 0, &(buf->idStreetLen));
-			checkErr();
-			retcode = SQLBindCol(
-				hstmt,
-				2,
-				SQL_C_WCHAR,
-				&(buf->streetName),
-				sizeof(SQLWCHAR) * strSZ,
-				&(buf->streetNameLen));
-			checkErr();
-
-			retcode = SQLExecute(hstmt);
-			checkErr();
-
-			retcode = SQLFetch(hstmt);
-			checkErr();
-			retcode = SQLCloseCursor(hstmt);
-			checkErr();
-		//запись улицы и idStreet
+		retcode = SQLFetch(hstmt);
+		checkErr();
+		retcode = SQLCloseCursor(hstmt);
+		checkErr();
 	};
 	virtual void findObj() override 
 	{

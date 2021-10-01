@@ -50,17 +50,17 @@ int main()
 		pnMap.updateObj();
 
 		pnMap.deleteObj();
-		cout << pn.id<<endl;
+		cout << pn.id<<endl;*/
 
 		Address ad;
 		AddressMapper adMap(&ad);
 
-		adMap.findObj(1);*/
+		adMap.findObj(1);
 
-		PhoneNumber pn;
+		/*PhoneNumber pn;
 		PhoneMapper pnMap(&pn);
 		wcscpy_s(pn.number, L"7(999)652-97-19");
-		pnMap.findObj(10);
+		pnMap.findObj(10);*/
 	}
 	catch (wstring msg) { wcout << msg; }
 	
