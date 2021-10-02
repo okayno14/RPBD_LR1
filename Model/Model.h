@@ -61,7 +61,7 @@ public:
 class Person
 {
 public:
-	SQLWCHAR name[strSZ];
+	SQLWCHAR firstName[strSZ];
 	SQLLEN nameLen;
 	
 	SQLWCHAR lastName[strSZ];

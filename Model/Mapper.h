@@ -59,7 +59,42 @@ class PersonMapper : public AbstractMapper
 {
 private:
 	Person* buf;
-
+	void bindName() 
+	{
+		retcode = SQLBindParameter(
+			hstmt,
+			1,
+			SQL_PARAM_INPUT,
+			SQL_C_WCHAR,
+			SQL_WCHAR,
+			sizeof(SQLWCHAR) * strSZ,
+			0,
+			&(buf->lastName),
+			sizeof(SQLWCHAR) * strSZ, NULL);
+		checkErr();
+		retcode = SQLBindParameter(
+			hstmt,
+			2,
+			SQL_PARAM_INPUT,
+			SQL_C_WCHAR,
+			SQL_WCHAR,
+			sizeof(SQLWCHAR) * strSZ,
+			0,
+			&(buf->firstName),
+			sizeof(SQLWCHAR) * strSZ, NULL);
+		checkErr();
+		retcode = SQLBindParameter(
+			hstmt,
+			3,
+			SQL_PARAM_INPUT,
+			SQL_C_WCHAR,
+			SQL_WCHAR,
+			sizeof(SQLWCHAR) * strSZ,
+			0,
+			&(buf->fatherName),
+			sizeof(SQLWCHAR) * strSZ, NULL);
+		checkErr();
+	};
 public:
 	PersonMapper(Person* buf = nullptr)
 	{
@@ -87,7 +122,7 @@ public:
 		checkErr();
 		retcode = SQLBindCol(hstmt, 3, SQL_C_WCHAR, &(buf->lastName), sizeof(SQLWCHAR) * strSZ, &(buf->lastNameLen));
 		checkErr();
-		retcode = SQLBindCol(hstmt, 4, SQL_C_WCHAR, &(buf->name), sizeof(SQLWCHAR) * strSZ, &(buf->nameLen));
+		retcode = SQLBindCol(hstmt, 4, SQL_C_WCHAR, &(buf->firstName), sizeof(SQLWCHAR) * strSZ, &(buf->nameLen));
 		checkErr();
 		retcode = SQLBindCol(hstmt, 5, SQL_C_WCHAR, &(buf->fatherName), sizeof(SQLWCHAR) * strSZ, &(buf->fatherNameLen));
 		checkErr();
@@ -103,10 +138,142 @@ public:
 	};
 
 	//ФИО
-	bool findObj(SQLWCHAR* lastName, SQLWCHAR* name, SQLWCHAR* fatherName) { return false; }
+	bool findObj(SQLWCHAR* lastName, SQLWCHAR* name, SQLWCHAR* fatherName) 
+	{ 
+		SQLLEN a;
+		bool res = false;
+		statementText =
+			(SQLWCHAR*)L"SELECT * FROM person WHERE"
+			" lastname = ? and"
+			" firstname = ? and"
+			" fathername = ?";
+
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		bindName();
+		
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+		checkErr();
+		
+		retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idAddress), 0, &(buf->idAddressLen));
+		checkErr();		
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		retcode = SQLRowCount(hstmt, &a);
+		checkErr();
+
+		if (a > 1 || a == 0)
+		{
+			res = false;
+			
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		}
+		else 
+		{
+			res = true;
+			retcode = SQLFetch(hstmt);
+			checkErr();
+
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		}		
+
+		//Не забудь поправить
+		return res;		
+	}
 
 	//ФИО ТЕЛЕФОН
-	bool findObj(PhoneNumber* phone) { return false; };
+	bool findObj(PhoneNumber* phone) 
+	{ 
+		SQLLEN a;
+		bool res = false;
+		statementText =
+			(SQLWCHAR*)
+			L" SELECT "
+			" 	person.id,"
+			" 	person.idaddress,"
+			" 	person.lastname AS lastname,"
+			" 	person.firstname AS firstname,"
+			" 	person.fathername AS fathername,"
+			" 	persone_number.idPhone AS number,"
+			" 	phoneNumber.idtype,"
+			" 	phoneNumber.number,"
+			" 	address.idstreet,"
+			" 	address.home,"
+			" 	address.appartement,"
+			" 	street.streetname"
+			" FROM"
+			" 	person INNER JOIN persone_number"
+			" 	ON"
+			" 		person.id = persone_number.idPerson"
+			" 	INNER JOIN phonenumber"
+			" 	ON "
+			" 		persone_number.idPhone = phoneNumber.id"
+			" 	INNER JOIN address"
+			" 	ON"
+			" 		person.idAddress = address.id"
+			" 	INNER JOIN street"
+			" 	ON"
+			" 		address.idstreet = street.id"
+			" WHERE "
+			" lastname = ? and"
+			" firstname = ? and"
+			" fathername = ? and"
+			" number = ?";
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		bindName();
+
+		retcode = SQLBindParameter(
+			hstmt,
+			4,
+			SQL_PARAM_INPUT,
+			SQL_C_WCHAR,
+			SQL_WCHAR,
+			sizeof(SQLWCHAR) * strSZ,
+			0,
+			&(phone->number),
+			sizeof(SQLWCHAR)*strSZ,
+			NULL);
+		checkErr();
+
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+		checkErr();
+
+		retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idAddress), 0, &(buf->idAddressLen));
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		retcode = SQLRowCount(hstmt, &a);
+		checkErr();
+
+		if (a!=1)
+		{
+			res = false;
+
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		}
+		else
+		{
+			retcode = SQLFetch(hstmt);
+			checkErr();
+
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+			res = true;
+		}
+
+		//Не забудь поправить
+		return res;
+	};
 
 	// ФИО АДРЕС
 	bool findObj(Address* address) { return false; };

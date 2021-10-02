@@ -56,8 +56,24 @@ int main()
 		adMap.deleteObj();*/
 
 		Person p;
+		
+
+		wcscpy_s(p.lastName,L"Zaykin");
+		wcscpy_s(p.firstName, L"Igor");
+		wcscpy_s(p.fatherName, L"Ivanovich");
+		
+		PhoneNumber pn;
+		wcscpy_s(pn.number,L"7(383)228-228-228");
+		
 		PersonMapper pMap(&p);
-		pMap.findObj(1);
+		
+		
+
+		//pMap.findObj(p.lastName,p.firstName,p.fatherName);
+
+		pMap.findObj(&pn);
+
+		pMap.findObj(2);
 
 
 	}
