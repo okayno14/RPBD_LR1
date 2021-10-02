@@ -55,11 +55,100 @@ protected:
 	}
 };
 
-//class PersonMapper : public AbstractMapper 
-//{
-//
-//};
-//
+class PersonMapper : public AbstractMapper 
+{
+private:
+	Person* buf;
+
+public:
+	PersonMapper(Person* buf = nullptr)
+	{
+		this->buf = buf;
+		db = DataBaseConnection::getInstance();
+		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
+	}
+	~PersonMapper() { SQLFreeHandle(SQL_HANDLE_STMT, hstmt); }
+	void setBuf(Person* buf) { this->buf = buf; }
+
+	void findObj(int id) override
+	{
+		SQLINTEGER idT = (SQLINTEGER)id;
+		buf->id = idT;
+
+		statementText = (SQLWCHAR*)L"SELECT * FROM person WHERE id = ?";
+
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->id), 0, NULL);
+		checkErr();
+
+		retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idAddress), 0, &(buf->idAddressLen));
+		checkErr();
+		retcode = SQLBindCol(hstmt, 3, SQL_C_WCHAR, &(buf->lastName), sizeof(SQLWCHAR) * strSZ, &(buf->lastNameLen));
+		checkErr();
+		retcode = SQLBindCol(hstmt, 4, SQL_C_WCHAR, &(buf->name), sizeof(SQLWCHAR) * strSZ, &(buf->nameLen));
+		checkErr();
+		retcode = SQLBindCol(hstmt, 5, SQL_C_WCHAR, &(buf->fatherName), sizeof(SQLWCHAR) * strSZ, &(buf->fatherNameLen));
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		retcode = SQLFetch(hstmt);
+		checkErr();
+
+		retcode = SQLCloseCursor(hstmt);
+		checkErr();
+	};
+
+	//ÔÈÎ
+	bool findObj(SQLWCHAR* lastName, SQLWCHAR* name, SQLWCHAR* fatherName) { return false; }
+
+	//ÔÈÎ ÒÅËÅÔÎÍ
+	bool findObj(PhoneNumber* phone) { return false; };
+
+	// ÔÈÎ ÀÄĞÅÑ
+	bool findObj(Address* address) { return false; };
+
+	// ÔÈÎ ÒÅËÅÔÎÍ ÀÄĞÅÑ
+	bool findObj()  override
+	{
+		bool res = false;
+		statementText =
+			(SQLWCHAR*)L"SELECT * FROM person WHERE"
+			" idaddress = ? and "
+			" lastname = ? and "
+			" firstname = ? and"
+			" fathername = ?";
+
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		//retcode = SQLBindParameter(hstmt,1,SQL_PARAM_INPUT,SQL_C_SLONG,SQL_INTEGER,4,0,&(buf->id),0,NULL);
+		//checkErr();
+
+		//retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idAddress), 0, &(buf->idAddressLen));
+		//checkErr();
+
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		retcode = SQLFetch(hstmt);
+		checkErr();
+
+		retcode = SQLCloseCursor(hstmt);
+		checkErr();
+
+		//Íå çàáóäü ïîïğàâèòü
+		return res;
+	};
+
+	//bool finObj(Address* address, PhoneNumber* phone) { return false; }
+
+};
+
 
 class AddressMapper : public AbstractMapper 
 {

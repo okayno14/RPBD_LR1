@@ -62,10 +62,18 @@ class Person
 {
 public:
 	SQLWCHAR name[strSZ];
+	SQLLEN nameLen;
+	
 	SQLWCHAR lastName[strSZ];
+	SQLLEN lastNameLen;
+
 	SQLWCHAR fatherName[strSZ];
+	SQLLEN fatherNameLen;
+
 	Address* address;
+	
 	SQLINTEGER phoneCount;
+	
 	vector<PhoneNumber*> phoneNumbers;	
 
 	Person(int id=-1,int idAddress=-1)
@@ -77,7 +85,10 @@ public:
 	friend class PersonMapper;
 private:
 	SQLINTEGER id;
+	SQLLEN idLen;
+
 	SQLINTEGER idAddress;
+	SQLLEN idAddressLen;
 };
 
 class DataBaseConnection

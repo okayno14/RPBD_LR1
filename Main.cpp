@@ -40,19 +40,7 @@ int main()
 
 	try
 	{
-		/*PhoneNumber pn;
-		pn.idType = 2;
-		wcscpy_s(pn.number,L"8(800)555-35-35");
-		PhoneMapper pnMap(&pn);
-		pnMap.insertObj();
-		
-		wcscpy_s(pn.number, L"2281488");
-		pnMap.updateObj();
-
-		pnMap.deleteObj();
-		cout << pn.id<<endl;*/
-
-		Address ad;
+		/*Address ad;
 		AddressMapper adMap(&ad);
 
 		ad.home = 7;
@@ -61,22 +49,17 @@ int main()
 
 		adMap.insertObj();
 
-		//adMap.deleteObj();
-
 		wcscpy_s(ad.streetName, L"Pokryshkina");
 		
 		adMap.updateObj();
 
-		adMap.deleteObj();
+		adMap.deleteObj();*/
 
-		//adMap.findObj();
-		
-		//adMap.findObj(1);
+		Person p;
+		PersonMapper pMap(&p);
+		pMap.findObj(1);
 
-		/*PhoneNumber pn;
-		PhoneMapper pnMap(&pn);
-		wcscpy_s(pn.number, L"7(999)652-97-19");
-		pnMap.findObj(10);*/
+
 	}
 	catch (wstring msg) { wcout << msg; }
 	
