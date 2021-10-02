@@ -623,7 +623,46 @@ public:
 		//Добавляем объекты в таблицу-связку телефонов и контактов, если они есть
 	};
 
-	void deleteObj()  override {};
+	void deleteObj()  override 
+	{
+		SQLLEN a;
+		//почистить persone_number
+		if (!buf->idPhones.empty()) 
+		{
+			statementText = (SQLWCHAR*)L"DELETE from persone_number WHERE idPerson = ?";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->id), 0, NULL);
+			checkErr();
+			
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLRowCount(hstmt,&a);
+			checkErr();
+		}
+
+		//почистить person
+
+		statementText = (SQLWCHAR*)L"DELETE FROM person WHERE id = ?";
+		
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->id), 0, NULL);
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		retcode = SQLRowCount(hstmt, &a);
+		checkErr();
+		
+		//обьект адреса не трогаем внутри данного класса
+
+	};
 
 	void updateObj() override {};
 };

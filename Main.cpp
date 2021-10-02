@@ -93,7 +93,15 @@ int main()
 		
 		p.idAddress = 4;
 
-		pMap.insertObj();
+		p.idPhones.push_back(6);
+
+		//pMap.insertObj();
+
+		//p.id = 19;
+
+		p.id = 20;
+
+		pMap.deleteObj();
 
 	}
 	catch (wstring msg) { wcout << msg; }
