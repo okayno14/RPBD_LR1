@@ -64,6 +64,11 @@ int main()
 		
 		PhoneNumber pn;
 		wcscpy_s(pn.number,L"7(383)228-228-228");
+
+		Address ad;
+		wcscpy_s(ad.streetName,L"Utkova");
+		ad.home = 9;
+		ad.appartement = 9;
 		
 		PersonMapper pMap(&p);
 		
@@ -71,7 +76,9 @@ int main()
 
 		//pMap.findObj(p.lastName,p.firstName,p.fatherName);
 
-		pMap.findObj(&pn);
+		//pMap.findObj(&pn);
+
+		pMap.findObj(&ad);
 
 		pMap.findObj(2);
 

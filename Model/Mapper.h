@@ -276,7 +276,100 @@ public:
 	};
 
 	// ÔÈÎ ÀÄĞÅÑ
-	bool findObj(Address* address) { return false; };
+	bool findObj(Address* address) 
+	{
+		SQLLEN a;
+		bool res = false;
+		statementText =
+			(SQLWCHAR*)L" SELECT "
+			" 	person.id AS id,"
+			" 	person.idaddress AS idaddress,"
+			" 	person.lastname AS lastname,"
+			" 	person.firstname AS firstname,"
+			" 	person.fathername AS fathername,"
+			" 	address.idstreet AS idstreet,"
+			" 	address.home AS home,"
+			" 	address.appartement AS appartement,"
+			" 	street.streetname AS streetname"
+			" FROM"
+			" 	person INNER JOIN address"
+			" 	ON"
+			" 		person.idAddress = address.id"
+			" 	INNER JOIN street"
+			" 	ON"
+			" 		address.idstreet = street.id"
+			" 	WHERE"
+			" 		lastname = ? and"
+			" 		firstname = ? and"
+			" 		fathername = ? and"
+			" 		home = ? and"
+			" 		appartement = ? and"
+			" 		streetname = ?;";
+
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		bindName();
+
+		retcode = SQLBindParameter(hstmt,4,SQL_PARAM_INPUT,SQL_C_SLONG,SQL_INTEGER,4,0,&(address->home),0,NULL);
+		checkErr();
+		retcode = SQLBindParameter(
+			hstmt, 
+			5, 
+			SQL_PARAM_INPUT, 
+			SQL_C_SLONG, 
+			SQL_INTEGER, 
+			4, 
+			0, 
+			&(address->appartement), 
+			0, 
+			NULL);
+		checkErr();
+		retcode = SQLBindParameter(
+			hstmt, 
+			6, 
+			SQL_PARAM_INPUT, 
+			SQL_C_WCHAR, 
+			SQL_WCHAR,
+			sizeof(SQLWCHAR)*strSZ, 
+			0, 
+			&(address->streetName), 
+			sizeof(SQLWCHAR) * strSZ, 
+			NULL);
+		checkErr();
+
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+		checkErr();
+
+		retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idAddress), 0, &(buf->idAddressLen));
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		retcode = SQLRowCount(hstmt, &a);
+		checkErr();
+
+		if (a!=1)
+		{
+			res = false;
+
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		}
+		else
+		{
+			res = true;
+			retcode = SQLFetch(hstmt);
+			checkErr();
+
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		}
+
+		//Íå çàáóäü ïîïğàâèòü
+		return res;
+	};
 
 	// ÔÈÎ ÒÅËÅÔÎÍ ÀÄĞÅÑ
 	bool findObj()  override
