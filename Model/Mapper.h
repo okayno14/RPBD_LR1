@@ -59,7 +59,7 @@ class PersonMapper : public AbstractMapper
 {
 private:
 	Person* buf;
-	void bindName() 
+	void bindNamePar() 
 	{
 		retcode = SQLBindParameter(
 			hstmt,
@@ -187,7 +187,7 @@ public:
 		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 		checkErr();
 
-		bindName();
+		bindNamePar();
 		
 		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
 		checkErr();
@@ -227,6 +227,7 @@ public:
 	//ФИО ТЕЛЕФОН
 	bool findObj(PhoneNumber* phone) 
 	{ 
+		if (!buf->containPhoneNumber(phone)) return false;
 		SQLLEN a;
 		bool res = false;
 		statementText =
@@ -265,7 +266,7 @@ public:
 		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 		checkErr();
 
-		bindName();
+		bindNamePar();
 
 		retcode = SQLBindParameter(
 			hstmt,
@@ -316,6 +317,7 @@ public:
 	// ФИО АДРЕС
 	bool findObj(Address* address) 
 	{
+		if (address != buf->address) return false;
 		SQLLEN a;
 		bool res = false;
 		statementText =
@@ -347,7 +349,7 @@ public:
 		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 		checkErr();
 
-		bindName();
+		bindNamePar();
 
 		retcode = SQLBindParameter(hstmt,4,SQL_PARAM_INPUT,SQL_C_SLONG,SQL_INTEGER,4,0,&(address->home),0,NULL);
 		checkErr();
@@ -414,6 +416,8 @@ public:
 	// ФИО ТЕЛЕФОН АДРЕС
 	bool findObj(PhoneNumber* phone, Address* address)
 	{
+		if (!buf->containPhoneNumber(phone)) return false;
+		if (address != buf->address) return false;
 		SQLLEN a;
 		bool res = false;
 		statementText =
@@ -455,7 +459,7 @@ public:
 		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 		checkErr();
 
-		bindName();
+		bindNamePar();
 		retcode = SQLBindParameter(hstmt, 4, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(address->home), 0, NULL);
 		checkErr();
 		retcode = SQLBindParameter(
@@ -531,7 +535,92 @@ public:
 
 	void insertObj() override 
 	{
+		SQLLEN a;
+
+		//Добавляем обьект в таблицу Person
+			if (buf->idAddress != -1) 
+			{
+				statementText =
+					(SQLWCHAR*)L"INSERT INTO person (lastname, firstname, fathername, idaddress) VALUES (?, ?, ?, ?)";
+
+				retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+				checkErr();
+
+				bindNamePar();
+				retcode = SQLBindParameter(hstmt, 4, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->idAddress), 0, NULL);
+				checkErr();
+			}
+			else 
+			{
+				statementText =
+					(SQLWCHAR*)L"INSERT INTO person (lastname, firstname, fathername) VALUES (?, ?, ?)";
+				
+				retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+				checkErr();
+
+				bindNamePar();
+			}
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLRowCount(hstmt, &a);
+			checkErr();			
+		//Добавляем обьект в таблицу Person
 		
+		//считываем id нового обьекта
+			statementText = (SQLWCHAR*)L"SELECT * FROM sec_p";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindCol(hstmt,1,SQL_C_SLONG,&(buf->id),0,&(buf->idLen));
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+			
+			retcode = SQLFetch(hstmt);
+			checkErr();
+
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		//считываем id нового обьекта
+		
+		//Добавляем объекты в таблицу-связку телефонов и контактов, если они есть
+			if (buf->idPhones.size() > 0) 
+			{
+				statementText =
+					(SQLWCHAR*)L"INSERT INTO persone_number (idPerson, idPhone) VALUES (?, ?)";
+
+				retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+				checkErr();
+
+				retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->id), 0, NULL);
+				checkErr();
+
+				for (int i = 0; i < buf->idPhones.size(); i++)
+				{
+					retcode = SQLBindParameter(
+						hstmt,
+						2,
+						SQL_PARAM_INPUT,
+						SQL_C_SLONG,
+						SQL_INTEGER,
+						4,
+						0,
+						&(buf->idPhones[i]),
+						0,
+						NULL);
+					checkErr();
+					
+					retcode = SQLExecute(hstmt);
+					checkErr();
+
+					retcode = SQLRowCount(hstmt, &a);
+					checkErr();
+				}
+			}
+		//Добавляем объекты в таблицу-связку телефонов и контактов, если они есть
 	};
 
 	void deleteObj()  override {};

@@ -86,16 +86,26 @@ public:
 	}
 	friend class PersonMapper;
 	friend class Model;
-private:
+
 	SQLINTEGER id;
 	SQLLEN idLen;
 
 	SQLINTEGER idAddress;
 	SQLLEN idAddressLen;
 
+public:
 	vector<SQLINTEGER> idPhones;
 	//Если не прокатит, то сделать вектор SQLLEN
 	SQLLEN idPhone;
+
+	bool containPhoneNumber(PhoneNumber* pn) 
+	{
+		for (int i = 0; i < phoneNumbers.size(); i++) 
+		{
+			if (pn == phoneNumbers[i]) return true;
+		}
+		return false;
+	}
 
 };
 

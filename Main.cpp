@@ -58,12 +58,13 @@ int main()
 		Person p;
 		
 
-		wcscpy_s(p.lastName,L"Zaykin");
-		wcscpy_s(p.firstName, L"Igor");
-		wcscpy_s(p.fatherName, L"Ivanovich");
+		wcscpy_s(p.lastName,L"a");
+		wcscpy_s(p.firstName, L"b");
+		wcscpy_s(p.fatherName, L"c");
 		
 		PhoneNumber pn;
 		wcscpy_s(pn.number,L"7(383)346-11-53");
+		
 
 		Address ad;
 		wcscpy_s(ad.streetName,L"Utkova");
@@ -71,6 +72,8 @@ int main()
 		ad.appartement = 9;
 		
 		PersonMapper pMap(&p);
+
+		//p.idPhones.push_back(1);
 		
 		
 
@@ -82,7 +85,15 @@ int main()
 
 		//pMap.findObj(2);
 		//pMap.findObj(&ad);
-		pMap.findObj(&pn, &ad);
+		//pMap.findObj(&pn, &ad);
+
+		//pMap.findObj(&pn);
+
+		//p.phoneNumbers.push_back(&pn);
+		
+		p.idAddress = 4;
+
+		pMap.insertObj();
 
 	}
 	catch (wstring msg) { wcout << msg; }
