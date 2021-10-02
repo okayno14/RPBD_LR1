@@ -78,10 +78,11 @@ int main()
 
 		//pMap.findObj(&pn);
 
-		pMap.findObj(&pn,&ad);
+		//pMap.findObj();
 
 		//pMap.findObj(2);
-
+		//pMap.findObj(&ad);
+		pMap.findObj(&pn, &ad);
 
 	}
 	catch (wstring msg) { wcout << msg; }

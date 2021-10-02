@@ -27,6 +27,7 @@ public:
 		this->idStreet = idStreet;
 	}
 	friend class AddressMapper;
+	friend class Model;
 private:
 	SQLINTEGER id;
 	SQLLEN idLen;
@@ -49,6 +50,7 @@ public:
 	}
 	SQLINTEGER* getId() { return &id; }
 	friend class PhoneMapper;
+	friend class Model;
 //private:
 	SQLINTEGER id;
 	SQLLEN idLen;
@@ -83,12 +85,18 @@ public:
 		this->idAddress = idAddress;		
 	}
 	friend class PersonMapper;
+	friend class Model;
 private:
 	SQLINTEGER id;
 	SQLLEN idLen;
 
 	SQLINTEGER idAddress;
 	SQLLEN idAddressLen;
+
+	vector<SQLINTEGER> idPhones;
+	//Если не прокатит, то сделать вектор SQLLEN
+	SQLLEN idPhone;
+
 };
 
 class DataBaseConnection

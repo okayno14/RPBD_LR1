@@ -95,6 +95,40 @@ private:
 			sizeof(SQLWCHAR) * strSZ, NULL);
 		checkErr();
 	};
+	void getIdPhone() 
+	{
+		SQLLEN a;
+		SQLINTEGER phoneId;
+		
+		statementText =
+			(SQLWCHAR*)L"SELECT idphone FROM persone_number WHERE idperson = ?";
+
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->id), 0, NULL);
+		checkErr();
+		
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &phoneId, 0, &(buf->idLen));
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		retcode = SQLRowCount(hstmt, &a);
+		checkErr();
+
+		buf->phoneCount = a;
+		if (a > 1)
+		{
+			while (retcode = SQLFetch(hstmt) != SQL_NO_DATA) 
+			{
+				buf->idPhones.push_back(phoneId);
+			}			
+		}
+		retcode = SQLCloseCursor(hstmt);
+		checkErr();
+	};
 public:
 	PersonMapper(Person* buf = nullptr)
 	{
@@ -135,6 +169,8 @@ public:
 
 		retcode = SQLCloseCursor(hstmt);
 		checkErr();
+
+		getIdPhone();
 	};
 
 	//ФИО
@@ -181,6 +217,8 @@ public:
 			retcode = SQLCloseCursor(hstmt);
 			checkErr();
 		}		
+
+		getIdPhone();
 
 		//Не забудь поправить
 		return res;		
@@ -265,13 +303,13 @@ public:
 		{
 			retcode = SQLFetch(hstmt);
 			checkErr();
-
+			
 			retcode = SQLCloseCursor(hstmt);
 			checkErr();
+
+			getIdPhone();
 			res = true;
 		}
-
-		//Не забудь поправить
 		return res;
 	};
 
@@ -365,6 +403,8 @@ public:
 
 			retcode = SQLCloseCursor(hstmt);
 			checkErr();
+
+			getIdPhone();
 		}
 
 		//Не забудь поправить
@@ -482,6 +522,8 @@ public:
 
 			retcode = SQLCloseCursor(hstmt);
 			checkErr();
+
+			getIdPhone();
 		}
 
 		return res;
