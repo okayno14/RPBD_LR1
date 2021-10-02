@@ -138,7 +138,7 @@ public:
 	};
 
 	//ФИО
-	bool findObj(SQLWCHAR* lastName, SQLWCHAR* name, SQLWCHAR* fatherName) 
+	bool findObj() override 
 	{ 
 		SQLLEN a;
 		bool res = false;
@@ -372,41 +372,129 @@ public:
 	};
 
 	// ФИО ТЕЛЕФОН АДРЕС
-	bool findObj()  override
+	bool findObj(PhoneNumber* phone, Address* address)
 	{
+		SQLLEN a;
 		bool res = false;
 		statementText =
-			(SQLWCHAR*)L"SELECT * FROM person WHERE"
-			" idaddress = ? and "
-			" lastname = ? and "
-			" firstname = ? and"
-			" fathername = ?";
+			(SQLWCHAR*)L" SELECT "
+			" 	person.id AS id,"
+			" 	person.idaddress AS idaddress,"
+			" 	person.lastname AS lastname,"
+			" 	person.firstname AS firstname,"
+			" 	person.fathername AS fathername,"
+			" 	persone_number.idPhone AS idPhone,"
+			" 	phoneNumber.idtype AS idtype,"
+			" 	phoneNumber.number AS number,"
+			" 	address.idstreet AS idstreet,"
+			" 	address.home AS home,"
+			" 	address.appartement AS appartement,"
+			" 	street.streetname AS streetname"
+			" FROM"
+			" 	person INNER JOIN persone_number"
+			" 	ON"
+			" 		person.id = persone_number.idPerson"
+			" 	INNER JOIN phonenumber"
+			" 	ON "
+			" 		persone_number.idPhone = phoneNumber.id"
+			" 	INNER JOIN address"
+			" 	ON"
+			" 		person.idAddress = address.id"
+			" 	INNER JOIN street"
+			" 	ON"
+			" 		address.idstreet = street.id"
+			" 	WHERE"
+			" 		lastname = ? and"
+			" 		firstname = ? and"
+			" 		fathername = ? and"
+			" 		home = ? and"
+			" 		appartement = ? and"
+			" 		streetname = ? and"
+			" 		number = ?";
 
 		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 		checkErr();
 
-		//retcode = SQLBindParameter(hstmt,1,SQL_PARAM_INPUT,SQL_C_SLONG,SQL_INTEGER,4,0,&(buf->id),0,NULL);
-		//checkErr();
+		bindName();
+		retcode = SQLBindParameter(hstmt, 4, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(address->home), 0, NULL);
+		checkErr();
+		retcode = SQLBindParameter(
+			hstmt,
+			5,
+			SQL_PARAM_INPUT,
+			SQL_C_SLONG,
+			SQL_INTEGER,
+			4,
+			0,
+			&(address->appartement),
+			0,
+			NULL);
+		checkErr();
+		retcode = SQLBindParameter(
+			hstmt,
+			6,
+			SQL_PARAM_INPUT,
+			SQL_C_WCHAR,
+			SQL_WCHAR,
+			sizeof(SQLWCHAR) * strSZ,
+			0,
+			&(address->streetName),
+			sizeof(SQLWCHAR) * strSZ,
+			NULL);
+		checkErr();
+		retcode = SQLBindParameter(
+			hstmt,
+			7,
+			SQL_PARAM_INPUT,
+			SQL_C_WCHAR,
+			SQL_WCHAR,
+			sizeof(SQLWCHAR) * strSZ,
+			0,
+			&(phone->number),
+			sizeof(SQLWCHAR) * strSZ,
+			NULL);
+		checkErr();
 
-		//retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idAddress), 0, &(buf->idAddressLen));
-		//checkErr();
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+		checkErr();
 
+		retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idAddress), 0, &(buf->idAddressLen));
+		checkErr();
 
 		retcode = SQLExecute(hstmt);
 		checkErr();
 
-		retcode = SQLFetch(hstmt);
+		retcode = SQLRowCount(hstmt, &a);
 		checkErr();
 
-		retcode = SQLCloseCursor(hstmt);
-		checkErr();
+		if (a !=1)
+		{
+			res = false;
 
-		//Не забудь поправить
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		}
+		else
+		{
+			res = true;
+			retcode = SQLFetch(hstmt);
+			checkErr();
+
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		}
+
 		return res;
 	};
 
-	//bool finObj(Address* address, PhoneNumber* phone) { return false; }
+	void insertObj() override 
+	{
+		
+	};
 
+	void deleteObj()  override {};
+
+	void updateObj() override {};
 };
 
 
@@ -568,7 +656,7 @@ public:
 		findObj(); //записывает в обьект его id
 
 	};
-	virtual void updateObj() override 
+	void updateObj() override 
 	{
 		SQLLEN a;
 		
@@ -597,7 +685,7 @@ public:
 		retcode = SQLRowCount(hstmt, &a);
 		checkErr();
 	};
-	virtual void deleteObj()  override 
+	void deleteObj()  override 
 	{
 		statementText = (SQLWCHAR*)L"DELETE FROM address WHERE id = ?";
 		
@@ -615,7 +703,7 @@ public:
 		checkErr();
 
 	};
-	virtual void findObj(int id) override 
+	void findObj(int id) override 
 	{
 		SQLINTEGER idT = (SQLINTEGER)id;
 					
@@ -671,7 +759,7 @@ public:
 		retcode = SQLCloseCursor(hstmt);
 		checkErr();
 	};
-	virtual bool findObj() override 
+	bool findObj() override 
 	{
 		statementText =
 			(SQLWCHAR*)L"SELECT"

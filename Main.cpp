@@ -63,7 +63,7 @@ int main()
 		wcscpy_s(p.fatherName, L"Ivanovich");
 		
 		PhoneNumber pn;
-		wcscpy_s(pn.number,L"7(383)228-228-228");
+		wcscpy_s(pn.number,L"7(383)346-11-53");
 
 		Address ad;
 		wcscpy_s(ad.streetName,L"Utkova");
@@ -78,9 +78,9 @@ int main()
 
 		//pMap.findObj(&pn);
 
-		pMap.findObj(&ad);
+		pMap.findObj(&pn,&ad);
 
-		pMap.findObj(2);
+		//pMap.findObj(2);
 
 
 	}
