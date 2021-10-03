@@ -664,7 +664,115 @@ public:
 
 	};
 
-	void updateObj() override {};
+	void updateObj() override 
+	{
+		SQLLEN a;
+		
+		//<обновить persone_number>
+			statementText = (SQLWCHAR*)L"DELETE FROM persone_number WHERE idPerson = ?";
+
+			retcode = SQLPrepare(hstmt,statementText,SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindParameter
+			(hstmt,
+			1,
+			SQL_PARAM_INPUT,
+			SQL_C_SLONG,
+			SQL_INTEGER,
+			4,0,
+			&(buf->id),0,NULL);
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLRowCount(hstmt,&a);
+			checkErr();
+
+			if (!buf->idPhones.empty()) 
+			{
+				statementText = (SQLWCHAR*)L"INSERT INTO persone_number (idPerson, idPhone) VALUES (?,?)";
+
+				retcode = SQLPrepare(hstmt,statementText,SQL_NTS);
+				checkErr();
+
+				retcode = SQLBindParameter
+				(hstmt,
+					1,
+					SQL_PARAM_INPUT,
+					SQL_C_SLONG,
+					SQL_INTEGER,
+					4, 0,
+					&(buf->id), 0, NULL);
+				checkErr();
+			
+				for (int i = 0; i < buf->idPhones.size(); i++)
+				{
+					retcode = SQLBindParameter(
+						hstmt,
+						2,
+						SQL_PARAM_INPUT,
+						SQL_C_SLONG,
+						SQL_INTEGER,
+						4,
+						0,
+						&(buf->idPhones[i]),
+						0,
+						NULL);
+					checkErr();
+
+					retcode = SQLExecute(hstmt);
+					checkErr();
+
+					retcode = SQLRowCount(hstmt, &a);
+					checkErr();
+				}
+			
+			}
+		//</обновить persone_number>
+
+		//<обновить person>
+			if (buf->idAddress != -1) 
+			{
+				statementText =
+					(SQLWCHAR*)L"UPDATE person SET lastname = ?, firstname = ?, fathername = ?, idaddress = ? WHERE id = ?";
+
+				retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+				checkErr();
+
+				bindNamePar();			
+				retcode = SQLBindParameter(hstmt, 4, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->idAddress), 0, NULL);
+				checkErr();			
+				retcode = SQLBindParameter(hstmt, 5, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->id), 0, NULL);
+				checkErr();
+
+				retcode = SQLExecute(hstmt);
+				checkErr();
+
+				retcode = SQLRowCount(hstmt, &a);
+				checkErr();
+			}
+			else 
+			{
+				statementText =
+					(SQLWCHAR*)L"UPDATE person SET lastname = ?, firstname = ?, fathername = ? WHERE id = ?";
+
+				retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+				checkErr();
+
+				bindNamePar();
+				retcode = SQLBindParameter(hstmt, 4, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->id), 0, NULL);
+				checkErr();
+
+				retcode = SQLExecute(hstmt);
+				checkErr();
+
+				retcode = SQLRowCount(hstmt, &a);
+				checkErr();
+			}
+		//</обновить person>
+	};
 };
 
 

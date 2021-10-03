@@ -94,12 +94,17 @@ int main()
 		p.idAddress = 4;
 
 		p.idPhones.push_back(6);
+		
 
-		//pMap.insertObj();
+		pMap.insertObj();
 
-		//p.id = 19;
+		
+		wcscpy_s(p.firstName,L"Vasya");
+		p.idAddress = 8;
+		p.idPhones.push_back(4);
 
-		p.id = 20;
+		pMap.updateObj();
+		
 
 		pMap.deleteObj();
 
