@@ -1277,6 +1277,7 @@ public:
 			if (finded > 1) return false;
 			else return true;
 		//Поиск обьекта в таблице по номеру телефона
+			commitTransaction();
 	};
 	
 	void insertObj() override
@@ -1321,7 +1322,7 @@ public:
 			retcode = SQLRowCount(hstmt, &rc);
 			checkErr();
 
-			statementText = (SQLWCHAR*)L"SELECT id FROM phoneNumber where number = ?";
+			/*statementText = (SQLWCHAR*)L"SELECT id FROM phoneNumber where number = ?";
 			
 			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 			checkErr();
@@ -1350,8 +1351,29 @@ public:
 			retcode = SQLFetch(hstmt);
 			checkErr();
 			retcode = SQLCloseCursor(hstmt);
-			checkErr();
+			checkErr();*/
 		//id idType номер телефона
+
+		//<Получение id обьекта>
+			statementText = (SQLWCHAR*)L"SELECT * FROM sec_pn";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLFetch(hstmt);
+			checkErr();
+
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		//</Получение id обьекта>
+
+		commitTransaction();
 	}
 
 	void deleteObj() override 
@@ -1382,6 +1404,7 @@ public:
 			retcode = SQLRowCount(hstmt, &rc);
 			checkErr();
 		//Удаляем из phoneNumber
+		commitTransaction();
 	};
 
 	void updateObj() override 
@@ -1438,5 +1461,6 @@ public:
 		SQLLEN rc;
 		retcode = SQLRowCount(hstmt, &rc);
 		checkErr();
+		commitTransaction();
 	}
 };
