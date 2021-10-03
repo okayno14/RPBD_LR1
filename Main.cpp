@@ -97,14 +97,12 @@ int main()
 		
 
 		pMap.insertObj();
-
 		
 		wcscpy_s(p.firstName,L"Vasya");
 		p.idAddress = 8;
 		p.idPhones.push_back(4);
 
-		pMap.updateObj();
-		
+		pMap.updateObj();		
 
 		pMap.deleteObj();
 

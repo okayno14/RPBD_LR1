@@ -53,6 +53,14 @@ protected:
 			throw cerr.str();
 		}
 	}
+	void commitTransaction() 
+	{
+		SQLEndTran(SQL_HANDLE_DBC, *(db->getHDBC()), SQL_COMMIT);
+	}
+	void rollbackTransaction() 
+	{
+		SQLEndTran(SQL_HANDLE_DBC, *(db->getHDBC()), SQL_ROLLBACK);
+	}
 };
 
 class PersonMapper : public AbstractMapper 
@@ -220,6 +228,7 @@ public:
 
 		getIdPhone();
 
+		commitTransaction();
 		//Не забудь поправить
 		return res;		
 	}
@@ -311,6 +320,7 @@ public:
 			getIdPhone();
 			res = true;
 		}
+		commitTransaction();
 		return res;
 	};
 
@@ -409,6 +419,7 @@ public:
 			getIdPhone();
 		}
 
+		commitTransaction();
 		//Не забудь поправить
 		return res;
 	};
@@ -529,7 +540,7 @@ public:
 
 			getIdPhone();
 		}
-
+		commitTransaction();
 		return res;
 	};
 
@@ -621,6 +632,7 @@ public:
 				}
 			}
 		//Добавляем объекты в таблицу-связку телефонов и контактов, если они есть
+		commitTransaction();
 	};
 
 	void deleteObj()  override 
@@ -661,7 +673,7 @@ public:
 		checkErr();
 		
 		//обьект адреса не трогаем внутри данного класса
-
+		commitTransaction();
 	};
 
 	void updateObj() override 
@@ -772,6 +784,7 @@ public:
 				checkErr();
 			}
 		//</обновить person>
+		commitTransaction();
 	};
 };
 
