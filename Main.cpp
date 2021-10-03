@@ -81,7 +81,7 @@ int main()
 			adMap.deleteObj();
 		//</Адрес>
 
-	/*
+	
 		//<Контакт>
 			//Создаём буфер в памяти
 			Person p;
@@ -106,7 +106,7 @@ int main()
 
 			pMap.deleteObj();
 		//</Контакт>
-	*/
+	
 	}
 	catch (wstring msg) { wcout << msg; }
 	
