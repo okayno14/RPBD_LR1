@@ -65,13 +65,15 @@ int main()
 			AddressMapper adMap(&ad);
 
 			//Вписываем его характеристики
-			wcscpy_s(ad.streetName,L"Marksa");
-			ad.home = 228;
+			wcscpy_s(ad.streetName,L"Maksa");
+			ad.home = 16;
 			ad.appartement = 1337;		
 
-			adMap.insertObj();
+			//adMap.insertObj();
 
 			//Обновляем значения
+			adMap.findObj();
+			
 			ad.home = 16;
 
 			adMap.updateObj();
@@ -79,6 +81,7 @@ int main()
 			adMap.deleteObj();
 		//</Адрес>
 
+	/*
 		//<Контакт>
 			//Создаём буфер в памяти
 			Person p;
@@ -103,6 +106,7 @@ int main()
 
 			pMap.deleteObj();
 		//</Контакт>
+	*/
 	}
 	catch (wstring msg) { wcout << msg; }
 	
