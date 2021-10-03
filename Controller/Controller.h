@@ -1,35 +1,34 @@
 #pragma once
 #include <iostream>
-#include <windot11.h>
 #include "Model\Model.h"
 
 class Controller
 {
 	//Model mod;
 public:
-	bool add—ontact(SQLWCHAR* lastNameContact, SQLWCHAR* firstNameContact, 
-		SQLWCHAR* fatherNameContact);
-	bool deleteContact(SQLWCHAR* lastNameContact, SQLWCHAR* firstNameContact, 
-		SQLWCHAR* fatherNameContact);
-	bool to—hangeContact(SQLWCHAR* lastNameContact, SQLWCHAR* firstNameContact, 
-		SQLWCHAR* fatherNameContact);
+	bool add—ontact(SQLWCHAR* lastNameContact, SQLWCHAR* firstNameContact,
+		SQLWCHAR* fatherNameContact) {};
+	bool deleteContact(SQLWCHAR* lastNameContact, SQLWCHAR* firstNameContact,
+		SQLWCHAR* fatherNameContact) {};
+	bool to—hangeContact(SQLWCHAR* lastNameContact, SQLWCHAR* firstNameContact,
+		SQLWCHAR* fatherNameContact) {};
 	
 	
-	bool addPhoneNumberContact(SQLWCHAR* number);
-	bool deletePhoneNumberContact(SQLWCHAR* number);
-	bool toChangePhoneNumberContact(SQLWCHAR* lastNameContact, 
+	bool addPhoneNumberContact(SQLWCHAR* number) {};
+	bool deletePhoneNumberContact(SQLWCHAR* number) {};
+	bool toChangePhoneNumberContact(SQLWCHAR* lastNameContact,
 		SQLWCHAR* firstNameContact, SQLWCHAR* fatherNameContact,
-		SQLWCHAR* oldnumber, SQLWCHAR* newnumber);
+		SQLWCHAR* oldnumber, SQLWCHAR* newnumber) {};
 	
-	bool toChangeTypePhoneNumber(int type);
-	bool findPhoneByFIO(SQLWCHAR* lastNameContact, SQLWCHAR* firstNameContact, 
-		SQLWCHAR* fatherNameContact);///
-	bool changeTheStreet(SQLWCHAR* nameStreet);
-	bool deleteStreetContacn(SQLWCHAR* nameStret);
-	bool toChangeNumberHome(int numberHome);
-	bool toChangeNumberApartment(int numemberApartment);
-	bool findAddressByFIO(SQLWCHAR* lastNameContact, SQLWCHAR* firstNameContact, SQLWCHAR* fatherNameContact);
-	bool findContactBy4NumberPhone(SQLWCHAR* number4);
+	bool toChangeTypePhoneNumber(int type) {};
+	bool findPhoneByFIO(SQLWCHAR* lastNameContact, SQLWCHAR* firstNameContact,
+		SQLWCHAR* fatherNameContact) {};///
+	bool changeTheStreet(SQLWCHAR* nameStreet) {};
+	bool deleteStreetContacn(SQLWCHAR* nameStret) {};
+	bool toChangeNumberHome(int numberHome) {};
+	bool toChangeNumberApartment(int numemberApartment) {};
+	bool findAddressByFIO(SQLWCHAR* lastNameContact, SQLWCHAR* firstNameContact, SQLWCHAR* fatherNameContact) {};
+	bool findContactBy4NumberPhone(SQLWCHAR* number4) {};
 	
 };
 

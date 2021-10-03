@@ -40,14 +40,74 @@ int main()
 
 	try
 	{
+		/*Address ad;
+		AddressMapper adMap(&ad);
+
+		ad.home = 7;
+		ad.appartement = 6;
+		wcscpy_s(ad.streetName, L"Marksa");
+
+		adMap.insertObj();
+
+		wcscpy_s(ad.streetName, L"Pokryshkina");
+		
+		adMap.updateObj();
+
+		adMap.deleteObj();*/
+
+		Person p;
+		
+
+		wcscpy_s(p.lastName,L"a");
+		wcscpy_s(p.firstName, L"b");
+		wcscpy_s(p.fatherName, L"c");
+		
 		PhoneNumber pn;
-		pn.idType = 228;
-		wcscpy_s(pn.typeName,L"prekok");
-		wcscpy_s(pn.number,L"8(800)555-35-35");
-		PhoneMapper pnMap(&pn);
-		pnMap.insertObj();
-		pnMap.deleteObj();
-		cout << pn.id<<endl;
+		wcscpy_s(pn.number,L"7(383)346-11-53");
+		
+
+		Address ad;
+		wcscpy_s(ad.streetName,L"Utkova");
+		ad.home = 9;
+		ad.appartement = 9;
+		
+		PersonMapper pMap(&p);
+
+		//p.idPhones.push_back(1);
+		
+		
+
+		//pMap.findObj(p.lastName,p.firstName,p.fatherName);
+
+		//pMap.findObj(&pn);
+
+		//pMap.findObj();
+
+		//pMap.findObj(2);
+		//pMap.findObj(&ad);
+		//pMap.findObj(&pn, &ad);
+
+		//pMap.findObj(&pn);
+
+		//p.phoneNumbers.push_back(&pn);
+		
+		p.idAddress = 4;
+
+		p.idPhones.push_back(6);
+		
+
+		pMap.insertObj();
+
+		
+		wcscpy_s(p.firstName,L"Vasya");
+		p.idAddress = 8;
+		p.idPhones.push_back(4);
+
+		pMap.updateObj();
+		
+
+		pMap.deleteObj();
+
 	}
 	catch (wstring msg) { wcout << msg; }
 	

@@ -13,8 +13,13 @@ class Address
 {
 public:
 	SQLWCHAR streetName[strSZ];
+	SQLLEN streetNameLen;
+
 	SQLINTEGER home;
+	SQLLEN homeLen;
+
 	SQLINTEGER appartement;
+	SQLLEN appartementLen;
 
 	Address(int id = -1, int idStreet = -1)
 	{
@@ -22,9 +27,13 @@ public:
 		this->idStreet = idStreet;
 	}
 	friend class AddressMapper;
+	friend class Model;
 private:
 	SQLINTEGER id;
+	SQLLEN idLen;
+
 	SQLINTEGER idStreet;
+	SQLLEN idStreetLen;
 };
 
 class PhoneNumber
@@ -41,6 +50,7 @@ public:
 	}
 	SQLINTEGER* getId() { return &id; }
 	friend class PhoneMapper;
+	friend class Model;
 //private:
 	SQLINTEGER id;
 	SQLLEN idLen;
@@ -53,11 +63,19 @@ public:
 class Person
 {
 public:
-	SQLWCHAR name[strSZ];
+	SQLWCHAR firstName[strSZ];
+	SQLLEN nameLen;
+	
 	SQLWCHAR lastName[strSZ];
+	SQLLEN lastNameLen;
+
 	SQLWCHAR fatherName[strSZ];
+	SQLLEN fatherNameLen;
+
 	Address* address;
+	
 	SQLINTEGER phoneCount;
+	
 	vector<PhoneNumber*> phoneNumbers;	
 
 	Person(int id=-1,int idAddress=-1)
@@ -67,9 +85,28 @@ public:
 		this->idAddress = idAddress;		
 	}
 	friend class PersonMapper;
-private:
+	friend class Model;
+
 	SQLINTEGER id;
+	SQLLEN idLen;
+
 	SQLINTEGER idAddress;
+	SQLLEN idAddressLen;
+
+public:
+	vector<SQLINTEGER> idPhones;
+	//Если не прокатит, то сделать вектор SQLLEN
+	SQLLEN idPhone;
+
+	bool containPhoneNumber(PhoneNumber* pn) 
+	{
+		for (int i = 0; i < phoneNumbers.size(); i++) 
+		{
+			if (pn == phoneNumbers[i]) return true;
+		}
+		return false;
+	}
+
 };
 
 class DataBaseConnection
