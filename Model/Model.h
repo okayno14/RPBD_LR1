@@ -137,6 +137,10 @@ protected:
 		retcode = SQLAllocHandle(SQL_HANDLE_DBC, handleEnv, &hDBC);
 		checkErr();
 
+		//Ставим ручной режим траназакций
+		retcode = SQLSetConnectAttr(hDBC, SQL_ATTR_AUTOCOMMIT, (SQLPOINTER)FALSE, 0);
+		checkErr();
+		
 		retcode = SQLConnect(hDBC, dsn, SQL_NTS, user, SQL_NTS, password, SQL_NTS);
 		checkErr();
 		//установить атрибуты коннекта

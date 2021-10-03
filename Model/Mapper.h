@@ -53,6 +53,16 @@ protected:
 			throw cerr.str();
 		}
 	}
+	void commitTransaction() 
+	{
+		retcode = SQLEndTran(SQL_HANDLE_DBC, *(db->getHDBC()), SQL_COMMIT);
+		checkErr();
+	}
+	void rollbackTransaction() 
+	{
+		retcode = SQLEndTran(SQL_HANDLE_DBC, *(db->getHDBC()), SQL_ROLLBACK);
+		checkErr();
+	}
 };
 
 class PersonMapper : public AbstractMapper 
@@ -220,6 +230,7 @@ public:
 
 		getIdPhone();
 
+		commitTransaction();
 		//Не забудь поправить
 		return res;		
 	}
@@ -311,6 +322,7 @@ public:
 			getIdPhone();
 			res = true;
 		}
+		commitTransaction();
 		return res;
 	};
 
@@ -409,6 +421,7 @@ public:
 			getIdPhone();
 		}
 
+		commitTransaction();
 		//Не забудь поправить
 		return res;
 	};
@@ -529,7 +542,7 @@ public:
 
 			getIdPhone();
 		}
-
+		commitTransaction();
 		return res;
 	};
 
@@ -621,6 +634,7 @@ public:
 				}
 			}
 		//Добавляем объекты в таблицу-связку телефонов и контактов, если они есть
+		commitTransaction();
 	};
 
 	void deleteObj()  override 
@@ -661,7 +675,7 @@ public:
 		checkErr();
 		
 		//обьект адреса не трогаем внутри данного класса
-
+		commitTransaction();
 	};
 
 	void updateObj() override 
@@ -772,6 +786,7 @@ public:
 				checkErr();
 			}
 		//</обновить person>
+		commitTransaction();
 	};
 };
 
@@ -790,95 +805,12 @@ public:
 	~AddressMapper() { SQLFreeHandle(SQL_HANDLE_STMT, hstmt); }
 	void setBuf(Address* buf) { this->buf = buf; }
 	
-	bool findStreet()
-	{
-		statementText = (SQLWCHAR*)L"SELECT id FROM street WHERE streetname = ?";
-
-		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-		checkErr();
-
-		retcode = SQLBindParameter(
-			hstmt,
-			1,
-			SQL_PARAM_INPUT,
-			SQL_C_WCHAR,
-			SQL_WCHAR,
-			sizeof(SQLWCHAR) * strSZ,
-			0,
-			buf->streetName,
-			sizeof(SQLWCHAR) * strSZ,
-			NULL
-		);
-		checkErr();
-
-		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->idStreet), 0, &(buf->idStreetLen));
-		checkErr();
-
-		retcode = SQLExecute(hstmt);
-		checkErr();
-
-		SQLLEN finded;
-		retcode = SQLRowCount(hstmt, &finded);
-		checkErr();
-
-		retcode = SQLFetch(hstmt);
-		checkErr();
-
-		retcode = SQLCloseCursor(hstmt);
-		checkErr();
-		
-		if (finded == 1) 
-		{
-			return true;
-		}
-		else 
-		{
-			return false;
-		}
-
-	};
-	void checkStreet() 
-	{
-		SQLLEN a;
-		if (findStreet() == false)
-		{
-			statementText = (SQLWCHAR*)L"INSERT INTO street (streetname) VALUES (?)";
-
-			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-			checkErr();
-
-			retcode = SQLBindParameter
-			(
-				hstmt,
-				1,
-				SQL_PARAM_INPUT,
-				SQL_C_WCHAR,
-				SQL_WCHAR,
-				sizeof(SQLWCHAR) * strSZ,
-				0,
-				buf->streetName,
-				sizeof(SQLWCHAR) * strSZ,
-				NULL
-			);
-			checkErr();
-
-			retcode = SQLExecute(hstmt);
-			checkErr();
-
-			retcode = SQLRowCount(hstmt, &a);
-			checkErr();
-
-			findStreet();
-		}
-	}
-	
 	void insertObj() override 
 	{
 		SQLLEN a;
-		//Проверка и вставка улицы
-		checkStreet();
-		
-		//Проверка и вставка улицы
+		//<Если нет улицы - вставка. Чтение idStreet>
+			if (!findStreet()) { insertStreet(); }
+		//</Если нет улицы - вставка. Чтение idStreet>
 
 		//Вставка квартиры и дома
 			statementText = (SQLWCHAR*)L"INSERT INTO address (home, appartement, idStreet) VALUES (?,?,?)";
@@ -931,17 +863,37 @@ public:
 	
 		//Вставка квартиры и дома
 
-		findObj(); //записывает в обьект его id
+		//<Поиск id нового объекта>
+			statementText = (SQLWCHAR*)L"SELECT * FROM sec_a";
 
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLFetch(hstmt);
+			checkErr();
+
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		//</Поиск id нового объекта>
+		commitTransaction();
 	};
 	void updateObj() override 
 	{
 		SQLLEN a;
+		//проверяем количество адресов, связанных со старой улицей
+		//если оно равно 0, то удалить улицу
+		SQLINTEGER oldIdStreet = buf->idStreet;
 		
-		/*Если пользователь переписал название улицы, то
-		нужно сгенерировать новый обьект улицы и записать его ид в буфер, иначе ничего не делать*/
-		checkStreet();
-
+		//<Если нет улицы - вставка. Чтение idStreet>
+			if (!findStreet()) { insertStreet(); }
+		//</Если нет улицы - вставка. Чтение idStreet>
+		
 		/*делаем апдейт дома, квартиры, идУлицы*/
 		statementText = (SQLWCHAR*)L"UPDATE address SET idstreet = ?, home = ?, appartement = ? WHERE id = ?";
 		
@@ -962,6 +914,12 @@ public:
 				
 		retcode = SQLRowCount(hstmt, &a);
 		checkErr();
+
+		//Если старая улица не связана с какими-то адресами, то 
+		//удаляем улицу
+		delStreet(oldIdStreet);
+
+		commitTransaction();
 	};
 	void deleteObj()  override 
 	{
@@ -980,6 +938,11 @@ public:
 		retcode = SQLRowCount(hstmt,&a);
 		checkErr();
 
+		//проверяем количество адресов, связанных со старой улицей
+		//если оно равно 0, то удалить улицу
+		delStreet(buf->idStreet);
+
+		commitTransaction();
 	};
 	void findObj(int id) override 
 	{
@@ -1036,6 +999,7 @@ public:
 		checkErr();
 		retcode = SQLCloseCursor(hstmt);
 		checkErr();
+		commitTransaction();
 	};
 	bool findObj() override 
 	{
@@ -1110,9 +1074,193 @@ public:
 		checkErr();
 		retcode = SQLCloseCursor(hstmt);
 		checkErr();
+		commitTransaction();
 
 		if (finded > 1) return false;
 		else return true;
+	};
+
+	void insertStreet() 
+	{
+		SQLLEN a;
+
+		statementText = (SQLWCHAR*)L"INSERT INTO street (streetname) VALUES (?)";
+
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		retcode = SQLBindParameter
+		(
+			hstmt,
+			1,
+			SQL_PARAM_INPUT,
+			SQL_C_WCHAR,
+			SQL_WCHAR,
+			sizeof(SQLWCHAR) * strSZ,
+			0,
+			buf->streetName,
+			sizeof(SQLWCHAR) * strSZ,
+			NULL
+		);
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		retcode = SQLRowCount(hstmt, &a);
+		checkErr();
+
+		//<Поиск id>
+			statementText = (SQLWCHAR*)L"SELECT * FROM sec_s";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->idStreet), 0, &(buf->idLen));
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLFetch(hstmt);
+			checkErr();
+
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		//</Поиск id>
+	};
+	//Если объект улицы не связан с контактами, то удалить его из базы
+	void delStreet(SQLINTEGER idStreet)
+	{
+		//<Поиск связей улицы и адреса>
+			SQLLEN a;
+
+			statementText =
+				(SQLWCHAR*)L" SELECT"
+				" street.id as id,"
+				" street.streetname as streetname,"
+				" address.id as idaddress"
+				" FROM"
+				" street INNER JOIN address"
+				" ON"
+				" street.id = address.idstreet"
+				" WHERE street.id = ?";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &idStreet, 0, NULL);
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLRowCount(hstmt, &a);
+			checkErr();
+
+			/*retcode = SQLFetch(hstmt);
+			checkErr();*/
+
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		//</Поиск связей улицы и адреса>
+
+		if (a == 0)
+		{
+			statementText = (SQLWCHAR*)L"DELETE FROM street WHERE id = ?";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->idStreet), 0, NULL);
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLRowCount(hstmt, &a);
+			checkErr();
+		}
+	};
+	//Поиск улицы по имени в БД.
+	void updateStreet() 
+	{
+		SQLLEN a;
+
+		statementText = (SQLWCHAR*)L"UPDATE street set streetName = ? WHERE id = ?";
+
+		retcode = SQLPrepare(hstmt,statementText,SQL_NTS);
+		checkErr();
+
+		retcode = SQLBindParameter
+		(
+			hstmt,
+			1,
+			SQL_PARAM_INPUT,
+			SQL_C_WCHAR,
+			SQL_WCHAR,
+			sizeof(SQLWCHAR) * strSZ,
+			0,
+			buf->streetName,
+			sizeof(SQLWCHAR) * strSZ,
+			NULL
+		);
+		checkErr();
+		retcode = SQLBindParameter(hstmt, 2, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->idStreet), 0, NULL);
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		retcode = SQLRowCount(hstmt, &a);
+		checkErr();
+	};
+	bool findStreet()
+	{
+		statementText = (SQLWCHAR*)L"SELECT id FROM street WHERE streetname = ?";
+
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		retcode = SQLBindParameter(
+			hstmt,
+			1,
+			SQL_PARAM_INPUT,
+			SQL_C_WCHAR,
+			SQL_WCHAR,
+			sizeof(SQLWCHAR) * strSZ,
+			0,
+			buf->streetName,
+			sizeof(SQLWCHAR) * strSZ,
+			NULL
+		);
+		checkErr();
+
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->idStreet), 0, &(buf->idStreetLen));
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		SQLLEN finded;
+		retcode = SQLRowCount(hstmt, &finded);
+		checkErr();
+
+		retcode = SQLFetch(hstmt);
+		checkErr();
+
+		retcode = SQLCloseCursor(hstmt);
+		checkErr();
+
+		if (finded == 1)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
 	};
 };
 
@@ -1195,7 +1343,9 @@ public:
 		retcode = SQLFetch(hstmt);
 		checkErr();
 		retcode = SQLCloseCursor(hstmt);
-		checkErr();		
+		checkErr();	
+		
+		commitTransaction();
 	}
 
 	bool findObj() override 
@@ -1260,6 +1410,7 @@ public:
 			if (finded > 1) return false;
 			else return true;
 		//Поиск обьекта в таблице по номеру телефона
+			commitTransaction();
 	};
 	
 	void insertObj() override
@@ -1304,7 +1455,7 @@ public:
 			retcode = SQLRowCount(hstmt, &rc);
 			checkErr();
 
-			statementText = (SQLWCHAR*)L"SELECT id FROM phoneNumber where number = ?";
+			/*statementText = (SQLWCHAR*)L"SELECT id FROM phoneNumber where number = ?";
 			
 			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 			checkErr();
@@ -1333,8 +1484,29 @@ public:
 			retcode = SQLFetch(hstmt);
 			checkErr();
 			retcode = SQLCloseCursor(hstmt);
-			checkErr();
+			checkErr();*/
 		//id idType номер телефона
+
+		//<Получение id обьекта>
+			statementText = (SQLWCHAR*)L"SELECT * FROM sec_pn";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLFetch(hstmt);
+			checkErr();
+
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		//</Получение id обьекта>
+
+		commitTransaction();
 	}
 
 	void deleteObj() override 
@@ -1365,6 +1537,7 @@ public:
 			retcode = SQLRowCount(hstmt, &rc);
 			checkErr();
 		//Удаляем из phoneNumber
+		commitTransaction();
 	};
 
 	void updateObj() override 
@@ -1421,5 +1594,6 @@ public:
 		SQLLEN rc;
 		retcode = SQLRowCount(hstmt, &rc);
 		checkErr();
+		commitTransaction();
 	}
 };
