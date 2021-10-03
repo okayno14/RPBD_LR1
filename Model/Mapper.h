@@ -55,11 +55,13 @@ protected:
 	}
 	void commitTransaction() 
 	{
-		SQLEndTran(SQL_HANDLE_DBC, *(db->getHDBC()), SQL_COMMIT);
+		retcode = SQLEndTran(SQL_HANDLE_DBC, *(db->getHDBC()), SQL_COMMIT);
+		checkErr();
 	}
 	void rollbackTransaction() 
 	{
-		SQLEndTran(SQL_HANDLE_DBC, *(db->getHDBC()), SQL_ROLLBACK);
+		retcode = SQLEndTran(SQL_HANDLE_DBC, *(db->getHDBC()), SQL_ROLLBACK);
+		checkErr();
 	}
 };
 
@@ -1208,7 +1210,9 @@ public:
 		retcode = SQLFetch(hstmt);
 		checkErr();
 		retcode = SQLCloseCursor(hstmt);
-		checkErr();		
+		checkErr();	
+		
+		commitTransaction();
 	}
 
 	bool findObj() override 
