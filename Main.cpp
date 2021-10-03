@@ -40,21 +40,69 @@ int main()
 
 	try
 	{
-		PhoneNumber pn;
-		PhoneMapper pnMap(&pn);
+		//<Телефон>
+			//Создаём буфер в памяти
+			PhoneNumber pn;
+			PhoneMapper pnMap(&pn);
 
-		pn.idType = 2;
-		wcscpy_s(pn.number,L"123456");
+			//Вписываем его хараетеристики
+			pn.idType = 2;
+			wcscpy_s(pn.number, L"123456");
+
+			pnMap.insertObj();
+
+			//Обновляем значения
+			wcscpy_s(pn.number, L"1488");
+
+			pnMap.updateObj();
+
+			pnMap.deleteObj();
+		//</Телефон>
+
+		//<Адрес>
+			//Создаём буфер в памяти
+			Address ad;
+			AddressMapper adMap(&ad);
+
+			//Вписываем его характеристики
+			wcscpy_s(ad.streetName,L"Marksa");
+			ad.home = 228;
+			ad.appartement = 1337;		
+
+			adMap.insertObj();
+
+			//Обновляем значения
+			ad.home = 16;
+
+			adMap.updateObj();
+
+			adMap.deleteObj();
+		//</Адрес>
+
+		//<Контакт>
+			//Создаём буфер в памяти
+			Person p;
+			PersonMapper pMap(&p);
+
+			//Вписываем его хараетеристики
+			wcscpy_s(p.lastName, L"a");
+			wcscpy_s(p.firstName, L"b");
+			wcscpy_s(p.fatherName, L"c");
+			p.idAddress = 4;
+			p.idPhones.push_back(6);
+
+			pMap.insertObj();
+
+			//Обновляем значения
+			wcscpy_s(p.firstName, L"Vasya");
+			p.idAddress = 8;
+			p.idPhones.push_back(4);
 
 
-		pnMap.insertObj();
+			pMap.updateObj();
 
-		wcscpy_s(pn.number, L"1488");
-		
-		pnMap.updateObj();
-
-		pnMap.deleteObj();
-
+			pMap.deleteObj();
+		//</Контакт>
 	}
 	catch (wstring msg) { wcout << msg; }
 	
