@@ -1,6 +1,3 @@
-#pragma once
-
-
 #define strSZ 20
 
 class Model;

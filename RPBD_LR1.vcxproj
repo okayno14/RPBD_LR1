@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Controller\Controller.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="View.cpp" />
   </ItemGroup>

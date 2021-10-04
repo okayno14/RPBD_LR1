@@ -22,6 +22,9 @@
     <ClCompile Include="View.cpp">
       <Filter>View</Filter>
     </ClCompile>
+    <ClCompile Include="Controller\Controller.cpp">
+      <Filter>Controller</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Model\Model.h">

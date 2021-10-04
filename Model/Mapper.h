@@ -1,7 +1,3 @@
-#pragma once
-
-
-
 class AbstractMapper
 {
 public:

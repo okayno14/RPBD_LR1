@@ -1,3 +1,4 @@
+#pragma once
 #include "standart.h"
 #include "Model\Model.h"
 #include "Model\Mapper.h"

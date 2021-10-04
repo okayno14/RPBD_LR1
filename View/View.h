@@ -1,7 +1,5 @@
 #pragma once
-
-
-
+#include "../Controller/Controller.h"
 
 class ConsoleApp
 {
@@ -12,7 +10,6 @@ private:
 	bool findmenu;
 	bool updatemenu;
 	Controller con;
-	wstringstream cerr;
 //указатель на контроллер не забудь
 
 public:
