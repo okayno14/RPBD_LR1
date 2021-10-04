@@ -9,17 +9,28 @@
 
 #define strSZ 20
 
+class DataBaseConnection;
+
 class Address
 {
 public:
-	SQLWCHAR streetName[strSZ];
-	SQLLEN streetNameLen;
-
+	SQLWCHAR streetName[strSZ];	
 	SQLINTEGER home;
-	SQLLEN homeLen;
-
 	SQLINTEGER appartement;
+
+private:
+	DataBaseConnection* dbc;
+	
+	SQLINTEGER id;
+	SQLINTEGER idStreet;
+
+	SQLLEN idLen;
+	SQLLEN idStreetLen;	
+	SQLLEN streetNameLen;
+	SQLLEN homeLen;
 	SQLLEN appartementLen;
+
+public:
 
 	Address(int id = -1, int idStreet = -1)
 	{
@@ -28,12 +39,6 @@ public:
 	}
 	friend class AddressMapper;
 	friend class Model;
-private:
-	SQLINTEGER id;
-	SQLLEN idLen;
-
-	SQLINTEGER idStreet;
-	SQLLEN idStreetLen;
 };
 
 class PhoneNumber
@@ -42,41 +47,53 @@ public:
 	SQLWCHAR number[strSZ];
 	SQLWCHAR typeName[strSZ];
 	
-	
-	PhoneNumber(int id =-1, int idType=-1)
-	{
-		this->id = id;
-		this->idType = idType;
-	}
-	SQLINTEGER* getId() { return &id; }
-	friend class PhoneMapper;
-	friend class Model;
-//private:
+private:
+	DataBaseConnection* dbc;
+
 	SQLINTEGER id;
 	SQLLEN idLen;
 	SQLINTEGER idType;
 	SQLLEN idTypeLen;
 	SQLLEN numberLen;
 	SQLLEN typeNameLen;
+
+public:
+	
+	PhoneNumber(int id =-1, int idType=-1)
+	{
+		this->id = id;
+		this->idType = idType;
+	}
+	friend class PhoneMapper;
+	friend class Model;
 };
 
 class Person
 {
 public:
-	SQLWCHAR firstName[strSZ];
-	SQLLEN nameLen;
-	
+	SQLWCHAR firstName[strSZ];	
 	SQLWCHAR lastName[strSZ];
-	SQLLEN lastNameLen;
-
 	SQLWCHAR fatherName[strSZ];
-	SQLLEN fatherNameLen;
-
 	Address* address;
-	
-	SQLINTEGER phoneCount;
-	
 	vector<PhoneNumber*> phoneNumbers;	
+
+private:
+	DataBaseConnection* dbc;
+
+	SQLINTEGER id;
+	SQLINTEGER idAddress;
+	SQLINTEGER phoneCount;
+
+	vector<SQLINTEGER> idPhones;
+	
+	SQLLEN nameLen;
+	SQLLEN lastNameLen;
+	SQLLEN fatherNameLen;
+	SQLLEN idLen;
+	SQLLEN idAddressLen;
+	SQLLEN idPhone;
+
+public:
 
 	Person(int id=-1,int idAddress=-1)
 	{
@@ -84,20 +101,7 @@ public:
 		this->id = id;
 		this->idAddress = idAddress;		
 	}
-	friend class PersonMapper;
-	friend class Model;
-
-	SQLINTEGER id;
-	SQLLEN idLen;
-
-	SQLINTEGER idAddress;
-	SQLLEN idAddressLen;
-
-public:
-	vector<SQLINTEGER> idPhones;
-	//Если не прокатит, то сделать вектор SQLLEN
-	SQLLEN idPhone;
-
+	
 	bool containPhoneNumber(PhoneNumber* pn) 
 	{
 		for (int i = 0; i < phoneNumbers.size(); i++) 
@@ -106,6 +110,9 @@ public:
 		}
 		return false;
 	}
+
+	friend class PersonMapper;
+	friend class Model;
 
 };
 
