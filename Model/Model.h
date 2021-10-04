@@ -162,7 +162,7 @@ protected:
 	DataBaseConnection() : status{1}
 	{
 		dsn = (SQLWCHAR*)L"Phonebook";
-		user = (SQLWCHAR*)L"postgres";
+		user = (SQLWCHAR*)L"pan";
 		password = (SQLWCHAR*)L"123";
 
 		retcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &handleEnv);

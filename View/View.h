@@ -3,93 +3,49 @@
 
 
 
-class ConsoleApp 
+class ConsoleApp
 {
 private:
 	int MainMenu;
 	int UntMenu;
 	int ch;
+	bool findmenu;
+	bool updatemenu;
+	Controller con;
+	wstringstream cerr;
 //указатель на контроллер не забудь
 
 public:
-	ConsoleApp() 
-	{
-		MainMenu = 0;
-		UntMenu = 0;
-		ch = 0;
-		setlocale(LC_ALL, "Russian");
-		//system("chcp 1251 > nul");
-		system("color 0F");
-	}
+	ConsoleApp();
 
-	void Main_menu_output()
-	{
-		cout << "1 - Поглядеть запись в телефонной книге" << endl;
-		cout << "2 - Добавить запись в телефонную книгу" << endl;
-		cout << "3 - Изменить запись в телефонной книге" << endl;
-		cout << "4 - Удаление записи" << endl;
-		cout << "Нажмите 9 для выхода" << endl;
-	}
+	void Main_menu_output();
 
-	void clear()
-	{
-		MainMenu = 0;
-		UntMenu = 0;
-		ch = 0;
+	void Find_menu();
 
-		Main_menu_output();
-	}
+	void Update_menu();
 
-	void run()
-	{
-		Main_menu_output();
-		
+	void clear();
 
-		while (MainMenu != 9)
-		{
-			cin >> MainMenu;
-			system("cls");
-			switch (MainMenu)
-			{
-				default:
-				{
-					cout << "Очепятка\n";
-					_getch();
-					system("cls");
-					clear();
-					break;
-				}
-				case 1:
-				{
-					_getch();
-					system("cls");
-					clear();
-					break;
-				};
-				case 2:
-				{
-					_getch();
-					system("cls");
-					clear();
-					break;
-				}
-				case 3:
-				{
-					_getch();
-					system("cls");
-					clear();
-					break;
-				}
-				case 4:
-				{
-					_getch();
-					system("cls");
-					clear();
-					break;
-				}
-				case 9: break;
-			}
-		}
-		system("pause");
-	}
+	void run();
+
+	void runFind(bool findmenu);
+
+	void runUpdate(bool updatemenu);
+
+	void addContact();
+	void deleteContact();
+	void findAddresstoFIO();
+	void findPhoneNumbertoFIO();
+	void findto4();
+	void updateFIOcontacte();
+	void addAddress();
+	void updateStreet();
+	void updateNumberHome();
+	void updateNumberAppartment();
+	void addPhoneNumber();
+	
+	void updatePhoneNumber();
+	void updateTypePhoneNumber();
+	void deletePhoneNumber();
+	void deleteAddress();
 };
