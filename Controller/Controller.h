@@ -1,6 +1,5 @@
 #pragma once
-#include <iostream>
-#include "Model\Model.h"
+
 
 class Controller
 {

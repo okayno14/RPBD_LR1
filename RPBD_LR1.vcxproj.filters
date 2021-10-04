@@ -33,5 +33,8 @@
     <ClInclude Include="Model\Mapper.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="standart.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

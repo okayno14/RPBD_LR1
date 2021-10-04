@@ -145,6 +145,7 @@
     <ClInclude Include="Controller\Controller.h" />
     <ClInclude Include="Model\Mapper.h" />
     <ClInclude Include="Model\Model.h" />
+    <ClInclude Include="standart.h" />
     <ClInclude Include="View\View.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

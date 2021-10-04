@@ -1,11 +1,6 @@
 #pragma once
-#include "Model.h"
-#include <windows.h>
-#include <odbcinst.h>
-#include <sqlext.h>
-#include <sql.h>
-#include <iostream>
-#include <sstream>
+
+
 
 class AbstractMapper
 {

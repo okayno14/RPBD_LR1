@@ -1,16 +1,11 @@
 #pragma once
-#include <windows.h>
-#include <odbcinst.h>
-#include <sqlext.h>
-#include <sql.h>
-#include <iostream>
-#include <vector>
-#include <unordered_map>
+
 
 #define strSZ 20
 
 class Model;
 class PhoneNumber;
+class ConsoleApp;
 
 class StatePhoneNumber
 {
