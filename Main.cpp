@@ -17,6 +17,11 @@ int main()
 {
 	
 	ConsoleApp con;
+	
+	Model model;
+	PhoneNumber pn;
+
+	model.addPhone(pn);
 
 	return 0;	
 }

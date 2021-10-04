@@ -9,6 +9,33 @@
 
 #define strSZ 20
 
+class Model;
+class PhoneNumber;
+
+class StatePhoneNumber
+{
+public:
+	virtual void find(PhoneNumber* pn) = 0;
+	virtual void add(PhoneNumber* pn) = 0;
+	virtual void update(PhoneNumber* pn) = 0;
+	virtual void delObj(PhoneNumber* pn) = 0;
+	virtual void sync(PhoneNumber* pn) = 0;
+protected:
+
+	Model* model;
+};
+
+class StatePhoneNumber_1 : public StatePhoneNumber
+{
+public:
+	StatePhoneNumber_1(Model* model) { this->model = model; }
+	void find(PhoneNumber* pn) {};
+	void add(PhoneNumber* pn);
+	void update(PhoneNumber* pn) {};
+	void delObj(PhoneNumber* pn) {};
+	void sync(PhoneNumber* pn) {};
+};
+
 class DataBaseConnection;
 
 class Address
@@ -43,19 +70,22 @@ public:
 
 class PhoneNumber
 {
-public:
+private:
+	StatePhoneNumber* currentState;
+	
 	SQLWCHAR number[strSZ];
 	SQLWCHAR typeName[strSZ];
 	
-private:
 	DataBaseConnection* dbc;
-
+	
 	SQLINTEGER id;
 	SQLLEN idLen;
 	SQLINTEGER idType;
 	SQLLEN idTypeLen;
 	SQLLEN numberLen;
 	SQLLEN typeNameLen;
+
+	void add() { currentState->add(this); };
 
 public:
 	
@@ -64,8 +94,13 @@ public:
 		this->id = id;
 		this->idType = idType;
 	}
+
+	void changeState(StatePhoneNumber* newState) { currentState = newState; }
+	
 	friend class PhoneMapper;
+	friend class PersonMapper;
 	friend class Model;
+	friend class StatePhoneNumber;
 };
 
 class Person
@@ -186,21 +221,54 @@ DataBaseConnection* DataBaseConnection::getInstance()
 
 class Model 
 {
-private:
-	unordered_map<int,Address> addressTable;
+public:
+	vector<Address> addressList;
 	//AddressMapper
-	unordered_map<int,PhoneNumber> phoneNumberTable;
+	vector<PhoneNumber> phoneNumberList;
 	//PhoneNumberMapper
-	unordered_map<int, Person> personTable;
+	vector<Person> personList;
 	//PersonMapper
 	ConsoleApp* conApp;
-public:
-	Person& watchRecord() {};
-	void removeRecord() {};
-	void editRecord() {};
-	void addRecord() {};
+
+
+	bool findPerson(Person p) {};
+	bool findPerson(PhoneNumber pn) {};
+	bool findPerson(Address ad) {};
+	void removePerson(Person p) {};
+	void updatePerson(Person p) {};
+	void addPerson(Person p) {};
+
+	void addPhone(PhoneNumber pn);
+
 private:
 	Person& findByAllAtributes() {};
 	Person& findBy4() {};
 	Person& findById() {};
+
+	//PhoneNumber
+		void findPhoneNumber();
+		void addPhoneNumber();
+		void updatePhoneNumber();
+		void delObjPhoneNumber();
+		void syncPhoneNumber();
+	//PhoneNumber
+
+	//Address
+		
+	//Address
 };
+
+
+void Model::addPhone(PhoneNumber pn)
+{
+	pn.changeState(new StatePhoneNumber_1(this));
+	pn.add();
+}
+
+void StatePhoneNumber_1::add(PhoneNumber* pn) 
+{
+	model->phoneNumberList.push_back(*pn);
+	cout << "add";
+}
+
+
