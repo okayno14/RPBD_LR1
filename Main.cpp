@@ -30,86 +30,91 @@ int main()
 	unordered_map<int,char> t;*/
 	
 	
-	try 
-		{ 
-			PhoneNumber pn;
-			PhoneMapper pnMap(&pn);
-			pnMap.findObj(2); 
-		}
-	catch (wstring msg) { wcout << msg; }
+	//try 
+	//	{ 
+	//		PhoneNumber pn;
+	//		PhoneMapper pnMap(&pn);
+	//		pnMap.findObj(2); 
+	//	}
+	//catch (wstring msg) { wcout << msg; }
 
-	try
-	{
-		//<Телефон>
-			//Создаём буфер в памяти
-			PhoneNumber pn;
-			PhoneMapper pnMap(&pn);
+	//try
+	//{
+	//	//<Телефон>
+	//		//Создаём буфер в памяти
+	//		//PhoneNumber pn;
+	//		//PhoneMapper pnMap(&pn);
 
-			//Вписываем его хараетеристики
-			pn.idType = 2;
-			wcscpy_s(pn.number, L"123456");
+	//		////Вписываем его хараетеристики
+	//		//pn.idType = 2;
+	//		//wcscpy_s(pn.number, L"123456");
 
-			pnMap.insertObj();
+	//		//pnMap.insertObj();
 
-			//Обновляем значения
-			wcscpy_s(pn.number, L"1488");
+	//		////Обновляем значения
+	//		//wcscpy_s(pn.number, L"1488");
 
-			pnMap.updateObj();
+	//		//pnMap.updateObj();
 
-			pnMap.deleteObj();
-		//</Телефон>
+	//		//pnMap.deleteObj();
+	//	//</Телефон>
 
-		//<Адрес>
-			//Создаём буфер в памяти
-			Address ad;
-			AddressMapper adMap(&ad);
+	//	//<Адрес>
+	//		//Создаём буфер в памяти
+	//		//Address ad;
+	//		//AddressMapper adMap(&ad);
 
-			//Вписываем его характеристики
-			wcscpy_s(ad.streetName,L"Maksa");
-			ad.home = 16;
-			ad.appartement = 1337;		
+	//		////Вписываем его характеристики
+	//		//wcscpy_s(ad.streetName,L"Maksa");
+	//		//ad.home = 16;
+	//		//ad.appartement = 1337;		
 
-			//adMap.insertObj();
+	//		////adMap.insertObj();
 
-			//Обновляем значения
-			adMap.findObj();
-			
-			ad.home = 16;
+	//		////Обновляем значения
+	//		//adMap.findObj();
+	//		//
+	//		//ad.home = 16;
 
-			adMap.updateObj();
+	//		//adMap.updateObj();
 
-			adMap.deleteObj();
-		//</Адрес>
+	//		//adMap.deleteObj();
+	//	//</Адрес>
 
+	//
+	//	//<Контакт>
+	//		//Создаём буфер в памяти
+	//		//Person p;
+	//		//PersonMapper pMap(&p);
+
+	//		////Вписываем его хараетеристики
+	//		//wcscpy_s(p.lastName, L"a");
+	//		//wcscpy_s(p.firstName, L"b");
+	//		//wcscpy_s(p.fatherName, L"c");
+	//		//p.idAddress = 4;
+	//		//p.idPhones.push_back(6);
+
+	//		//pMap.insertObj();
+
+	//		////Обновляем значения
+	//		//wcscpy_s(p.firstName, L"Vasya");
+	//		//p.idAddress = 8;
+	//		//p.idPhones.push_back(4);
+
+
+	//		//pMap.updateObj();
+
+	//		//pMap.deleteObj();
+	//		// 
+	//	//</Контакт>
+
+	//		
+	//
+	//}
+	//catch (wstring msg) { wcout << msg; }
+	//
 	
-		//<Контакт>
-			//Создаём буфер в памяти
-			Person p;
-			PersonMapper pMap(&p);
+	con.run();
 
-			//Вписываем его хараетеристики
-			wcscpy_s(p.lastName, L"a");
-			wcscpy_s(p.firstName, L"b");
-			wcscpy_s(p.fatherName, L"c");
-			p.idAddress = 4;
-			p.idPhones.push_back(6);
-
-			pMap.insertObj();
-
-			//Обновляем значения
-			wcscpy_s(p.firstName, L"Vasya");
-			p.idAddress = 8;
-			p.idPhones.push_back(4);
-
-
-			pMap.updateObj();
-
-			pMap.deleteObj();
-		//</Контакт>
-	
-	}
-	catch (wstring msg) { wcout << msg; }
-	
-	
 	return 0;	
 }

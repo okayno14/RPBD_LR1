@@ -6,6 +6,9 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include "View\View.h"
+
+using namespace std;
 
 #define strSZ 20
 
@@ -125,7 +128,7 @@ protected:
 	DataBaseConnection() : status{1}
 	{
 		dsn = (SQLWCHAR*)L"Phonebook";
-		user = (SQLWCHAR*)L"postgres";
+		user = (SQLWCHAR*)L"pan";
 		password = (SQLWCHAR*)L"123";
 
 		retcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &handleEnv);
@@ -186,7 +189,7 @@ private:
 	//PhoneNumberMapper
 	unordered_map<int, Person> personTable;
 	//PersonMapper
-	ConsoleApp* conApp;
+	///ConsoleApp* conApp;
 public:
 	Person& watchRecord() {};
 	void removeRecord() {};
