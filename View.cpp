@@ -56,6 +56,10 @@ void ConsoleApp::Update_menu()
 	cout << "------------------------------------------------" << endl;
 	cout << ">>";
 }
+void ConsoleApp::setController(Controller* con)
+{
+	this->con = con;
+}
 void ConsoleApp::run()
 {
 	while (MainMenu != 9)
@@ -677,6 +681,11 @@ void ConsoleApp::deleteAddress()
 	delete[] lastnamecontact;
 	delete[] firstnamecontact;
 	delete[] fathernamecontact;
+}
+
+void ConsoleApp::success()
+{
+	cout << "Success!!!!))" << endl;
 }
 
 

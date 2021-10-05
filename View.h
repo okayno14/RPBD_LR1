@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <sstream>
+#include <cstring>
 
 #include "Controller.h"
 using namespace std;
@@ -24,6 +25,8 @@ public:
 	void Find_menu();
 	void Update_menu();
 
+	void setController(Controller* con);
+	
 	void run();
 	void runFind(bool findmenu);
 	void runUpdate(bool updatemenu);
@@ -44,4 +47,6 @@ public:
 	void updateTypePhoneNumber();
 	void deletePhoneNumber();
 	void deleteAddress();
+
+	void success();
 };

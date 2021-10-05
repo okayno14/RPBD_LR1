@@ -8,13 +8,19 @@
 
 #include "Model.h"
 #include "View.h"
-
-
 using namespace std;
 
 int main() 
 {
+	Model model;
 	ConsoleApp app;
+	
+	Controller controller(&model);
+	controller.setView(&app);
+	app.setController(&controller);
+
+	cout << &controller << endl;
+
 	app.run();
 
 	

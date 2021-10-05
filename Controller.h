@@ -5,17 +5,25 @@
 #include <sql.h>
 #include <iostream>
 #include <sstream>
+#include <cstring>
 
 #include "Model.h"
+#include "View.h"
 
 using namespace std;
 
 class Model;
+class ConsoleApp;
 
 class Controller
 {
-public:
+private:
 	Model* model;
+	ConsoleApp* consoleApp;
+
+public:
+	Controller(Model* model);
+	void setView(ConsoleApp* consoleApp);
 
 	bool add—ontact(
 		SQLWCHAR* lastNameContact, 

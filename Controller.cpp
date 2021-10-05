@@ -1,6 +1,16 @@
 #include "Controller.h"
 
 
+Controller::Controller(Model* model)
+{
+	this->model = model;
+}
+
+void Controller::setView(ConsoleApp* consoleApp)
+{
+	this->consoleApp = consoleApp;
+}
+
 bool Controller::add—ontact(
 	SQLWCHAR* lastNameContact,
 	SQLWCHAR* firstNameContact,
@@ -8,22 +18,6 @@ bool Controller::add—ontact(
 {
 	if (lastNameContact == NULL && firstNameContact == NULL && fatherNameContact == NULL)
 		return false;
-	/*wcout << lastNameContact << endl;
-	wcout << firstNameContact << endl;
-	wcout << fatherNameContact << endl;
-	cout << "›ÚÓ ‚‡¯¯Â?" << endl;*/
-	//system("pause");
-	////poisk
-	//if (FindByNames(lastNameContact, firstNameContact, fatherNameContact))
-	//{
-	//	AddPerson(lastNameContact, firstNameContact, fatherNameContact);
-	//}
-	//else
-	//{
-	//	/// Persona nety
-	//	return false;
-	//}
-
 	lastNameContact = NULL;
 	firstNameContact = NULL;
 	fatherNameContact = NULL;
@@ -55,6 +49,14 @@ bool Controller::addPhoneNumberContact(
 	SQLWCHAR* fatherNameContact,
 	SQLWCHAR* number, int type)
 {
+	PhoneNumber pn;
+	wcscpy_s(pn.number,number);
+	pn.idType = type;
+
+	model->addPhone(pn);
+
+	this->consoleApp->success();
+	
 	return false;
 }
 

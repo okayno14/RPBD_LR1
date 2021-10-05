@@ -6,11 +6,8 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <cstring>
 
-//#include "Address.h"
-//#include "Person.h"
-//#include "PhoneNumber.h"
-//#include "Mapper.h"
 #include "DataBaseConnection.h"
 
 #define strSZ 20
@@ -212,11 +209,12 @@ private:
 	PhoneMapper pnMap;
 	std::vector<Person> personTable;
 	PersonMapper pMap;
-public:
+public:	
 	Person& watchRecord() {};
 	void removeRecord() {};
 	void editRecord() {};
-	void addRecord() {};
+	void addRecord();
+	void addPhone(PhoneNumber pn);
 private:
 	Person& findByAllAtributes() {};
 	Person& findBy4() {};
