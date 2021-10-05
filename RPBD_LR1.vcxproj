@@ -18,6 +18,23 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Address.cpp" />
+    <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="DataBaseConnection.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Mapper.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Person.cpp" />
+    <ClCompile Include="PhoneNumber.cpp" />
+    <ClCompile Include="View.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Controller.h" />
+    <ClInclude Include="DataBaseConnection.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="View.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -138,18 +155,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Controller\Controller.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="View.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Controller\Controller.h" />
-    <ClInclude Include="Model\Mapper.h" />
-    <ClInclude Include="Model\Model.h" />
-    <ClInclude Include="standart.h" />
-    <ClInclude Include="View\View.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

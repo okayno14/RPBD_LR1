@@ -3,17 +3,26 @@
 #include <odbcinst.h>
 #include <sqlext.h>
 #include <sql.h>
+#include <iostream>
+#include <sstream>
+
+#include "Model.h"
+
+using namespace std;
+
+class Model;
 
 class Controller
 {
-	//Model mod;
 public:
+	Model* model;
+
 	bool add—ontact(
 		SQLWCHAR* lastNameContact, 
 		SQLWCHAR* firstNameContact,
 		SQLWCHAR* fatherNameContact);
 	bool deleteContact(
-		SQLWCHAR* lastNameContact, 
+		SQLWCHAR* lastNameContact,
 		SQLWCHAR* firstNameContact,
 		SQLWCHAR* fatherNameContact);
 	bool to—hangeContact(
@@ -25,8 +34,8 @@ public:
 		SQLWCHAR* newfatherNameContact);
 	bool addPhoneNumberContact(
 		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact, 
-		SQLWCHAR* fatherNameContact, 
+		SQLWCHAR* firstNameContact,
+		SQLWCHAR* fatherNameContact,
 		SQLWCHAR* number,
 		int type);
 	bool deletePhoneNumberContact(
@@ -36,7 +45,7 @@ public:
 		SQLWCHAR* number);
 	bool toChangePhoneNumberContact(
 		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact, 
+		SQLWCHAR* firstNameContact,
 		SQLWCHAR* fatherNameContact,
 		SQLWCHAR* oldnumber,
 		SQLWCHAR* newnumber);
@@ -47,7 +56,7 @@ public:
 		SQLWCHAR* number,
 		int type);
 	bool findPhoneByFIO(
-		SQLWCHAR* lastNameContact, 
+		SQLWCHAR* lastNameContact,
 		SQLWCHAR* firstNameContact,
 		SQLWCHAR* fatherNameContact);
 	bool toChangeStreetContacn(
@@ -63,11 +72,11 @@ public:
 	bool toChangeNumberApartment(
 		SQLWCHAR* lastNameContact,
 		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact, 
+		SQLWCHAR* fatherNameContact,
 		int numemberApartment);
 	bool findAddressByFIO(
-		SQLWCHAR* lastNameContact, 
-		SQLWCHAR* firstNameContact, 
+		SQLWCHAR* lastNameContact,
+		SQLWCHAR* firstNameContact,
 		SQLWCHAR* fatherNameContact);
 	bool findContactBy4NumberPhone(SQLWCHAR* number4);
 	bool addAddress(
@@ -81,5 +90,5 @@ public:
 		SQLWCHAR* lastNameContact,
 		SQLWCHAR* firstNameContact,
 		SQLWCHAR* fatherNameContact);
-	
+
 };

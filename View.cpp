@@ -1,18 +1,4 @@
-#pragma once
-#include "View/View.h"
-#include "Controller/Controller.h"
-#include <iostream>
-
-#include <windows.h>
-#include <odbcinst.h>
-#include <sqlext.h>
-#include <sql.h>
-#include <vector>
-#include <iostream>
-#include <sstream>
-#include <conio.h>
-#include <cstdlib>
-using namespace std;
+#include "View.h"
 
 ConsoleApp::ConsoleApp()
 {
@@ -24,7 +10,7 @@ ConsoleApp::ConsoleApp()
 	setlocale(LC_ALL, "Russian");
 	//system("chcp 1251 > nul");
 	system("color 0F");
-}
+};
 
 void ConsoleApp::Main_menu_output()
 {
@@ -39,7 +25,6 @@ void ConsoleApp::Main_menu_output()
 	cout << "------------------------------------------------" << endl;
 	cout << ">>";
 }
-
 void ConsoleApp::Find_menu()
 {
 	cout << "------------------------------------------------" << endl;
@@ -52,7 +37,6 @@ void ConsoleApp::Find_menu()
 	cout << "------------------------------------------------" << endl;
 	cout << ">>";
 }
-
 void ConsoleApp::Update_menu()
 {
 	cout << "------------------------------------------------" << endl;
@@ -72,16 +56,6 @@ void ConsoleApp::Update_menu()
 	cout << "------------------------------------------------" << endl;
 	cout << ">>";
 }
-
-void ConsoleApp::clear()
-{
-	MainMenu = 0;
-	UntMenu = 0;
-	ch = 0;
-
-	Main_menu_output();
-}
-
 void ConsoleApp::run()
 {
 	while (MainMenu != 9)
@@ -139,7 +113,6 @@ void ConsoleApp::run()
 	}
 	system("pause");
 }
-
 void ConsoleApp::runFind(bool findmenu)
 {
 	while (findmenu == true)
@@ -180,7 +153,6 @@ void ConsoleApp::runFind(bool findmenu)
 		}
 	}
 }
-
 void ConsoleApp::runUpdate(bool updatemenu)
 {
 	while (updatemenu == true)
@@ -279,11 +251,10 @@ void ConsoleApp::addContact()
 	wcin >> firstnamecontact;
 	cout << "Введите отчество контакта : ";
 	wcin >> fathernamecontact;
-	con.addСontact(lastnamecontact, firstnamecontact, fathernamecontact);
+	con->addСontact(lastnamecontact, firstnamecontact, fathernamecontact);
 	delete[] lastnamecontact;
 	delete[] firstnamecontact;
 	delete[] fathernamecontact;
-
 }
 
 void ConsoleApp::deleteContact()
@@ -300,7 +271,7 @@ void ConsoleApp::deleteContact()
 	wcin >> firstnamecontact;
 	cout << "Введите отчество контакта : ";
 	wcin >> fathernamecontact;
-	con.deleteContact(lastnamecontact, firstnamecontact, fathernamecontact);
+	con->deleteContact(lastnamecontact, firstnamecontact, fathernamecontact);
 	delete[] lastnamecontact;
 	delete[] firstnamecontact;
 	delete[] fathernamecontact;
@@ -321,7 +292,7 @@ void ConsoleApp::findAddresstoFIO()
 	cout << "Введите отчество контакта : ";
 	wcin >> fathernamecontact;
 
-	con.findAddressByFIO(lastnamecontact, firstnamecontact, fathernamecontact);
+	con->findAddressByFIO(lastnamecontact, firstnamecontact, fathernamecontact);
 
 	delete[] lastnamecontact;
 	delete[] firstnamecontact;
@@ -343,7 +314,7 @@ void ConsoleApp::findPhoneNumbertoFIO()
 	cout << "Введите отчество контакта : ";
 	wcin >> fathernamecontact;
 
-	con.findPhoneByFIO(lastnamecontact, firstnamecontact, fathernamecontact);
+	con->findPhoneByFIO(lastnamecontact, firstnamecontact, fathernamecontact);
 
 	delete[] lastnamecontact;
 	delete[] firstnamecontact;
@@ -359,7 +330,7 @@ void ConsoleApp::findto4()
 	cout << "Введите 4-е символа телефонного номера контакта : ";
 	wchar_t* four_phonenumber = new wchar_t[5];
 	wcin >> four_phonenumber;
-	con.findContactBy4NumberPhone(four_phonenumber);
+	con->findContactBy4NumberPhone(four_phonenumber);
 	delete[] four_phonenumber;
 }
 
@@ -368,7 +339,6 @@ void ConsoleApp::updateFIOcontacte()
 	cout << "------------------------------------------------" << endl;
 	cout << "------------- Изменить ФИО контакту ------------" << endl;
 	cout << "------------------------------------------------" << endl;
-	///<----
 	wchar_t* oldlastnamecontact = new wchar_t[20];
 	wchar_t* oldfirstnamecontact = new wchar_t[20];
 	wchar_t* oldfathernamecontact = new wchar_t[20];
@@ -390,7 +360,7 @@ void ConsoleApp::updateFIOcontacte()
 	cout << "Введите отчество контакта : ";
 	wcin >> newfathernamecontact;
 
-	con.toСhangeContact(
+	con->toСhangeContact(
 		oldlastnamecontact,
 		oldfirstnamecontact,
 		oldfathernamecontact,
@@ -430,7 +400,7 @@ void ConsoleApp::addAddress()
 	cout << "Введите номер квартиры проживания контакта : ";
 	cin >> numberAppotarment;
 
-	con.addAddress(lastnamecontact,
+	con->addAddress(lastnamecontact,
 		firstnamecontact,
 		fathernamecontact,
 		nameStreet,
@@ -441,7 +411,6 @@ void ConsoleApp::addAddress()
 	delete[] lastnamecontact;
 	delete[] firstnamecontact;
 	delete[] fathernamecontact;
-
 }
 
 void ConsoleApp::updateStreet()
@@ -462,7 +431,7 @@ void ConsoleApp::updateStreet()
 	cout << "Введите новое название улицы проживания контакта : ";
 	wcin >> nameStreet;
 
-	con.toChangeStreetContacn(
+	con->toChangeStreetContacn(
 		lastnamecontact,
 		firstnamecontact,
 		fathernamecontact,
@@ -492,7 +461,7 @@ void ConsoleApp::updateNumberHome()
 	cout << "Введите новый номер дома проживания контакта : ";
 	cin >> numberHome;
 
-	con.toChangeNumberHome(
+	con->toChangeNumberHome(
 		lastnamecontact,
 		firstnamecontact,
 		fathernamecontact,
@@ -521,7 +490,7 @@ void ConsoleApp::updateNumberAppartment()
 	cout << "Введите новый номер дома проживания контакта : ";
 	cin >> numberAppotarment;
 
-	con.toChangeNumberHome(
+	con->toChangeNumberHome(
 		lastnamecontact,
 		firstnamecontact,
 		fathernamecontact,
@@ -553,13 +522,13 @@ void ConsoleApp::addPhoneNumber()
 	int type;
 	cout << "Введите тип телефонного номера : ";
 	cin >> type;
-	if (type < 0 and type > 3)
+	if (type < 0 || type > 3)
 	{
 		cout << "Ошибка! неизвестный тип телефонного номера" << endl;
 	}
 	else
 	{
-		con.addPhoneNumberContact(
+		con->addPhoneNumberContact(
 			lastnamecontact,
 			firstnamecontact,
 			fathernamecontact,
@@ -574,7 +543,6 @@ void ConsoleApp::addPhoneNumber()
 	delete[] firstnamecontact;
 	delete[] fathernamecontact;
 }
-
 
 void ConsoleApp::updatePhoneNumber()
 {
@@ -598,7 +566,7 @@ void ConsoleApp::updatePhoneNumber()
 	cout << "Введите новый телефонный номер : ";
 	wcin >> newphoneNumber;
 
-	con.toChangePhoneNumberContact(
+	con->toChangePhoneNumberContact(
 		lastnamecontact,
 		firstnamecontact,
 		fathernamecontact,
@@ -634,13 +602,13 @@ void ConsoleApp::updateTypePhoneNumber()
 	int type;
 	cout << "Введите тип телефонного номера контакту : ";
 	cin >> type;
-	if (type < 0 and type > 3)
+	if (type < 0 || type > 3)
 	{
 		cout << "Ошибка! неизвестный тип телефонного номера" << endl;
 	}
 	else
 	{
-		con.toChangeTypePhoneNumber(
+		con->toChangeTypePhoneNumber(
 			lastnamecontact,
 			firstnamecontact,
 			fathernamecontact,
@@ -674,7 +642,7 @@ void ConsoleApp::deletePhoneNumber()
 	cout << "Введите телефонный номер : ";
 	wcin >> phoneNumber;
 
-	con.deletePhoneNumberContact(
+	con->deletePhoneNumberContact(
 		lastnamecontact,
 		firstnamecontact,
 		fathernamecontact,
@@ -701,7 +669,7 @@ void ConsoleApp::deleteAddress()
 	cout << "Введите отчество контакта : ";
 	wcin >> fathernamecontact;
 
-	con.deleteAddress(
+	con->deleteAddress(
 		lastnamecontact,
 		firstnamecontact,
 		fathernamecontact);
@@ -710,3 +678,5 @@ void ConsoleApp::deleteAddress()
 	delete[] firstnamecontact;
 	delete[] fathernamecontact;
 }
+
+

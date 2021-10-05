@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Исходные файлы">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Model">
       <UniqueIdentifier>{897a51e6-fef8-4ce0-a18f-a5ea04fea569}</UniqueIdentifier>
     </Filter>
@@ -14,33 +10,52 @@
     <Filter Include="Controller">
       <UniqueIdentifier>{431c1031-f80d-4bc5-bd9c-8d6c9bbd8e92}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="Controller.cpp">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Address.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="DataBaseConnection.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Mapper.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Person.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="PhoneNumber.cpp">
+      <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="View.cpp">
       <Filter>View</Filter>
     </ClCompile>
-    <ClCompile Include="Controller\Controller.cpp">
-      <Filter>Controller</Filter>
+    <ClCompile Include="Main.cpp">
+      <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Model\Model.h">
-      <Filter>Model</Filter>
-    </ClInclude>
-    <ClInclude Include="View\View.h">
-      <Filter>View</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Controller.h">
+    <ClInclude Include="Controller.h">
       <Filter>Controller</Filter>
     </ClInclude>
-    <ClInclude Include="Model\Mapper.h">
+    <ClInclude Include="DataBaseConnection.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="standart.h">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Model.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="View.h">
+      <Filter>View</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
