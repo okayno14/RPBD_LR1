@@ -19,8 +19,6 @@ int main()
 	controller.setView(&app);
 	app.setController(&controller);
 
-	cout << &controller << endl;
-
 	app.run();
 
 	
