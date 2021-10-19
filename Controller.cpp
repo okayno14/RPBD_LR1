@@ -153,84 +153,56 @@ bool Controller::deleteAddress(
 {
 	return false;
 }
+/* изменить**
+тепрь нужно передовать сылку счетчика  в медоты модели
+*/
 
-Person* Controller::find_Person()
-{
-	Person* tmpfree = nullptr;
-	try
-	{
-		/*poisk s null*/
-		/*tmpfree = find;*/
-	}
-	catch (int debag)
-	{
-		throw - 2;
-	}
-	return tmpfree;
-}
 
 Person* Controller::find_Person(
 	SQLWCHAR* lastNameContact,
 	SQLWCHAR* firstNameContact,
 	SQLWCHAR* fatherNameContact)
 {
-	Person* tmp = nullptr;
+	/*Person tmp(lastNameContact,firstNameContact,fatherNameContact);*/
 	wchar_t* number;
+	wchar_t* address;
+	int T = 0; // schetchik
 
-	try
-	{
-		/*tmp = find*/
-	}catch(int debag)
+	/*tmp = this->model->findPerson();*/
+
+	if (T > 1)
 	{
 		number = this->consoleApp->get_a_number();
-		try
-		{
-			/*poisk po fio i telefony*/
-			/*tmp = find*/
+		/*tmp = this->model->findPerson()*///fio number
 
-			
-		}
-		catch (int debag2)
+		/*????
+		if (???)
 		{
-			tmp = find_Person(
-				lastNameContact,
-				firstNameContact,
-				fatherNameContact,
-				number);
+			addres = this->consoleApp->get_a_address();
+			tmp = this->model->findPerson();
+
+			if(???)
+			{
+				tmp = this->model->findPerson();// poisk pustogo
+				
+				if(voobwe netu)
+				{
+					throw -1;// oblamivaem returny
+				}
+
+				return tmp;
+			}
+
+			return tmp;
 		}
+		*/
+
+		/*return tmp*/
 	}
-	return tmp;
+
+	/*suda */
+	
+	return nullptr;///<----- poka tut
 }
 
-Person* Controller::find_Person(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	SQLWCHAR* phonenumber)
-{
-	Person* tmptwo = nullptr;
-	wchar_t* address = this->consoleApp->get_a_address();
-	try
-	{
-		/*poisk po addresu fio i telephonu*/
-		/*tmptwo = find*/
-		
-		
-	}
-	catch (int debag)
-	{
-		tmptwo = find_Person();
-
-		////null poisk
-		//try
-		//{
-
-		//}
-		//catch (int debag2)
-		//{
-		//	//pizdech
-		//}
-	}
-	return tmptwo;
-}
 
