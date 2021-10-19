@@ -209,7 +209,7 @@ bool PersonMapper::findObj()
 	return res;
 }
 //ÔÈÎ+ÒÅËÅÔÎÍ
-bool PersonMapper::findObj(PhoneNumber* phone)
+int PersonMapper::findObj(PhoneNumber* phone)
 
 {
 	if (!buf->containPhoneNumber(phone)) return false;
@@ -297,10 +297,10 @@ bool PersonMapper::findObj(PhoneNumber* phone)
 		res = true;
 	}
 	commitTransaction();
-	return res;
+	return a;
 }
 //ÔÈÎ+ÀÄÐÅÑ
-bool PersonMapper::findObj(Address* address)
+int PersonMapper::findObj(Address* address)
 
 {
 	if (address != buf->address) return false;
@@ -397,10 +397,10 @@ bool PersonMapper::findObj(Address* address)
 
 	commitTransaction();
 	//Íå çàáóäü ïîïðàâèòü
-	return res;
+	return a;
 }
 //ÔÈÎ+ÒÅËÅÔÎÍ+ÀÄÐÅÑ
-bool PersonMapper::findObj(PhoneNumber* phone, Address* address)
+int PersonMapper::findObj(PhoneNumber* phone, Address* address)
 
 {
 	if (!buf->containPhoneNumber(phone)) return false;
@@ -517,7 +517,7 @@ bool PersonMapper::findObj(PhoneNumber* phone, Address* address)
 		getIdPhone();
 	}
 	commitTransaction();
-	return res;
+	return a;
 }
 void PersonMapper::insertObj()
 

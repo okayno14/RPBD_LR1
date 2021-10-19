@@ -182,13 +182,13 @@ public:
 	bool findObj() override;
 
 	//тхн рекетнм
-	bool findObj(PhoneNumber* phone);
+	int findObj(PhoneNumber* phone);
 
 	// тхн юдпея
-	bool findObj(Address* address);
+	int findObj(Address* address);
 
 	// тхн рекетнм юдпея
-	bool findObj(PhoneNumber* phone, Address* address);
+	int findObj(PhoneNumber* phone, Address* address);
 
 	//Empty
 	bool findObj(bool a);

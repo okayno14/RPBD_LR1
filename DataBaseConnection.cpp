@@ -2,8 +2,8 @@
 
 DataBaseConnection::DataBaseConnection() : status{ 0 }
 {
-	//dsn = (SQLWCHAR*)L"Pfdfdfffd";
-	dsn = (SQLWCHAR*)L"Phonebook";
+	dsn = (SQLWCHAR*)L"Pfdfdfffd";
+	//dsn = (SQLWCHAR*)L"Phonebook";
 	user = (SQLWCHAR*)L"postgres";
 	password = (SQLWCHAR*)L"123";
 
