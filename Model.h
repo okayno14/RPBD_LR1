@@ -32,11 +32,15 @@ public:
 	friend class AddressMapper;
 	friend class Model;
 private:
+	
+	
 	SQLINTEGER id;
 	SQLLEN idLen;
 
 	SQLINTEGER idStreet;
 	SQLLEN idStreetLen;
+
+	bool isSynced = false;
 };
 
 class PhoneNumber
@@ -57,11 +61,15 @@ public:
 	SQLLEN idTypeLen;
 	SQLLEN numberLen;
 	SQLLEN typeNameLen;
+
+	bool isSynced = false;
 };
 
 class Person
 {
-public:
+	friend class PersonMapper;
+	friend class Model;
+private:
 	SQLWCHAR firstName[strSZ];
 	SQLLEN nameLen;
 
@@ -77,23 +85,34 @@ public:
 
 	std::vector<PhoneNumber*> phoneNumbers;
 
-	Person(int id = -1, int idAddress = -1);
-	
-	friend class PersonMapper;
-	friend class Model;
-
-	SQLINTEGER id;
-	SQLLEN idLen;
-
-	SQLINTEGER idAddress;
-	SQLLEN idAddressLen;
+	bool isSynced = false;
 
 public:
+	Person(SQLWCHAR* lastName, SQLWCHAR* firstName, SQLWCHAR* fatherName)
+	{
+		wcscpy_s(this->lastName, lastName);
+		wcscpy_s(this->firstName,firstName);		
+		wcscpy_s(this->fatherName, fatherName);
+	};
+	
+
+	bool containPhoneNumber(PhoneNumber* pn);
+		
+	
+
+private:
+	SQLINTEGER id = -1;
+	SQLLEN idLen;
+
+	SQLINTEGER idAddress = -1;
+	SQLLEN idAddressLen;
+
+
 	std::vector<SQLINTEGER> idPhones;
 	//Если не прокатит, то сделать вектор SQLLEN
 	SQLLEN idPhone;
 
-	bool containPhoneNumber(PhoneNumber* pn);
+	
 	
 
 };
@@ -221,9 +240,25 @@ public:
 	delete
 	find*/
 
+	//<Person>
+		void insertPerson(Person p);
+		
+		void updatePerson(Person pOld, Address add);
+		void updatePerson(Person pOld, PhoneNumber pn);
+		void updatePerson(Person pOld, Person fio);
+
+		void deletePerson(Person p);
+		//Person* findPerson()
+	//</Person>
+	
 	//<Phone>
 		void insertPhone(Person* p, PhoneNumber pn);
+		void updatePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
+		void deletePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
+		//void findPhone();
 	//</Phone>
+
+
 
 private:
 	Person& findByAllAtributes() {};

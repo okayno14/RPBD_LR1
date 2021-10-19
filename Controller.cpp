@@ -18,9 +18,11 @@ bool Controller::addÑontact(
 {
 	if (lastNameContact == NULL && firstNameContact == NULL && fatherNameContact == NULL)
 		return false;
-	lastNameContact = NULL;
-	firstNameContact = NULL;
-	fatherNameContact = NULL;
+	
+	Person p(lastNameContact, firstNameContact, fatherNameContact);
+	model->insertPerson(p);
+
+	consoleApp->success();
 	return true;
 }
 
