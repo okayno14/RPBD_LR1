@@ -172,6 +172,8 @@ void Controller::experiment()
 	
 	model->insertPerson(p);
 
-	t = model->findPerson(p, false);
+	int q = 0;
+	
+	t = model->findPerson(p, false, q);
 }
 

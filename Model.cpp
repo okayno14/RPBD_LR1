@@ -1,5 +1,6 @@
 #pragma once
 #include "Model.h"
+#include "math.h"
 
 void Model::addRecord()
 {
@@ -15,8 +16,8 @@ void Model::addPhone(PhoneNumber pn)
 }
 void Model::insertPerson(Person p)
 {
-	//personTable.push_back(p);
-	//pMap.setBuf(&personTable.back());
+	personTable.push_back(p);
+	pMap.setBuf(&personTable.back());
 
 	pMap.setBuf(&p);
 
@@ -24,43 +25,51 @@ void Model::insertPerson(Person p)
 	if (dbc != nullptr) 
 	{ 
 		pMap.insertObj(); 
-		//personTable.back().isSynced = 1;
+		personTable.back().isSynced = 1;
 	}
-
-	//pMap.deleteObj();
 };
 
-Person Model::findPerson(Person p, bool isEmpty) 
+Person Model::findPerson(Person p, bool isEmpty, int& ctr) 
 {
 	//ПОКА ЧТО НЕ УЧИТЫВАЕТ isEmpty
 	
 	Person res;
 	
+	ctr = 0;
 	int i = 0;
 	int sz = personTable.size();
-	//bool flag = 0;
+	
+	int sd = 0;
+	int bd = 0;
 
 	//Ищем в СД совпадение по ФИО
-	//Флаг демонстрирует успешность поиска
 	while (i < sz) 
 	{
 		if (p.isEqual(&personTable[i])) 
 		{ 
-			//flag = 1; break; 
 			res = personTable[i];
-			return res;
+			sd++;
 		}
 		i++;
 	}
 	pMap.setBuf(&p);
-	//Если объект был найден в БД и отсутствовал в памяти модели
-	if (dbc != nullptr && pMap.findObj()) 
+	
+	//Если есть совпадения в базе
+	if (dbc != nullptr) 
 	{
-		personTable.push_back(p);
-		res = p;
-		return res;
+		bd = pMap.findObjj();
+		//ctr = ctr + q;
+		
+		if (bd == 1) 
+		{
+			personTable.push_back(p);
+			res = p;
+		}		
+		//return res;
 	}
-	//Если дошли сюда, то нигде такого объекта нет
-	throw - 1;
+
+	ctr = abs(bd - sd);
+
+	return res;
 
 }

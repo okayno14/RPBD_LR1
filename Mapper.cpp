@@ -157,7 +157,7 @@ void PersonMapper::findObj(int id)
 	getIdPhone();
 }
 //ФИО
-bool PersonMapper::findObj()
+int PersonMapper::findObjj()
 
 {
 	SQLLEN a;
@@ -206,7 +206,7 @@ bool PersonMapper::findObj()
 
 	commitTransaction();
 	//Не забудь поправить
-	return res;
+	return a;
 }
 //ФИО+ТЕЛЕФОН
 int PersonMapper::findObj(PhoneNumber* phone)

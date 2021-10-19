@@ -179,7 +179,9 @@ public:
 	void findObj(int id) override;
 
 	//тхн
-	bool findObj() override;
+	int findObjj();
+	
+	bool findObj() { return false; };
 
 	//тхн рекетнм
 	int findObj(PhoneNumber* phone);
@@ -288,7 +290,7 @@ public:
 		void deletePerson(Person p);
 		
 		//тхн
-		Person findPerson(Person p, bool isEmpty);
+		Person findPerson(Person p, bool isEmpty, int& ctr);
 		//тхн рекетнм
 		Person findPerson(Person p, PhoneNumber pn);
 		//тхн рекетнм юдпея
