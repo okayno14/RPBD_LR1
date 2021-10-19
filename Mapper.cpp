@@ -156,6 +156,7 @@ void PersonMapper::findObj(int id)
 
 	getIdPhone();
 }
+//ÔÈÎ
 bool PersonMapper::findObj()
 
 {
@@ -207,6 +208,7 @@ bool PersonMapper::findObj()
 	//Íå çàáóäü ïîïğàâèòü
 	return res;
 }
+//ÔÈÎ+ÒÅËÅÔÎÍ
 bool PersonMapper::findObj(PhoneNumber* phone)
 
 {
@@ -297,6 +299,7 @@ bool PersonMapper::findObj(PhoneNumber* phone)
 	commitTransaction();
 	return res;
 }
+//ÔÈÎ+ÀÄĞÅÑ
 bool PersonMapper::findObj(Address* address)
 
 {
@@ -396,6 +399,7 @@ bool PersonMapper::findObj(Address* address)
 	//Íå çàáóäü ïîïğàâèòü
 	return res;
 }
+//ÔÈÎ+ÒÅËÅÔÎÍ+ÀÄĞÅÑ
 bool PersonMapper::findObj(PhoneNumber* phone, Address* address)
 
 {
@@ -757,6 +761,11 @@ void PersonMapper::updateObj()
 	}
 	//</îáíîâèòü person>
 	commitTransaction();
+}
+bool PersonMapper::findObj(bool)
+{
+		
+	return false;
 };
 
 AddressMapper::AddressMapper(Address* buf)

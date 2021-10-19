@@ -21,6 +21,7 @@ void ConsoleApp::Main_menu_output()
 	cout << "2 - Добавить контакт в тк" << endl;
 	cout << "3 - Редактирование контакта в тк" << endl;
 	cout << "4 - Удаление контакта" << endl;
+	cout << "5 - ЕКСПЕРИМЕНТ\n";
 	cout << "Нажмите 9 для выхода" << endl;
 	cout << "------------------------------------------------" << endl;
 	cout << ">>";
@@ -108,6 +109,14 @@ void ConsoleApp::run()
 		{
 			system("cls");
 			deleteContact();
+			_getwch();
+			system("cls");
+			break;
+		}
+		case 5:
+		{
+			system("cls");
+			con->experiment();
 			_getwch();
 			system("cls");
 			break;

@@ -94,7 +94,29 @@ public:
 		wcscpy_s(this->firstName,firstName);		
 		wcscpy_s(this->fatherName, fatherName);
 	};
+
+	Person() {};
 	
+	bool isEqual(const Person* b) 
+	{
+		const SQLWCHAR* a_lastname = this->lastName;
+		const SQLWCHAR* a_firstname = this->firstName;
+		const SQLWCHAR* a_fathername = this->fatherName;
+
+		const SQLWCHAR* b_lastname = b->lastName;
+		const SQLWCHAR* b_firstname = b->firstName;
+		const SQLWCHAR* b_fathername = b->fatherName;
+
+		if
+		(
+			wcscmp(a_lastname, b_lastname) == 0 &&
+			wcscmp(a_firstname, b_firstname) == 0 &&
+			wcscmp(a_fathername, b_fathername) == 0
+		)
+			return true;
+		else return false;
+
+	}
 
 	bool containPhoneNumber(PhoneNumber* pn);
 		
@@ -153,6 +175,7 @@ public:
 	~PersonMapper() { SQLFreeHandle(SQL_HANDLE_STMT, hstmt); }
 	void setBuf(Person* buf) { this->buf = buf; }
 
+	//ID
 	void findObj(int id) override;
 
 	//тхн
@@ -166,6 +189,9 @@ public:
 
 	// тхн рекетнм юдпея
 	bool findObj(PhoneNumber* phone, Address* address);
+
+	//Empty
+	bool findObj(bool a);
 
 	void insertObj() override;
 
@@ -228,7 +254,19 @@ private:
 	PhoneMapper pnMap;
 	std::vector<Person> personTable;
 	PersonMapper pMap;
+
+	DataBaseConnection* dbc = nullptr;
 public:	
+	Model() 
+	{
+		try
+		{
+			dbc = DataBaseConnection::getInstance();
+		}
+		catch (int err) {}
+	}
+	
+	
 	Person* findPerson() {};
 	void removeRecord() {};
 	void editRecord() {};
@@ -248,7 +286,13 @@ public:
 		void updatePerson(Person pOld, Person fio);
 
 		void deletePerson(Person p);
-		//Person* findPerson()
+		
+		//тхн
+		Person findPerson(Person p, bool isEmpty);
+		//тхн рекетнм
+		Person findPerson(Person p, PhoneNumber pn);
+		//тхн рекетнм юдпея
+		Person findPerson(Person p, PhoneNumber pn, Address add);
 	//</Person>
 	
 	//<Phone>
@@ -257,8 +301,6 @@ public:
 		void deletePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
 		//void findPhone();
 	//</Phone>
-
-
 
 private:
 	Person& findByAllAtributes() {};

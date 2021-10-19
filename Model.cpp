@@ -15,15 +15,52 @@ void Model::addPhone(PhoneNumber pn)
 }
 void Model::insertPerson(Person p)
 {
-	personTable.push_back(p);
-	pMap.setBuf(&personTable.back());
+	//personTable.push_back(p);
+	//pMap.setBuf(&personTable.back());
+
+	pMap.setBuf(&p);
 
 	//Если БД доступна - записать объект
-	if (DataBaseConnection::getInstance()->status != -2) 
+	if (dbc != nullptr) 
 	{ 
 		pMap.insertObj(); 
-		personTable.back().isSynced = 1;
+		//personTable.back().isSynced = 1;
 	}
 
-	pMap.deleteObj();
+	//pMap.deleteObj();
 };
+
+Person Model::findPerson(Person p, bool isEmpty) 
+{
+	//ПОКА ЧТО НЕ УЧИТЫВАЕТ isEmpty
+	
+	Person res;
+	
+	int i = 0;
+	int sz = personTable.size();
+	//bool flag = 0;
+
+	//Ищем в СД совпадение по ФИО
+	//Флаг демонстрирует успешность поиска
+	while (i < sz) 
+	{
+		if (p.isEqual(&personTable[i])) 
+		{ 
+			//flag = 1; break; 
+			res = personTable[i];
+			return res;
+		}
+		i++;
+	}
+	pMap.setBuf(&p);
+	//Если объект был найден в БД и отсутствовал в памяти модели
+	if (dbc != nullptr && pMap.findObj()) 
+	{
+		personTable.push_back(p);
+		res = p;
+		return res;
+	}
+	//Если дошли сюда, то нигде такого объекта нет
+	throw - 1;
+
+}

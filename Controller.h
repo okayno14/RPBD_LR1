@@ -99,4 +99,6 @@ public:
 		SQLWCHAR* firstNameContact,
 		SQLWCHAR* fatherNameContact);
 
+
+	void experiment();
 };

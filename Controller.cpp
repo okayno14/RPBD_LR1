@@ -156,3 +156,22 @@ bool Controller::deleteAddress(
 	return false;
 }
 
+void Controller::experiment() 
+{
+	SQLWCHAR lastname[strSZ];
+	SQLWCHAR firstname[strSZ];
+	SQLWCHAR fathername[strSZ];
+
+	wcscpy_s(lastname, L"Ivanov");
+	wcscpy_s(firstname, L"Ivan");
+	wcscpy_s(fathername, L"Ivanovich");
+
+	Person p(lastname, firstname, fathername);
+
+	Person t;
+	
+	model->insertPerson(p);
+
+	t = model->findPerson(p, false);
+}
+
