@@ -1,6 +1,6 @@
 #include "DataBaseConnection.h"
 
-DataBaseConnection::DataBaseConnection() : status{ 1 }
+DataBaseConnection::DataBaseConnection() : status{ 0 }
 {
 	dsn = (SQLWCHAR*)L"Phonebook";
 	user = (SQLWCHAR*)L"postgres";
@@ -66,11 +66,12 @@ DataBaseConnection* DataBaseConnection::getInstance()
 	try 
 	{
 		if (database_ == nullptr) { database_ = new DataBaseConnection(); }
+		return database_;
 	}
 	catch (std::wstring msg) 
 	{
-		throw msg;
+		//std::wcout << msg << std::endl;
+		int err = -2;
+		throw err;
 	}
-		
-	return database_;
 }

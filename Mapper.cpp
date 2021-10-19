@@ -114,9 +114,13 @@ void PersonMapper::getIdPhone()
 }
 PersonMapper::PersonMapper(Person* buf)
 {
-	this->buf = buf;
-	db = DataBaseConnection::getInstance();
-	retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
+	try
+	{
+		this->buf = buf;
+		db = DataBaseConnection::getInstance();
+		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
+	}
+	catch (int err) {}
 }
 void PersonMapper::findObj(int id)
 
@@ -757,9 +761,13 @@ void PersonMapper::updateObj()
 
 AddressMapper::AddressMapper(Address* buf)
 {
-	this->buf = buf;
-	db = DataBaseConnection::getInstance();
-	retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
+	try 
+	{
+		this->buf = buf;
+		db = DataBaseConnection::getInstance();
+		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
+	}
+	catch (int err) {}
 }
 void AddressMapper::insertObj()
 
@@ -1227,20 +1235,13 @@ bool AddressMapper::findStreet()
 
 PhoneMapper::PhoneMapper(PhoneNumber* buf)
 {
-	this->buf = buf;
-	try { 
-		db = DataBaseConnection::getInstance(); 
+	try
+	{
+		this->buf = buf;
+		db = DataBaseConnection::getInstance();
 		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
 	}
-	catch (std::wstring msg) 
-	{
-		std::wcout << msg;
-		
-	}
-	
-	
-	
-	checkErr();
+	catch (int err) {}
 }
 void PhoneMapper::findObj(int id)
 

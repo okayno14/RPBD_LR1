@@ -210,11 +210,21 @@ private:
 	std::vector<Person> personTable;
 	PersonMapper pMap;
 public:	
-	Person& watchRecord() {};
+	Person* findPerson() {};
 	void removeRecord() {};
 	void editRecord() {};
 	void addRecord();
 	void addPhone(PhoneNumber pn);
+
+	/*insert
+	update
+	delete
+	find*/
+
+	//<Phone>
+		void insertPhone(Person* p, PhoneNumber pn);
+	//</Phone>
+
 private:
 	Person& findByAllAtributes() {};
 	Person& findBy4() {};
