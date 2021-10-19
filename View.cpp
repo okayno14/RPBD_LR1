@@ -21,7 +21,7 @@ void ConsoleApp::Main_menu_output()
 	cout << "2 - Добавить контакт в тк" << endl;
 	cout << "3 - Редактирование контакта в тк" << endl;
 	cout << "4 - Удаление контакта" << endl;
-	cout << "Нажмите 9 для выхода" << endl;
+	cout << "Нажмите 0 для выхода" << endl;
 	cout << "------------------------------------------------" << endl;
 	cout << ">>";
 }
@@ -33,7 +33,7 @@ void ConsoleApp::Find_menu()
 	cout << "1 - Искать адрес по ФИО" << endl;
 	cout << "2 - Искать номер(а) по ФИО" << endl;
 	cout << "3 - Поиск контакта по 4-м символам номера" << endl;
-	cout << "9 - Выход из меню поиска информации" << endl;
+	cout << "0 - Выход из меню поиска информации" << endl;
 	cout << "------------------------------------------------" << endl;
 	cout << ">>";
 }
@@ -62,7 +62,7 @@ void ConsoleApp::setController(Controller* con)
 }
 void ConsoleApp::run()
 {
-	while (MainMenu != 9)
+	while (MainMenu != 0)
 	{
 		Main_menu_output();
 		cin >> MainMenu;
@@ -112,7 +112,7 @@ void ConsoleApp::run()
 			system("cls");
 			break;
 		}
-		case 9: break;
+		case 0: break;
 		}
 	}
 	system("pause");
@@ -144,7 +144,7 @@ void ConsoleApp::runFind(bool findmenu)
 			_getwch();
 			system("cls");
 			break;
-		case 9:
+		case 0:
 			findmenu = false;
 			break;
 		default:
@@ -687,5 +687,27 @@ void ConsoleApp::success()
 {
 	cout << "Success!!!!))" << endl;
 }
+
+void ConsoleApp::fail()
+{
+	cout << "Fail" << endl;
+}
+
+wchar_t* ConsoleApp::get_a_number()
+{
+	wchar_t* numder = new wchar_t[20];
+	cout <<  "Введите номер телефона для дальнейшего поиска контакта" << endl;
+ 	wcin >> numder;
+	return numder;
+}
+
+wchar_t* ConsoleApp::get_a_address()
+{
+	wchar_t* numder = new wchar_t[20];
+	cout << "Введите номер телефона для дальнейшего поиска контакта" << endl;
+	wcin >> numder;
+	return numder;
+}
+
 
 

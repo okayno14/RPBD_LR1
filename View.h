@@ -49,4 +49,9 @@ public:
 	void deleteAddress();
 
 	void success();
+	void fail();
+
+	wchar_t* get_a_number();/*find fio and phoneNumber*/
+	wchar_t* get_a_address();/*find fio and phoneNumber and address*/
+	
 };

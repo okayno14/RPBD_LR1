@@ -98,5 +98,16 @@ public:
 		SQLWCHAR* lastNameContact,
 		SQLWCHAR* firstNameContact,
 		SQLWCHAR* fatherNameContact);
+private:
 
+	Person* find_Person(
+		SQLWCHAR* lastNameContact,
+		SQLWCHAR* firstNameContact,
+		SQLWCHAR* fatherNameContact);
+	Person* find_Person(
+		SQLWCHAR* lastNameContact,
+		SQLWCHAR* firstNameContact,
+		SQLWCHAR* fatherNameContact,
+		SQLWCHAR* phonenumber);
+	Person* find_Person();
 };
