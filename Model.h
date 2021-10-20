@@ -51,6 +51,16 @@ public:
 
 
 	PhoneNumber(int id = -1, int idType = -1);
+
+	bool isEqual(const PhoneNumber* b)
+	{
+		const SQLWCHAR* a_number = this->number;
+		const SQLWCHAR* b_number = b->number;
+
+		if (wcscmp(a_number, b_number) == 0) return true;
+		else return false;
+	};
+
 	SQLINTEGER* getId() { return &id; }
 	friend class PhoneMapper;
 	friend class Model;
@@ -181,6 +191,7 @@ public:
 	//тхн
 	int findObjj();
 	
+	//осяршьйю
 	bool findObj() { return false; };
 
 	//тхн рекетнм
@@ -193,7 +204,7 @@ public:
 	int findObj(PhoneNumber* phone, Address* address);
 
 	//Empty
-	bool findObj(bool a);
+	int findObj(bool a);
 
 	void insertObj() override;
 
@@ -292,7 +303,7 @@ public:
 		//тхн
 		Person findPerson(Person p, bool isEmpty, int& ctr);
 		//тхн рекетнм
-		Person findPerson(Person p, PhoneNumber pn);
+		Person findPerson(Person p, PhoneNumber pn, int& ctr);
 		//тхн рекетнм юдпея
 		Person findPerson(Person p, PhoneNumber pn, Address add);
 	//</Person>
@@ -305,7 +316,7 @@ public:
 	//</Phone>
 
 private:
-	Person& findByAllAtributes() {};
-	Person& findBy4() {};
-	Person& findById() {};
+	//Person& findByAllAtributes() {};
+	//Person& findBy4() {};
+	//Person& findById() {};
 };

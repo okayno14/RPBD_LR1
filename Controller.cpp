@@ -158,22 +158,31 @@ bool Controller::deleteAddress(
 
 void Controller::experiment() 
 {
+	Person t;
+	int q = 0;
+
 	SQLWCHAR lastname[strSZ];
 	SQLWCHAR firstname[strSZ];
 	SQLWCHAR fathername[strSZ];
+
+	/*wcscpy_s(lastname, L"a");
+	wcscpy_s(firstname, L"b");
+	wcscpy_s(fathername, L"c");*/
+
 
 	wcscpy_s(lastname, L"Ivanov");
 	wcscpy_s(firstname, L"Ivan");
 	wcscpy_s(fathername, L"Ivanovich");
 
 	Person p(lastname, firstname, fathername);
-
-	Person t;
+	
 	
 	model->insertPerson(p);
-
-	int q = 0;
 	
 	t = model->findPerson(p, false, q);
+
+	
+
+	//t = model->findPerson(p, true, q);
 }
 

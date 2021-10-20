@@ -31,8 +31,6 @@ void Model::insertPerson(Person p)
 
 Person Model::findPerson(Person p, bool isEmpty, int& ctr) 
 {
-	//ПОКА ЧТО НЕ УЧИТЫВАЕТ isEmpty
-	
 	Person res;
 	
 	ctr = 0;
@@ -41,6 +39,7 @@ Person Model::findPerson(Person p, bool isEmpty, int& ctr)
 	
 	int sd = 0;
 	int bd = 0;
+	int common = 0;
 
 	//Ищем в СД совпадение по ФИО
 	while (i < sz) 
@@ -48,6 +47,7 @@ Person Model::findPerson(Person p, bool isEmpty, int& ctr)
 		if (p.isEqual(&personTable[i])) 
 		{ 
 			res = personTable[i];
+			if (res.isSynced) common++;
 			sd++;
 		}
 		i++;
@@ -57,19 +57,82 @@ Person Model::findPerson(Person p, bool isEmpty, int& ctr)
 	//Если есть совпадения в базе
 	if (dbc != nullptr) 
 	{
-		bd = pMap.findObjj();
-		//ctr = ctr + q;
-		
-		if (bd == 1) 
+		if (isEmpty)
+			bd = pMap.findObj(isEmpty);
+		else		
+			bd = pMap.findObjj();
+	
+		//Если найденный элемент есть только в БД
+		//, то добавляем его в память приложения
+		if (bd == 1 && !res.isEqual(&p)) 
 		{
 			personTable.push_back(p);
-			res = p;
+			personTable.back().isSynced = 1;
+			res = personTable.back();
 		}		
-		//return res;
 	}
 
-	ctr = abs(bd - sd);
+	//Учитываем дублироание объектов в обоих источниках
+	ctr = bd + sd - common;
 
 	return res;
+}
 
+Person Model::findPerson(Person p, PhoneNumber pn, int& ctr) 
+{
+	Person res;
+
+	ctr = 0;
+	int sz = personTable.size();
+
+	int sd = 0;
+	int bd = 0;
+	int common = 0;
+
+	//Ищем в СД совпадение по ФИО
+	for (int i = 0;i<sz;i++) 
+	{
+		//Если совпали ФИО
+		if (p.isEqual(&personTable[i])) 
+		{
+			//Ищем совпадения телефонов
+			for (int j = 0; j < personTable[i].phoneNumbers.size(); j++)
+			{
+				//Совпало имя и телефон
+				if (personTable[i].phoneNumbers[j]->isEqual(&pn))
+				{
+					res = p;
+					if (res.isSynced) common++;
+					sd++;
+				}
+			}
+		}
+	}
+
+	pMap.setBuf(&p);
+
+	//Если есть совпадения в базе
+	if (dbc != nullptr)
+	{
+		bd = pMap.findObj(&pn);
+
+		//Если найденный элемент есть только в БД,
+		//то добавляем его в память приложения
+		if (bd == 1 && !res.isEqual(&p))
+		{
+			//имеем контакт и список id его телефонов
+			//необходмо запустить поиск телефонов, который
+			//ищет по id в СД
+			//если не совпал, то обращается к PhoneMapper
+
+			personTable.push_back(p);
+			personTable.back().isSynced = 1;
+			res = personTable.back();
+		}
+	}
+
+	//Учитываем дублироание объектов в обоих источниках
+	ctr = bd + sd - common;
+
+	return res;
 }

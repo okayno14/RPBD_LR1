@@ -25,6 +25,7 @@ void AbstractMapper::checkErr()
 			SQL_MAX_MESSAGE_LENGTH,
 			&infoL);
 		cerr << info << std::endl;
+		std::wcout << cerr.str() << std::endl;
 		throw cerr.str();
 	}
 }
@@ -762,10 +763,83 @@ void PersonMapper::updateObj()
 	//</обновить person>
 	commitTransaction();
 }
-bool PersonMapper::findObj(bool)
+int PersonMapper::findObj(bool q)
 {
-		
-	return false;
+	SQLLEN a;
+	bool res = false;
+	statementText =
+		(SQLWCHAR*)L"SELECT person.id FROM person, persone_number"
+		" WHERE"
+		" person.lastname = ? AND"
+		" person.firstname = ? AND"
+		" person.fathername = ? AND"
+		" person.id = persone_number.idPerson";
+
+
+	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+	checkErr();
+
+	bindNamePar();
+
+	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+	checkErr();
+
+	retcode = SQLExecute(hstmt);
+	checkErr();
+
+	retcode = SQLRowCount(hstmt, &a);
+	checkErr();
+
+
+	retcode = SQLCloseCursor(hstmt);
+	checkErr();
+
+	if (a == 0)
+	{
+		statementText =
+			(SQLWCHAR*)L"SELECT id"
+			" FROM person as p"
+			" WHERE"
+			" p.lastname = ? AND"
+			" p.firstname = ? AND"
+			" p.fathername = ? AND"
+			" p.idAddress is NULL";
+
+
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		bindNamePar();
+
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		retcode = SQLRowCount(hstmt, &a);
+		checkErr();
+
+
+		if (a == 1) 
+		{
+			retcode = SQLFetch(hstmt);
+			checkErr();
+			
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+
+		}
+		else 
+		{
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		}
+	}
+
+	commitTransaction();
+	//Не забудь поправить
+	return a;
 };
 
 AddressMapper::AddressMapper(Address* buf)
