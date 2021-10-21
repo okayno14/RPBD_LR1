@@ -257,9 +257,13 @@ public:
 	void updateObj() override;
 };
 
+//Óáğàòü
+class Controler;
 
 class Model 
 {
+	//óáğàòü
+	friend class Controller;
 private:
 	std::vector<Address> addressTable;
 	AddressMapper adMap;
@@ -292,6 +296,12 @@ public:
 	find*/
 
 	//<Person>
+private:
+		void sync();
+		void upload(Person* p);
+		void download(Person* p);
+
+public:
 		void insertPerson(Person p);
 		
 		void updatePerson(Person pOld, Address add);
@@ -301,11 +311,11 @@ public:
 		void deletePerson(Person p);
 		
 		//ÔÈÎ
-		Person findPerson(Person p, bool isEmpty, int& ctr);
+		Person& findPerson(Person p, bool isEmpty, int& ctr);
 		//ÔÈÎ ÒÅËÅÔÎÍ
-		Person findPerson(Person p, PhoneNumber pn, int& ctr);
+		Person& findPerson(Person p, PhoneNumber pn, int& ctr);
 		//ÔÈÎ ÒÅËÅÔÎÍ ÀÄĞÅÑ
-		Person findPerson(Person p, PhoneNumber pn, Address add);
+		Person& findPerson(Person p, PhoneNumber pn, Address add);
 	//</Person>
 	
 	//<Phone>
