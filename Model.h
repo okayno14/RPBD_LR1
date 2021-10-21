@@ -5,6 +5,7 @@
 #include <sql.h>
 #include <iostream>
 #include <sstream>
+#include <list>
 #include <vector>
 #include <cstring>
 
@@ -265,11 +266,11 @@ class Model
 	//убрать
 	friend class Controller;
 private:
-	std::vector<Address> addressTable;
+	std::list<Address> addressTable;
 	AddressMapper adMap;
-	std::vector<PhoneNumber> phoneNumberTable;
+	std::list<PhoneNumber> phoneNumberTable;
 	PhoneMapper pnMap;
-	std::vector<Person> personTable;
+	std::list<Person> personTable;
 	PersonMapper pMap;
 
 	DataBaseConnection* dbc = nullptr;

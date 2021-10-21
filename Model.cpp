@@ -32,18 +32,20 @@ void Model::insertPerson(Person p)
 void Model::download(Person* p)
 {
 	//адреса
-	int i = 0;
 	int count = 0;
-	while (i < addressTable.size()) 
+
+	std::list<Address>::iterator it = addressTable.begin();
+	while (it != addressTable.end()) 
 	{
+				
 		//Если нашёлся адрес по id в СД
-		if (addressTable[i].id == p->idAddress) 
+		if ((*it).id == p->idAddress)
 		{
-			p->address = &addressTable[i];
+			p->address = &(*it);
 			count++;
 			break;
 		}
-		i++;
+		it++;
 	}
 	//Адреса в памяти нет
 	if (count == 0) 
@@ -61,19 +63,21 @@ void Model::download(Person* p)
 	//цикл обхода id телефонов
 	for (int i = 0; i < p->idPhones.size(); i++) 
 	{
-		int j = 0;
 		count = 0;
 		int id = p->idPhones[i];
-		while (j < phoneNumberTable.size())
+
+		std::list<PhoneNumber>::iterator jt = phoneNumberTable.begin();
+		
+		while (jt != phoneNumberTable.end())
 		{
 			//Если нашёлся телефон по id в СД
-			if (phoneNumberTable[j].id == id)
+			if ((*jt).id == id)
 			{
-				p->phoneNumbers.push_back(&phoneNumberTable[j]);
+				p->phoneNumbers.push_back(&(*jt));
 				count++;
 				break;
 			}
-			j++;
+			jt++;
 		}
 		//Телефона в памяти нет
 		if (count == 0)
@@ -83,8 +87,6 @@ void Model::download(Person* p)
 			pnMap.setBuf(&pn);
 			pnMap.findObj(id);
 			phoneNumberTable.push_back(pn);
-			//PhoneNumber* ptr= &phoneNumberTable.back();
-			//p->phoneNumbers.push_back(&phoneNumberTable.back());
 			p->phoneNumbers.push_back(&phoneNumberTable.back());
 		}
 		p->phoneNumbers.back()->isSynced = 1;
@@ -134,17 +136,17 @@ void Model::upload(Person* p)
 
 void Model::sync() 
 {
-	for (int i = 0; i < personTable.size(); i++) 
+	for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end();++i) 
 	{
-		if (!personTable[i].isSynced) 
+		if (! (*i).isSynced) 
 		{
-			pMap.setBuf(&personTable[i]);
+			pMap.setBuf(&(*i));
 			
 			//Подготовка вторичных сущностей к загрузке
-			upload(&personTable[i]);
+			upload(&(*i));
 			
 			//состояние 01
-			if (personTable[i].id == -1) 
+			if ((*i).id == -1)
 			{
 				pMap.insertObj();
 			}
@@ -153,7 +155,7 @@ void Model::sync()
 			{
 				pMap.updateObj();
 			}
-			personTable[i].isSynced = 1;
+			(*i).isSynced = 1;
 		}
 	}
 };
@@ -179,14 +181,14 @@ Person& Model::findPerson(Person p, bool isEmpty, int& ctr)
 	int bd = 0;
 
 	//Ищем в СД совпадение по ФИО
-	while (i < sz) 
+	
+	for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i) 
 	{
-		if (p.isEqual(&personTable[i])) 
-		{ 
-			res = &personTable[i];
+		if (p.isEqual(&(*i))) 
+		{
+			res = &(*i);
 			sd++;
 		}
-		i++;
 	}
 	
 	//Онлайн-часть
@@ -244,16 +246,17 @@ Person& Model::findPerson(Person p, PhoneNumber pn, int& ctr)
 	int common = 0;
 
 	//Ищем в СД совпадение по ФИО
-	for (int i = 0;i<sz;i++) 
+
+	for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
 	{
 		//Если совпали ФИО
-		if (p.isEqual(&personTable[i])) 
+		if (p.isEqual(&(*i))) 
 		{
 			//Ищем совпадения телефонов
-			for (int j = 0; j < personTable[i].phoneNumbers.size(); j++)
+			for (int j = 0; j < (*i).phoneNumbers.size(); j++)
 			{
 				//Совпало имя и телефон
-				if (personTable[i].phoneNumbers[j]->isEqual(&pn))
+				if ((*i).phoneNumbers[j]->isEqual(&pn))
 				{
 					res = p;
 					if (res.isSynced) common++;
