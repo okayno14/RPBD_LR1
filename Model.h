@@ -13,12 +13,18 @@
 
 #define strSZ 20
 
-
-
+class Model;
+class AddressMapper;
+class PhoneMapper;
+class PersonMapper;
 
 class Address
 {
-public:
+	friend class AddressMapper;
+	friend class PersonMapper;
+	friend class Model;
+	
+private:
 	SQLWCHAR streetName[strSZ];
 	SQLLEN streetNameLen;
 
@@ -27,13 +33,6 @@ public:
 
 	SQLINTEGER appartement;
 	SQLLEN appartementLen;
-
-	Address(int id = -1, int idStreet = -1);
-	
-	friend class AddressMapper;
-	friend class Model;
-private:
-	
 	
 	SQLINTEGER id;
 	SQLLEN idLen;
@@ -42,14 +41,33 @@ private:
 	SQLLEN idStreetLen;
 
 	bool isSynced = false;
+
+public:
+	Address(int id = -1, int idStreet = -1);
 };
 
 class PhoneNumber
 {
-public:
-	SQLWCHAR number[strSZ];
-	SQLWCHAR typeName[strSZ];
+	friend class PhoneMapper;
+	friend class Model;
+	friend class PersonMapper;
+	
+private:
+	SQLINTEGER id;
+	SQLLEN idLen;
 
+	SQLINTEGER idType;
+	SQLLEN idTypeLen;
+
+	SQLWCHAR number[strSZ];
+	SQLLEN numberLen;
+
+	SQLWCHAR typeName[strSZ];
+	SQLLEN typeNameLen;
+
+	bool isSynced = false;
+
+public:
 
 	PhoneNumber(int id = -1, int idType = -1);
 
@@ -63,17 +81,6 @@ public:
 	};
 
 	SQLINTEGER* getId() { return &id; }
-	friend class PhoneMapper;
-	friend class Model;
-	//private:
-	SQLINTEGER id;
-	SQLLEN idLen;
-	SQLINTEGER idType;
-	SQLLEN idTypeLen;
-	SQLLEN numberLen;
-	SQLLEN typeNameLen;
-
-	bool isSynced = false;
 };
 
 class Person
@@ -95,6 +102,16 @@ private:
 	SQLINTEGER phoneCount;
 
 	std::vector<PhoneNumber*> phoneNumbers;
+	
+	SQLINTEGER id = -1;
+	SQLLEN idLen;
+
+	SQLINTEGER idAddress = -1;
+	SQLLEN idAddressLen;
+
+	std::vector<SQLINTEGER> idPhones;
+	//≈ÒÎË ÌÂ ÔÓÍ‡ÚËÚ, ÚÓ Ò‰ÂÎ‡Ú¸ ‚ÂÍÚÓ SQLLEN
+	SQLLEN idPhone;
 
 	bool isSynced = false;
 
@@ -130,35 +147,10 @@ public:
 	}
 
 	bool containPhoneNumber(PhoneNumber* pn);
-		
-	
-
-private:
-	SQLINTEGER id = -1;
-	SQLLEN idLen;
-
-	SQLINTEGER idAddress = -1;
-	SQLLEN idAddressLen;
-
-
-	std::vector<SQLINTEGER> idPhones;
-	//≈ÒÎË ÌÂ ÔÓÍ‡ÚËÚ, ÚÓ Ò‰ÂÎ‡Ú¸ ‚ÂÍÚÓ SQLLEN
-	SQLLEN idPhone;
-
-	
-	
-
 };
 
 class AbstractMapper
 {
-public:
-	virtual void insertObj() {};
-	virtual void updateObj() {};
-	virtual void deleteObj() {};
-	virtual void findObj(int id) {};
-	virtual bool findObj() = 0;
-
 protected:
 	SQLRETURN retcode;
 	SQLHSTMT hstmt;
@@ -170,6 +162,15 @@ protected:
 	SQLWCHAR* statementText;
 
 	std::wstringstream cerr;
+
+public:
+	virtual void insertObj() {};
+	virtual void updateObj() {};
+	virtual void deleteObj() {};
+	virtual void findObj(int id) {};
+	virtual bool findObj() = 0;
+
+protected:
 	void checkErr();
 	void commitTransaction();
 	void rollbackTransaction();
@@ -268,8 +269,10 @@ class Model
 private:
 	std::list<Address> addressTable;
 	AddressMapper adMap;
+	
 	std::list<PhoneNumber> phoneNumberTable;
 	PhoneMapper pnMap;
+	
 	std::list<Person> personTable;
 	PersonMapper pMap;
 
@@ -296,37 +299,34 @@ public:
 	delete
 	find*/
 
-	//<Person>
+	void insertPerson(Person p);
+
+	void updatePerson(Person pOld, Address add);
+	void updatePerson(Person pOld, PhoneNumber pn);
+	void updatePerson(Person pOld, Person fio);
+
+	void deletePerson(Person p);
+
+	//‘»Œ
+	Person& findPerson(Person p, bool isEmpty, int& ctr);
+	//‘»Œ “≈À≈‘ŒÕ
+	Person& findPerson(Person p, PhoneNumber pn, int& ctr);
+	//‘»Œ “≈À≈‘ŒÕ ¿ƒ–≈—
+	Person& findPerson(Person p, PhoneNumber pn, Address add);
+	//</Person>
+
+	//<Phone>
+	void insertPhone(Person* p, PhoneNumber pn);
+	void updatePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
+	void deletePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
+	//void findPhone();
+//</Phone>
+
 private:
 		void sync();
 		void upload(Person* p);
 		void download(Person* p);
 
-public:
-		void insertPerson(Person p);
-		
-		void updatePerson(Person pOld, Address add);
-		void updatePerson(Person pOld, PhoneNumber pn);
-		void updatePerson(Person pOld, Person fio);
-
-		void deletePerson(Person p);
-		
-		//‘»Œ
-		Person& findPerson(Person p, bool isEmpty, int& ctr);
-		//‘»Œ “≈À≈‘ŒÕ
-		Person& findPerson(Person p, PhoneNumber pn, int& ctr);
-		//‘»Œ “≈À≈‘ŒÕ ¿ƒ–≈—
-		Person& findPerson(Person p, PhoneNumber pn, Address add);
-	//</Person>
-	
-	//<Phone>
-		void insertPhone(Person* p, PhoneNumber pn);
-		void updatePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
-		void deletePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
-		//void findPhone();
-	//</Phone>
-
-private:
 	//Person& findByAllAtributes() {};
 	//Person& findBy4() {};
 	//Person& findById() {};

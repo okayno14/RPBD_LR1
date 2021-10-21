@@ -51,13 +51,13 @@ bool Controller::addPhoneNumberContact(
 	SQLWCHAR* fatherNameContact,
 	SQLWCHAR* number, int type)
 {
-	PhoneNumber pn;
-	wcscpy_s(pn.number,number);
-	pn.idType = type;
+	//PhoneNumber pn;
+	//wcscpy_s(pn.number,number);
+	//pn.idType = type;
 
-	model->addPhone(pn);
+	//model->addPhone(pn);
 
-	this->consoleApp->success();
+	//this->consoleApp->success();
 	
 	return false;
 }
@@ -175,7 +175,7 @@ void Controller::experiment()
 	wcscpy_s(fathername, L"Ivanovich");
 
 	Person p(lastname, firstname, fathername);
-	//model->personTable.push_back(p);
+	model->personTable.push_back(p);
 
 	wcscpy_s(lastname, L"a");
 	Person pp(lastname, firstname, fathername);
@@ -192,9 +192,9 @@ void Controller::experiment()
 	//model->dbc = nullptr;
 	//model->insertPerson(p);
 	
-	//t = &model->findPerson(p, false, q);
+	t = &model->findPerson(p, false, q);
 
-	t = &model->findPerson(Gromova, false, q);
+	//t = &model->findPerson(Gromova, false, q);
 
 	//t = model->findPerson(p, true, q);
 }
