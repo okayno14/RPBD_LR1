@@ -133,30 +133,35 @@ void Model::upload(Person* p)
 
 };
 
-void Model::sync() 
+void Model::syncAll() 
 {
 	for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end();++i) 
 	{
-		if (! (*i).isSynced) 
-		{
-			pMap.setBuf(&(*i));
-			
-			//Подготовка вторичных сущностей к загрузке
-			upload(&(*i));
-			
-			//состояние 01
-			if ((*i).id == -1)
-			{
-				pMap.insertObj();
-			}
-			//состояние 12
-			else 
-			{
-				pMap.updateObj();
-			}
-			(*i).isSynced = 1;
-		}
+		sync(&(*i));
 	}
+};
+
+void Model::sync( Person* p)
+{
+	if (!p->isSynced)
+	{
+		pMap.setBuf(p);
+
+		//Подготовка вторичных сущностей к загрузке
+		upload(p);
+
+		//состояние 01
+		if (p->id == -1)
+		{
+			pMap.insertObj();
+		}
+		//состояние 12
+		else
+		{
+			pMap.updateObj();
+		}
+		p->isSynced = 1;
+	}	
 };
 
 //Метод делает атомарную операцию поиска 1 контакта.
@@ -193,7 +198,7 @@ Person& Model::findPerson(Person p, bool isEmpty, int& ctr)
 	if (dbc != nullptr) 
 	{
 		//вызов синхронизации
-		sync();
+		syncAll();
 		
 		pMap.setBuf(&p);
 		if (isEmpty)
@@ -259,7 +264,7 @@ Person& Model::findPerson(Person p, PhoneNumber pn, int& ctr)
 	if (dbc != nullptr)
 	{
 		//вызов синхронизации
-		sync();
+		syncAll();
 
 		pMap.setBuf(&p);
 		/*bd = pMap.findObjj();*/
@@ -322,7 +327,7 @@ Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
 	if (dbc != nullptr)
 	{
 		//вызов синхронизации
-		sync();
+		syncAll();
 
 		pMap.setBuf(&p);
 		//bd = pMap.findObj(&pn);

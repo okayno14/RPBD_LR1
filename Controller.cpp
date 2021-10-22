@@ -158,12 +158,12 @@ bool Controller::deleteAddress(
 
 void Controller::experiment() 
 {
-	//testFindPhone01(true);
+	testFindPhone01(true);
 	//testFindPhone10();
 
 	//testFindPhoneNameErr();
 	//testFindPhoneAddress01(false);
-	testFindPhoneAddress10();
+	//testFindPhoneAddress10();
 }
 
 //01 - загрузка из памяти

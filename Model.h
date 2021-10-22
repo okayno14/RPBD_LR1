@@ -386,7 +386,8 @@ public:
 	//</Phone>
 
 private:
-		void sync();
+		void syncAll();
+		void sync(Person* p);
 		void upload(Person* p);
 		void download(Person* p);
 
