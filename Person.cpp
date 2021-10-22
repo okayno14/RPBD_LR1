@@ -4,7 +4,7 @@ bool Person::containPhoneNumber(PhoneNumber* pn)
 {
 	for (int i = 0; i < phoneNumbers.size(); i++)
 	{
-		if (pn == phoneNumbers[i]) return true;
+		if (phoneNumbers[i]->isEqual(pn)) return true;
 	}
 	return false;
 }

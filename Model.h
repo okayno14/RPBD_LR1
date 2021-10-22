@@ -34,10 +34,10 @@ private:
 	SQLINTEGER appartement;
 	SQLLEN appartementLen;
 	
-	SQLINTEGER id;
+	SQLINTEGER id = -1;
 	SQLLEN idLen;
 
-	SQLINTEGER idStreet;
+	SQLINTEGER idStreet = -1;
 	SQLLEN idStreetLen;
 
 	bool isSynced = false;
@@ -53,10 +53,10 @@ class PhoneNumber
 	friend class PersonMapper;
 	
 private:
-	SQLINTEGER id;
+	SQLINTEGER id = -1;
 	SQLLEN idLen;
 
-	SQLINTEGER idType;
+	SQLINTEGER idType = -1;
 	SQLLEN idTypeLen;
 
 	SQLWCHAR number[strSZ];
@@ -71,6 +71,30 @@ public:
 
 	PhoneNumber(int id = -1, int idType = -1);
 
+	PhoneNumber(SQLWCHAR* number, int type) 
+	{
+		wcscpy_s(this->number, number);
+		this->idType = type;
+		switch (type) 
+		{
+			case 1: 
+			{
+				wcscpy_s(this->typeName, L"mobile");
+				break;
+			}
+			case 2:
+			{
+				wcscpy_s(this->typeName, L"work");
+				break;
+			}
+			case 3:
+			{
+				wcscpy_s(this->typeName, L"home");
+				break;
+			}
+		}
+	}
+
 	bool isEqual(const PhoneNumber* b)
 	{
 		const SQLWCHAR* a_number = this->number;
@@ -80,7 +104,7 @@ public:
 		else return false;
 	};
 
-	SQLINTEGER* getId() { return &id; }
+	SQLINTEGER getId() { return id; }
 };
 
 class Person
@@ -143,10 +167,15 @@ public:
 		)
 			return true;
 		else return false;
-
 	}
 
 	bool containPhoneNumber(PhoneNumber* pn);
+
+	void setPhoneNumber(PhoneNumber* pn) 
+	{
+		this->phoneNumbers.push_back(pn);
+		this->idPhones.push_back( phoneNumbers.back()->getId());
+	};
 };
 
 class AbstractMapper
@@ -285,8 +314,7 @@ public:
 			dbc = DataBaseConnection::getInstance();
 		}
 		catch (int err) {}
-	}
-	
+	}	
 	
 	Person* findPerson() {};
 	void removeRecord() {};
@@ -299,28 +327,29 @@ public:
 	delete
 	find*/
 
-	void insertPerson(Person p);
+	//<Person>
+		void insertPerson(Person p);
 
-	void updatePerson(Person pOld, Address add);
-	void updatePerson(Person pOld, PhoneNumber pn);
-	void updatePerson(Person pOld, Person fio);
+		void updatePerson(Person pOld, Address add);
+		void updatePerson(Person pOld, PhoneNumber pn);
+		void updatePerson(Person pOld, Person fio);
 
-	void deletePerson(Person p);
+		void deletePerson(Person p);
 
-	//тхн
-	Person& findPerson(Person p, bool isEmpty, int& ctr);
-	//тхн рекетнм
-	Person& findPerson(Person p, PhoneNumber pn, int& ctr);
-	//тхн рекетнм юдпея
-	Person& findPerson(Person p, PhoneNumber pn, Address add);
+		//тхн
+		Person& findPerson(Person p, bool isEmpty, int& ctr);
+		//тхн рекетнм
+		Person& findPerson(Person p, PhoneNumber pn, int& ctr);
+		//тхн рекетнм юдпея
+		Person& findPerson(Person p, PhoneNumber pn, Address add);
 	//</Person>
 
 	//<Phone>
-	void insertPhone(Person* p, PhoneNumber pn);
-	void updatePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
-	void deletePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
-	//void findPhone();
-//</Phone>
+		void insertPhone(Person* p, PhoneNumber pn);
+		void updatePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
+		void deletePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
+		//void findPhone();
+	//</Phone>
 
 private:
 		void sync();

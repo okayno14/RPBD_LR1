@@ -103,7 +103,7 @@ void PersonMapper::getIdPhone()
 	checkErr();
 
 	buf->phoneCount = a;
-	if (a > 1)
+	if (a > 0)
 	{
 		while (retcode = SQLFetch(hstmt) != SQL_NO_DATA)
 		{
@@ -211,11 +211,10 @@ int PersonMapper::findObjj()
 }
 //тхн+рекетнм
 int PersonMapper::findObj(PhoneNumber* phone)
-
 {
-	if (!buf->containPhoneNumber(phone)) return false;
+	/*if (!buf->containPhoneNumber(phone)) 
+		return 0;*/
 	SQLLEN a;
-	bool res = false;
 	statementText =
 		(SQLWCHAR*)
 		L" SELECT "
@@ -226,11 +225,7 @@ int PersonMapper::findObj(PhoneNumber* phone)
 		" 	person.fathername AS fathername,"
 		" 	persone_number.idPhone AS number,"
 		" 	phoneNumber.idtype,"
-		" 	phoneNumber.number,"
-		" 	address.idstreet,"
-		" 	address.home,"
-		" 	address.appartement,"
-		" 	street.streetname"
+		" 	phoneNumber.number"
 		" FROM"
 		" 	person INNER JOIN persone_number"
 		" 	ON"
@@ -238,12 +233,6 @@ int PersonMapper::findObj(PhoneNumber* phone)
 		" 	INNER JOIN phonenumber"
 		" 	ON "
 		" 		persone_number.idPhone = phoneNumber.id"
-		" 	INNER JOIN address"
-		" 	ON"
-		" 		person.idAddress = address.id"
-		" 	INNER JOIN street"
-		" 	ON"
-		" 		address.idstreet = street.id"
 		" WHERE "
 		" lastname = ? and"
 		" firstname = ? and"
@@ -281,8 +270,6 @@ int PersonMapper::findObj(PhoneNumber* phone)
 
 	if (a != 1)
 	{
-		res = false;
-
 		retcode = SQLCloseCursor(hstmt);
 		checkErr();
 	}
@@ -295,7 +282,6 @@ int PersonMapper::findObj(PhoneNumber* phone)
 		checkErr();
 
 		getIdPhone();
-		res = true;
 	}
 	commitTransaction();
 	return a;

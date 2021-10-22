@@ -158,44 +158,97 @@ bool Controller::deleteAddress(
 
 void Controller::experiment() 
 {
-	Person* t;
-	int q = 0;
+	//testFindPhone01(true);
+	//testFindPhone10();
 
+	//testFindPhoneNameErr();
+}
+
+//01 - загрузка из памяти
+void Controller::testFindPhone01(bool isOnline) 
+{
+	if(!isOnline) 
+		model->dbc = nullptr;
+	
 	SQLWCHAR lastname[strSZ];
 	SQLWCHAR firstname[strSZ];
 	SQLWCHAR fathername[strSZ];
-
-	/*wcscpy_s(lastname, L"a");
-	wcscpy_s(firstname, L"b");
-	wcscpy_s(fathername, L"c");*/
-
 
 	wcscpy_s(lastname, L"Ivanov");
 	wcscpy_s(firstname, L"Ivan");
 	wcscpy_s(fathername, L"Ivanovich");
 
-	Person p(lastname, firstname, fathername);
+	SQLWCHAR phoneNumber[strSZ];
+	
+	wcscpy_s(phoneNumber,L"228");
+	
+	int type = 1;
+
+	//инициализаця контакта и телефона
+	PhoneNumber pn(phoneNumber, type);
+	Person p(lastname,firstname,fathername);
+
+	//вставка объектов в справочники модели, обходя insert()
 	model->personTable.push_back(p);
+	model->phoneNumberTable.push_back(pn);
 
-	wcscpy_s(lastname, L"a");
-	Person pp(lastname, firstname, fathername);
-	
+	//вставленному контакту привязываем указатель вставленного в справочник телефона
+	model->personTable.back().setPhoneNumber(&model->phoneNumberTable.back());	
 
-	wcscpy_s(lastname, L"Gromova");
-	wcscpy_s(firstname, L"Anna");
-	wcscpy_s(fathername, L"Timofeevna");
-	Person Gromova(lastname, firstname, fathername);
-	
-	//model->insertPerson(p);
+	Person* t;
 
-	
-	//model->dbc = nullptr;
-	//model->insertPerson(p);
-	
-	t = &model->findPerson(p, false, q);
-
-	//t = &model->findPerson(Gromova, false, q);
-
-	//t = model->findPerson(p, true, q);
+	int q = 0;
+	t = &model->findPerson(p, pn, q);
 }
 
+void Controller::testFindPhone10() 
+{
+	SQLWCHAR lastname[strSZ];
+	SQLWCHAR firstname[strSZ];
+	SQLWCHAR fathername[strSZ];
+
+	wcscpy_s(lastname, L"Ivanov");
+	wcscpy_s(firstname, L"Ivan");
+	wcscpy_s(fathername, L"Ivanovich");
+
+	SQLWCHAR phoneNumber[strSZ];
+
+	wcscpy_s(phoneNumber, L"228");
+
+	int type = 1;
+
+	//инициализаця контакта и телефона
+	PhoneNumber pn(phoneNumber, type);
+	Person p(lastname, firstname, fathername);
+
+	Person* t;
+
+	int q = 0;
+	t = &model->findPerson(p, pn, q);
+}
+
+void Controller::testFindPhoneNameErr() 
+{
+	SQLWCHAR lastname[strSZ];
+	SQLWCHAR firstname[strSZ];
+	SQLWCHAR fathername[strSZ];
+
+	wcscpy_s(lastname, L"Ivfffffeanov");
+	wcscpy_s(firstname, L"Ivan");
+	wcscpy_s(fathername, L"Ivanovich");
+
+	SQLWCHAR phoneNumber[strSZ];
+
+	wcscpy_s(phoneNumber, L"228");
+
+	int type = 1;
+
+	//инициализаця контакта и телефона
+	PhoneNumber pn(phoneNumber, type);
+	Person p(lastname, firstname, fathername);
+
+	Person* t;
+
+	int q = 0;
+	t = &model->findPerson(p, pn, q);
+}

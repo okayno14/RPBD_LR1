@@ -95,7 +95,6 @@ void Model::download(Person* p)
 
 void Model::upload(Person* p)
 {
-
 	//Работа с телефонами
 	for (int i = 0; i < p->phoneNumbers.size(); i++) 
 	{
@@ -169,7 +168,6 @@ void Model::sync()
 Person& Model::findPerson(Person p, bool isEmpty, int& ctr) 
 {
 	//Общая часть
-	//Person* res = &personTable.front();
 	Person* res = &p;
 	
 	ctr = 0;
@@ -235,60 +233,62 @@ Person& Model::findPerson(Person p, bool isEmpty, int& ctr)
 //НЕ ЮЗАТЬ, ОН КРИВОЙ
 Person& Model::findPerson(Person p, PhoneNumber pn, int& ctr) 
 {
-	Person res;
+	//Общая часть
+	Person* res = &p;
 
 	ctr = 0;
+	int i = 0;
 	int sz = personTable.size();
 
 	int sd = 0;
 	int bd = 0;
-	int common = 0;
 
-	//Ищем в СД совпадение по ФИО
+	//Ищем в СД совпадение по ФИО и ТЕЛЕФОНУ
 
 	for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
 	{
-		//Если совпали ФИО
-		if (p.isEqual(&(*i))) 
+		if (p.isEqual(&(*i)) && (*i).containPhoneNumber(&pn))
 		{
-			//Ищем совпадения телефонов
-			for (int j = 0; j < (*i).phoneNumbers.size(); j++)
-			{
-				//Совпало имя и телефон
-				if ((*i).phoneNumbers[j]->isEqual(&pn))
-				{
-					res = p;
-					if (res.isSynced) common++;
-					sd++;
-				}
-			}
+			res = &(*i);
+			sd++;
 		}
 	}
 
-	pMap.setBuf(&p);
-
-	//Если есть совпадения в базе
+	//Онлайн-часть
+	//Поиск совпадений в базе
 	if (dbc != nullptr)
 	{
+		//вызов синхронизации
+		sync();
+
+		pMap.setBuf(&p);
+		/*bd = pMap.findObjj();*/
 		bd = pMap.findObj(&pn);
 
-		//Если найденный элемент есть только в БД,
-		//то добавляем его в память приложения
-		if (bd == 1 && !res.isEqual(&p))
+		//Если найденный элемент есть только в БД
+		//, то добавляем его в память приложения
+		if (bd == 1 && sd == 0)
 		{
-			//имеем контакт и список id его телефонов
-			//необходмо запустить поиск телефонов, который
-			//ищет по id в СД
-			//если не совпал, то обращается к PhoneMapper
-
+			//сделать вспомогательный метод загрузки
+			//контакта из БД
 			personTable.push_back(p);
+			//работа со второстепенными атрибутами
+			download(&personTable.back());
 			personTable.back().isSynced = 1;
-			res = personTable.back();
+			res = &personTable.back();
 		}
+
+		//если найденный объект находится в бд и сд
+		if (bd == sd && bd == 1)
+			ctr = 1;
+		else
+			ctr = bd - sd;
+		return *res;
 	}
-
-	//Учитываем дублироание объектов в обоих источниках
-	ctr = bd + sd - common;
-
-	return res;
+	else
+	{
+		//Офлайн часть
+		ctr = sd;
+		return *res;
+	}
 }
