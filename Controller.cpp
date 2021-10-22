@@ -158,12 +158,14 @@ bool Controller::deleteAddress(
 
 void Controller::experiment() 
 {
-	testFindPhone01(true);
+	//testFindPhone01(true);
 	//testFindPhone10();
 
 	//testFindPhoneNameErr();
 	//testFindPhoneAddress01(false);
 	//testFindPhoneAddress10();
+
+	testUpdate();
 }
 
 //01 - загрузка из памяти
@@ -330,3 +332,32 @@ void Controller::testFindPhoneAddress10()
 	int q = 0;
 	t = &model->findPerson(p, pn, add, q);
 }
+
+void Controller::testUpdate()
+{
+	model->dbc = nullptr;
+
+	SQLWCHAR lastname[strSZ];
+	SQLWCHAR firstname[strSZ];
+	SQLWCHAR fathername[strSZ];
+
+	wcscpy_s(lastname, L"Ivanov");
+	wcscpy_s(firstname, L"Ivan");
+	wcscpy_s(fathername, L"Ivanovich");
+
+	Person p(lastname, firstname, fathername);
+	
+	Person* f = nullptr;
+	f = &model->insertPerson(p);
+
+	SQLWCHAR streetName[strSZ];
+	wcscpy_s(streetName, L"Ivanova");
+
+	Address add(streetName, 1,2);
+
+	Person copy = p;
+
+	copy.setAddress(&add);
+
+	model->updatePerson(f, copy);
+};

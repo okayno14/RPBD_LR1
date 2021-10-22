@@ -14,19 +14,17 @@ void Model::addPhone(PhoneNumber pn)
 	pnMap.insertObj();
 	pnMap.deleteObj();*/
 }
-void Model::insertPerson(Person p)
+Person& Model::insertPerson(Person p)
 {
-	personTable.push_back(p);
-	pMap.setBuf(&personTable.back());
-
-	pMap.setBuf(&p);
+	personTable.push_back(p);	
 
 	//Если БД доступна - записать объект
 	if (dbc != nullptr) 
 	{ 
-		pMap.insertObj(); 
-		personTable.back().isSynced = 1;
+		sync(&personTable.back());
 	}
+
+	return personTable.back();
 };
 
 void Model::download(Person* p)
@@ -130,10 +128,37 @@ void Model::upload(Person* p)
 		adMap.setBuf(p->address);
 		adMap.updateObj();
 	}
-
 };
 
-void Model::syncAll() 
+PhoneNumber& Model::findPhone(PhoneNumber pn, int& ctr)
+{
+	PhoneNumber* res = &pn;
+	for (std::list<PhoneNumber>::iterator i = phoneNumberTable.begin(); i != phoneNumberTable.end(); ++i)
+	{
+		if ((*i).isEqual(&pn))
+		{
+			ctr++;
+			res = &(*i);
+		}
+	}
+	return *res;
+}
+
+Address& Model::findAddress(Address add, int& ctr)
+{
+	Address* res = &add;
+	for (std::list<Address>::iterator i = addressTable.begin(); i != addressTable.end(); ++i) 
+	{
+		if ((*i).isEqual(&add))
+		{
+			ctr++;
+			res = &(*i);
+		}
+	}
+	return *res;
+}
+
+void Model::syncAll()
 {
 	for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end();++i) 
 	{
@@ -164,13 +189,86 @@ void Model::sync( Person* p)
 	}	
 };
 
+void Model::updatePerson(Person* pOld, Person pNew)
+{
+	pOld->isSynced = 0;
+
+	//Если обновляли ФИО
+	if (!pOld->isEqual(&pNew)) 
+	{
+		wcscpy_s(pOld->lastName, pNew.lastName);
+		wcscpy_s(pOld->firstName, pNew.firstName);
+		wcscpy_s(pOld->fatherName, pNew.fatherName);
+	}
+	
+	//работа с адресами
+	int q = 0;
+	
+	//Инициализируем указатель на случай, если
+	//у контакта не было адреса до этого 
+	Address empty;
+	if (pOld->address == nullptr)
+		pOld->address = &empty;
+
+	
+	if (!pOld->address->isEqual(pNew.address))
+	{
+		Address* finded = &findAddress(*(pNew.address), q);
+		//Если адреса в справочнике нет
+		//Тогда мы производим замену старого элемента коллекции
+		if (q == 0 && pOld->address != &empty)
+			*(pOld->address) = *(pNew.address);
+		//Добавляем в коллекцию новый элемент
+		else if (pOld->address == &empty)
+		{
+			addressTable.push_back(*pNew.address);
+			pOld->address = &addressTable.back();
+		}		
+		//переприсваивание указателей. Был вставлен существующий адрес
+		else 
+			pOld->address = finded;
+	}
+
+	//работа с телефонами
+	PhoneNumber* findedd = nullptr;
+	//сначала осмотр элементов вектора, присутствующих в обоих
+	//контактах
+	for (int i = 0; i < pOld->phoneNumbers.size(); i++)
+	{
+		//расширяем коллекции оригинала 
+		//если в новом объекте больше элементов
+		if (i > pOld->phoneNumbers.size())
+		{
+			pOld->phoneNumbers.push_back(nullptr);
+			pOld->idPhones.push_back(-1);
+		}
+		
+		//Если телефоны не совпали
+		if (!pOld->phoneNumbers[i]->isEqual(pNew.phoneNumbers[i])) 
+		{
+			findedd = &findPhone(*(pNew.phoneNumbers[i]), q);
+			//Если телефона в справочнике нет
+			if (q == 0)
+				*(pOld->phoneNumbers[i]) = *(pNew.phoneNumbers[i]);
+			//переприсваивание указателей
+			else
+				pOld->phoneNumbers[i] = findedd;
+
+			pOld->idPhones[i] = pOld->phoneNumbers[i]->id;
+		}		
+	}
+	
+	if (dbc != nullptr)
+		sync(pOld);
+}
+
 //Метод делает атомарную операцию поиска 1 контакта.
 //Возвращается копия найденного объекта и изменяется значение поступившего счётчика
 //Если поиск успешный, то счётчик = 1
 //Если счётчик > 0 значит недостаточно вторичных атрибутов
 //Если счётчик == 0 значит ничего не нашлось
 
-Person& Model::findPerson(Person p, bool isEmpty, int& ctr) 
+Person& Model::findPerson(Person p, bool isEmpty, int& ctr)
 {
 	//Общая часть
 	Person* res = &p;

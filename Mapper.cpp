@@ -102,7 +102,7 @@ void PersonMapper::getIdPhone()
 	retcode = SQLRowCount(hstmt, &a);
 	checkErr();
 
-	buf->phoneCount = a;
+	//buf->phoneCount = a;
 	if (a > 0)
 	{
 		while (retcode = SQLFetch(hstmt) != SQL_NO_DATA)

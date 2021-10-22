@@ -258,9 +258,9 @@ void ConsoleApp::addContact()
 	wchar_t* lastnamecontact = new wchar_t[20];
 	wchar_t* firstnamecontact = new wchar_t[20];
 	wchar_t* fathernamecontact = new wchar_t[20];
-	cout << "¬ведите им€ контакта : ";
-	wcin >> lastnamecontact;
 	cout << "¬ведите фамилию контакта : ";
+	wcin >> lastnamecontact;
+	cout << "¬ведите им€ контакта : ";
 	wcin >> firstnamecontact;
 	cout << "¬ведите отчество контакта : ";
 	wcin >> fathernamecontact;

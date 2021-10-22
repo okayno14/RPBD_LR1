@@ -120,7 +120,7 @@ public:
 		const SQLWCHAR* a_number = this->number;
 		const SQLWCHAR* b_number = b->number;
 
-		if (wcscmp(a_number, b_number) == 0) return true;
+		if (wcscmp(a_number, b_number) == 0 && idType == b->idType) return true;
 		else return false;
 	};
 
@@ -143,7 +143,7 @@ private:
 
 	Address* address;
 
-	SQLINTEGER phoneCount;
+	//SQLINTEGER phoneCount;
 
 	std::vector<PhoneNumber*> phoneNumbers;
 	
@@ -362,11 +362,13 @@ public:
 	find*/
 
 	//<Person>
-		void insertPerson(Person p);
+		Person& insertPerson(Person p);
 
 		void updatePerson(Person pOld, Address add);
 		void updatePerson(Person pOld, PhoneNumber pn);
 		void updatePerson(Person pOld, Person fio);
+
+		void updatePerson(Person* pOld, Person pNew);
 
 		void deletePerson(Person p);
 
@@ -382,8 +384,12 @@ public:
 		void insertPhone(Person* p, PhoneNumber pn);
 		void updatePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
 		void deletePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
-		//void findPhone();
+		PhoneNumber& findPhone(PhoneNumber pn, int& ctr);
 	//</Phone>
+
+	//<Address>
+		Address& findAddress(Address add, int& ctr);
+	//</Address>
 
 private:
 		void syncAll();
