@@ -210,7 +210,6 @@ void Model::updatePerson(Person* pOld, Person pNew)
 	if (pOld->address == nullptr)
 		pOld->address = &empty;
 
-	
 	if (!pOld->address->isEqual(pNew.address))
 	{
 		Address* finded = &findAddress(*(pNew.address), q);
@@ -231,15 +230,17 @@ void Model::updatePerson(Person* pOld, Person pNew)
 
 	//работа с телефонами
 	PhoneNumber* findedd = nullptr;
+
+	PhoneNumber emptyy;
 	//сначала осмотр элементов вектора, присутствующих в обоих
 	//контактах
-	for (int i = 0; i < pOld->phoneNumbers.size(); i++)
+	for (int i = 0; i < pNew.phoneNumbers.size(); i++)
 	{
 		//расширяем коллекции оригинала 
 		//если в новом объекте больше элементов
-		if (i > pOld->phoneNumbers.size())
+		if (i >= pOld->phoneNumbers.size())
 		{
-			pOld->phoneNumbers.push_back(nullptr);
+			pOld->phoneNumbers.push_back(&emptyy);
 			pOld->idPhones.push_back(-1);
 		}
 		
@@ -248,8 +249,13 @@ void Model::updatePerson(Person* pOld, Person pNew)
 		{
 			findedd = &findPhone(*(pNew.phoneNumbers[i]), q);
 			//Если телефона в справочнике нет
-			if (q == 0)
+			if (q == 0 && pOld->phoneNumbers[i] != &emptyy)
 				*(pOld->phoneNumbers[i]) = *(pNew.phoneNumbers[i]);
+			else if (pOld->phoneNumbers[i] == &emptyy) 
+			{
+				phoneNumberTable.push_back(*pNew.phoneNumbers[i]);
+				pOld->phoneNumbers[i] = &phoneNumberTable.back();
+			}
 			//переприсваивание указателей
 			else
 				pOld->phoneNumbers[i] = findedd;

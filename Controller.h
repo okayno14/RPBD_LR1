@@ -106,5 +106,6 @@ public:
 	void testFindPhoneNameErr();
 	void testFindPhoneAddress01(bool isOnline);
 	void testFindPhoneAddress10();
-	void testUpdate();
+	void testUpdateAddrOffline();
+	void testUpdateAddrPhoneOffline();
 };

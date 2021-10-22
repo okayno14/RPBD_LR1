@@ -165,7 +165,9 @@ void Controller::experiment()
 	//testFindPhoneAddress01(false);
 	//testFindPhoneAddress10();
 
-	testUpdate();
+	//testUpdateAddrOffline();
+
+	testUpdateAddrPhoneOffline();
 }
 
 //01 - загрузка из памяти
@@ -333,7 +335,7 @@ void Controller::testFindPhoneAddress10()
 	t = &model->findPerson(p, pn, add, q);
 }
 
-void Controller::testUpdate()
+void Controller::testUpdateAddrOffline()
 {
 	model->dbc = nullptr;
 
@@ -361,3 +363,39 @@ void Controller::testUpdate()
 
 	model->updatePerson(f, copy);
 };
+
+void Controller::testUpdateAddrPhoneOffline() 
+{
+	model->dbc = nullptr;
+
+	SQLWCHAR lastname[strSZ];
+	SQLWCHAR firstname[strSZ];
+	SQLWCHAR fathername[strSZ];
+
+	wcscpy_s(lastname, L"Ivanov");
+	wcscpy_s(firstname, L"Ivan");
+	wcscpy_s(fathername, L"Ivanovich");
+
+	Person p(lastname, firstname, fathername);
+
+	Person* f = nullptr;
+	f = &model->insertPerson(p);
+
+	SQLWCHAR streetName[strSZ];
+	wcscpy_s(streetName, L"Ivanova");
+
+	Address add(streetName, 1, 2);
+
+	SQLWCHAR number[strSZ];
+	wcscpy_s(number, L"334-58-96");
+
+	PhoneNumber pn(number,1);
+
+	
+	Person copy = p;
+
+	copy.setPhoneNumber(&pn);
+	copy.setAddress(&add);
+
+	model->updatePerson(f, copy);
+}
