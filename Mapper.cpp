@@ -390,8 +390,6 @@ int PersonMapper::findObj(Address* address)
 int PersonMapper::findObj(PhoneNumber* phone, Address* address)
 
 {
-	if (!buf->containPhoneNumber(phone)) return false;
-	if (address != buf->address) return false;
 	SQLLEN a;
 	bool res = false;
 	statementText =

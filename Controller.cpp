@@ -162,6 +162,8 @@ void Controller::experiment()
 	//testFindPhone10();
 
 	//testFindPhoneNameErr();
+	//testFindPhoneAddress01(false);
+	testFindPhoneAddress10();
 }
 
 //01 - загрузка из памяти
@@ -251,4 +253,80 @@ void Controller::testFindPhoneNameErr()
 
 	int q = 0;
 	t = &model->findPerson(p, pn, q);
+}
+
+void Controller::testFindPhoneAddress01(bool isOnline) 
+{
+	if (!isOnline)
+		model->dbc = nullptr;
+
+	SQLWCHAR lastname[strSZ];
+	SQLWCHAR firstname[strSZ];
+	SQLWCHAR fathername[strSZ];
+
+	wcscpy_s(lastname, L"Ivanov");
+	wcscpy_s(firstname, L"Ivan");
+	wcscpy_s(fathername, L"Ivanovich");
+
+	SQLWCHAR phoneNumber[strSZ];
+
+	wcscpy_s(phoneNumber, L"228");
+	int type = 1;
+
+	SQLWCHAR streetName[strSZ];
+	wcscpy_s(streetName, L"PUshkina");
+	int home = 404;
+	int apppartement = 502;	
+	
+
+	//инициализаця контакта, телефона, адреса
+	PhoneNumber pn(phoneNumber, type);
+	Person p(lastname, firstname, fathername);
+	Address add(streetName, home, apppartement);
+
+	//вставка объектов в справочники модели, обходя insert()
+	model->personTable.push_back(p);
+	model->phoneNumberTable.push_back(pn);
+	model->addressTable.push_back(add);
+
+	//вставленному контакту привязываем указатель вставленного в справочник телефона и адреса
+	model->personTable.back().setPhoneNumber(&model->phoneNumberTable.back());
+	model->personTable.back().setAddress(&model->addressTable.back());
+
+	Person* t;
+
+	int q = 0;
+	t = &model->findPerson(p, pn, add, q);
+}
+
+void Controller::testFindPhoneAddress10() 
+{
+	SQLWCHAR lastname[strSZ];
+	SQLWCHAR firstname[strSZ];
+	SQLWCHAR fathername[strSZ];
+
+	wcscpy_s(lastname, L"Ivanov");
+	wcscpy_s(firstname, L"Ivan");
+	wcscpy_s(fathername, L"Ivanovich");
+
+	SQLWCHAR phoneNumber[strSZ];
+
+	wcscpy_s(phoneNumber, L"228");
+	int type = 1;
+
+	SQLWCHAR streetName[strSZ];
+	wcscpy_s(streetName, L"PUshkina");
+	int home = 404;
+	int apppartement = 502;
+
+
+	//инициализаця контакта, телефона, адреса
+	PhoneNumber pn(phoneNumber, type);
+	Person p(lastname, firstname, fathername);
+	Address add(streetName, home, apppartement);
+
+	Person* t;
+
+	int q = 0;
+	t = &model->findPerson(p, pn, add, q);
 }

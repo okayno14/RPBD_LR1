@@ -44,6 +44,26 @@ private:
 
 public:
 	Address(int id = -1, int idStreet = -1);
+	Address(SQLWCHAR* streetName, int home, int appartement) 
+	{
+		wcscpy_s(this->streetName, streetName);
+		this->home = home;
+		this->appartement = appartement;
+	}
+	bool isEqual(const Address* ad) 
+	{
+		const SQLWCHAR* streetNameOrig = this->streetName;
+		const SQLWCHAR* streetNameOther = ad->streetName;
+		if
+		(
+			wcscmp(streetNameOrig, streetNameOther) == 0 &&
+			home == ad->home &&
+			appartement == ad->appartement
+		)
+			return true;
+		else
+			return false;
+	};
 };
 
 class PhoneNumber
@@ -169,13 +189,27 @@ public:
 		else return false;
 	}
 
-	bool containPhoneNumber(PhoneNumber* pn);
+	bool containPhoneNumber(PhoneNumber* pn) 
+	{
+		for (int i = 0; i < phoneNumbers.size(); i++)
+		{
+			if (phoneNumbers[i]->isEqual(pn)) return true;
+		}
+		return false;
+	}
+
+	bool containAddress(Address* ad) 
+	{
+		return this->address->isEqual(ad);
+	}
 
 	void setPhoneNumber(PhoneNumber* pn) 
 	{
 		this->phoneNumbers.push_back(pn);
 		this->idPhones.push_back( phoneNumbers.back()->getId());
 	};
+
+	void setAddress(Address* add) { this->address = add; };
 };
 
 class AbstractMapper
@@ -341,7 +375,7 @@ public:
 		//тхн рекетнм
 		Person& findPerson(Person p, PhoneNumber pn, int& ctr);
 		//тхн рекетнм юдпея
-		Person& findPerson(Person p, PhoneNumber pn, Address add);
+		Person& findPerson(Person p, PhoneNumber pn, Address add, int& ctr);
 	//</Person>
 
 	//<Phone>

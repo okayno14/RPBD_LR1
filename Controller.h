@@ -104,4 +104,6 @@ public:
 	void testFindPhone01(bool isOnline);
 	void testFindPhone10();
 	void testFindPhoneNameErr();
+	void testFindPhoneAddress01(bool isOnline);
+	void testFindPhoneAddress10();
 };

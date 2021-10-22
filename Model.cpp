@@ -230,7 +230,7 @@ Person& Model::findPerson(Person p, bool isEmpty, int& ctr)
 	}
 }
 
-//НЕ ЮЗАТЬ, ОН КРИВОЙ
+
 Person& Model::findPerson(Person p, PhoneNumber pn, int& ctr) 
 {
 	//Общая часть
@@ -264,6 +264,69 @@ Person& Model::findPerson(Person p, PhoneNumber pn, int& ctr)
 		pMap.setBuf(&p);
 		/*bd = pMap.findObjj();*/
 		bd = pMap.findObj(&pn);
+
+		//Если найденный элемент есть только в БД
+		//, то добавляем его в память приложения
+		if (bd == 1 && sd == 0)
+		{
+			//сделать вспомогательный метод загрузки
+			//контакта из БД
+			personTable.push_back(p);
+			//работа со второстепенными атрибутами
+			download(&personTable.back());
+			personTable.back().isSynced = 1;
+			res = &personTable.back();
+		}
+
+		//если найденный объект находится в бд и сд
+		if (bd == sd && bd == 1)
+			ctr = 1;
+		else
+			ctr = bd - sd;
+		return *res;
+	}
+	else
+	{
+		//Офлайн часть
+		ctr = sd;
+		return *res;
+	}
+}
+
+//НЕ ЮЗАТЬ ОН КРИВОЙ
+Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
+{
+	//Общая часть
+	Person* res = &p;
+
+	ctr = 0;
+	int i = 0;
+	int sz = personTable.size();
+
+	int sd = 0;
+	int bd = 0;
+
+	//Ищем в СД совпадение по ФИО и ТЕЛЕФОНУ
+
+	for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
+	{
+		if (p.isEqual(&(*i)) && (*i).containPhoneNumber(&pn) && (*i).containAddress(&add))
+		{
+			res = &(*i);
+			sd++;
+		}
+	}
+
+	//Онлайн-часть
+	//Поиск совпадений в базе
+	if (dbc != nullptr)
+	{
+		//вызов синхронизации
+		sync();
+
+		pMap.setBuf(&p);
+		//bd = pMap.findObj(&pn);
+		bd = pMap.findObj(&pn, &add);
 
 		//Если найденный элемент есть только в БД
 		//, то добавляем его в память приложения
