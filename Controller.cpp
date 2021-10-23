@@ -51,13 +51,7 @@ bool Controller::addPhoneNumberContact(
 	SQLWCHAR* fatherNameContact,
 	SQLWCHAR* number, int type)
 {
-	//PhoneNumber pn;
-	//wcscpy_s(pn.number,number);
-	//pn.idType = type;
 
-	//model->addPhone(pn);
-
-	//this->consoleApp->success();
 	
 	return false;
 }
@@ -165,8 +159,12 @@ void Controller::experiment()
 	//testFindPhoneAddress01(false);
 	//testFindPhoneAddress10();
 
-	testUpdateAddrOffline();
+	//testUpdateAddrOffline();
 	//testUpdateAddrPhoneOffline();
+
+	//testUpdateAddrOnline();
+
+	//testUpdatePhoneOnline();
 }
 
 //01 - загрузка из памяти
@@ -198,7 +196,7 @@ void Controller::testFindPhone01(bool isOnline)
 	model->phoneNumberTable.push_back(pn);
 
 	//вставленному контакту привязываем указатель вставленного в справочник телефона
-	model->personTable.back().setPhoneNumber(&model->phoneNumberTable.back());	
+	model->personTable.back().addPhoneNumber(&model->phoneNumberTable.back());	
 
 	Person* t;
 
@@ -293,7 +291,7 @@ void Controller::testFindPhoneAddress01(bool isOnline)
 	model->addressTable.push_back(add);
 
 	//вставленному контакту привязываем указатель вставленного в справочник телефона и адреса
-	model->personTable.back().setPhoneNumber(&model->phoneNumberTable.back());
+	model->personTable.back().addPhoneNumber(&model->phoneNumberTable.back());
 	model->personTable.back().setAddress(&model->addressTable.back());
 
 	Person* t;
@@ -401,9 +399,58 @@ void Controller::testUpdateAddrPhoneOffline()
 	
 	Person copy = p;
 
-	copy.setPhoneNumber(&pn);
-	copy.setPhoneNumber(&pn1);
+	copy.addPhoneNumber(&pn);
+	copy.addPhoneNumber(&pn1);
 	copy.setAddress(&add);
 
 	model->updatePerson(f, copy);
+}
+
+void Controller::testUpdateAddrOnline() 
+{
+	SQLWCHAR lastname[strSZ];
+	SQLWCHAR firstname[strSZ];
+	SQLWCHAR fathername[strSZ];
+
+	wcscpy_s(lastname,L"Alekseev");
+	wcscpy_s(firstname, L"Aleksandr");
+	wcscpy_s(fathername, L"Konstantinovich");
+
+	int q = 0;
+	Person* t = & model->findPerson(Person(lastname, firstname, fathername),false, q);
+
+	Person updated = *t;
+	
+	SQLWCHAR streetname[strSZ];
+	wcscpy_s(streetname, L"Lavrentieva");
+
+	Address add(streetname, 6, 99);
+	updated.setAddress(&add);
+
+	model->updatePerson(t, updated);
+}
+
+void Controller::testUpdatePhoneOnline() 
+{
+	SQLWCHAR lastname[strSZ];
+	SQLWCHAR firstname[strSZ];
+	SQLWCHAR fathername[strSZ];
+
+	wcscpy_s(lastname, L"Alekseev");
+	wcscpy_s(firstname, L"Aleksandr");
+	wcscpy_s(fathername, L"Konstantinovich");
+
+	int q = 0;
+	Person* t = &model->findPerson(Person(lastname, firstname, fathername), false, q);
+
+	Person updated = *t;
+
+	SQLWCHAR number[strSZ];
+	wcscpy_s(number, L"332-47-73");
+	
+	PhoneNumber pn(number,3);
+
+	updated.setPhoneNumber(0,&pn);
+
+	model->updatePerson(t, updated);
 }

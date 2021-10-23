@@ -108,4 +108,6 @@ public:
 	void testFindPhoneAddress10();
 	void testUpdateAddrOffline();
 	void testUpdateAddrPhoneOffline();
+	void testUpdateAddrOnline();
+	void testUpdatePhoneOnline();
 };

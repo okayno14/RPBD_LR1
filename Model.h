@@ -141,7 +141,7 @@ private:
 	SQLWCHAR fatherName[strSZ];
 	SQLLEN fatherNameLen;
 
-	Address* address;
+	Address* address = nullptr;
 
 	//SQLINTEGER phoneCount;
 
@@ -203,11 +203,20 @@ public:
 		return this->address->isEqual(ad);
 	}
 
-	void setPhoneNumber(PhoneNumber* pn) 
+	void addPhoneNumber(PhoneNumber* pn) 
 	{
 		this->phoneNumbers.push_back(pn);
 		this->idPhones.push_back( phoneNumbers.back()->getId());
 	};
+
+	void setPhoneNumber(int pos, PhoneNumber* pn) 
+	{
+		if (pos < phoneNumbers.size())
+		{
+			phoneNumbers[pos] = pn;
+			idPhones[pos] = pn->getId();
+		}
+	}
 
 	void setAddress(Address* add) { this->address = add; };
 };
@@ -298,6 +307,7 @@ public:
 	//Поиск улицы по имени в БД.
 	void updateStreet();
 	bool findStreet();
+	bool findStreet(int personId);
 };
 
 class PhoneMapper : public AbstractMapper

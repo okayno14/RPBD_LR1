@@ -214,18 +214,29 @@ void Model::updatePerson(Person* pOld, Person pNew)
 	{
 		Address* finded = &findAddress(*(pNew.address), q);
 		//Если адреса в справочнике нет
-		//Тогда мы производим замену старого элемента коллекции
+		//Тогда мы производим замену вторичных атрибутов 
+		//случай, когда элемента в коллекции не было и к контакту не был привязан адрес
 		if (q == 0 && pOld->address != &empty)
+		{
+			int buf = pOld->address->id;
+			int buf1 = pOld->address->idStreet;
+
 			*(pOld->address) = *(pNew.address);
-		//Добавляем в коллекцию новый элемент
+			pOld->address->id = buf;
+			pOld->address->idStreet = buf1;
+			
+		}
+		//случай, когда элемента в коллекции не было и к контакту был привязан адрес
+		//тогда объект копируется целиком
 		else if (pOld->address == &empty)
 		{
 			addressTable.push_back(*pNew.address);
 			pOld->address = &addressTable.back();
 		}		
-		//переприсваивание указателей. Был вставлен существующий адрес
+		//переприсваивание указателей. Так как новый адрес был в коллекции
 		else 
 			pOld->address = finded;
+		
 	}
 
 	//работа с телефонами
@@ -248,19 +259,29 @@ void Model::updatePerson(Person* pOld, Person pNew)
 		if (!pOld->phoneNumbers[i]->isEqual(pNew.phoneNumbers[i])) 
 		{
 			findedd = &findPhone(*(pNew.phoneNumbers[i]), q);
-			//Если телефона в справочнике нет
+			//Если телефона в справочнике нет и у контакта переписывают один из телефонов
+			//необходима замена вторичных атрибутов
 			if (q == 0 && pOld->phoneNumbers[i] != &emptyy)
+			{
 				*(pOld->phoneNumbers[i]) = *(pNew.phoneNumbers[i]);
+				pOld->phoneNumbers[i]->id = pOld->idPhones[i];
+			}
+			//Если телефона в справочнике нет и контакту приписывают новый телефон
+			//тогда объект копируется целиком
 			else if (pOld->phoneNumbers[i] == &emptyy) 
 			{
 				phoneNumberTable.push_back(*pNew.phoneNumbers[i]);
 				pOld->phoneNumbers[i] = &phoneNumberTable.back();
+				pOld->idPhones[i] = pOld->phoneNumbers[i]->id;
 			}
-			//переприсваивание указателей
+			//Если телефон был в справочнике. Тогда просто переписываем ссылку
 			else
+			{
 				pOld->phoneNumbers[i] = findedd;
+				pOld->idPhones[i] = pOld->phoneNumbers[i]->id;
+			}
 
-			pOld->idPhones[i] = pOld->phoneNumbers[i]->id;
+			
 		}		
 	}
 	

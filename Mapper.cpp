@@ -925,6 +925,8 @@ void AddressMapper::updateObj()
 
 	//<Если нет улицы - вставка. Чтение idStreet>
 	if (!findStreet()) { insertStreet(); }
+	/*if(buf->idStreet == -1) 
+		insertStreet();*/
 	//</Если нет улицы - вставка. Чтение idStreet>
 
 	/*делаем апдейт дома, квартиры, идУлицы*/
@@ -1164,6 +1166,8 @@ void AddressMapper::insertStreet()
 	retcode = SQLCloseCursor(hstmt);
 	checkErr();
 	//</Поиск id>
+
+	commitTransaction();
 }
 void AddressMapper::delStreet(SQLINTEGER idStreet)
 
@@ -1208,7 +1212,7 @@ void AddressMapper::delStreet(SQLINTEGER idStreet)
 		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 		checkErr();
 
-		retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->idStreet), 0, NULL);
+		retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &idStreet, 0, NULL);
 		checkErr();
 
 		retcode = SQLExecute(hstmt);
@@ -1299,6 +1303,7 @@ bool AddressMapper::findStreet()
 	}
 
 };
+
 
 PhoneMapper::PhoneMapper(PhoneNumber* buf)
 {
