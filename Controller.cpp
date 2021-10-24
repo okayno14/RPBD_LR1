@@ -165,6 +165,46 @@ void Controller::experiment()
 	//testUpdateAddrOnline();
 
 	//testUpdatePhoneOnline();
+
+	/*SQLWCHAR streetName[strSZ];
+	wcscpy_s(streetName, L"Voennaya");
+	Address add(streetName,40,37);
+	
+	int q(0);
+
+	Address* f = &model->insertAddress(add);
+	model->getState(f);*/
+	
+	//testUpdateAddrPhoneOffline();
+
+	//testFindFIO();
+
+	//testUpdateAddrOffline();
+	testUpdateAddrOnline();
+}
+
+void Controller::testFindFIO() 
+{
+	SQLWCHAR lastname[strSZ];
+	SQLWCHAR firstname[strSZ];
+	SQLWCHAR fathername[strSZ];
+
+	wcscpy_s(lastname, L"Zaykin");
+	wcscpy_s(firstname, L"Igor");
+	wcscpy_s(fathername, L"Ivanovich");
+
+	SQLWCHAR phoneNumber[strSZ];
+
+	wcscpy_s(phoneNumber, L"228");
+
+	
+	Person p(lastname, firstname, fathername);
+
+
+	Person* t;
+
+	int q = 0;
+	t = &model->findPerson(p, false, q);
 }
 
 //01 - загрузка из памяти
@@ -191,12 +231,14 @@ void Controller::testFindPhone01(bool isOnline)
 	PhoneNumber pn(phoneNumber, type);
 	Person p(lastname,firstname,fathername);
 
+	p.addPhoneNumber(&pn);
+
 	//вставка объектов в справочники модели, обходя insert()
-	model->personTable.push_back(p);
-	model->phoneNumberTable.push_back(pn);
+	//model->personTable.push_back(p);
+	//model->phoneNumberTable.push_back(pn);
 
 	//вставленному контакту привязываем указатель вставленного в справочник телефона
-	model->personTable.back().addPhoneNumber(&model->phoneNumberTable.back());	
+	//model->personTable.back().addPhoneNumber(&model->phoneNumberTable.back());	
 
 	Person* t;
 
@@ -424,7 +466,7 @@ void Controller::testUpdateAddrOnline()
 	SQLWCHAR streetname[strSZ];
 	wcscpy_s(streetname, L"Lavrentieva");
 
-	Address add(streetname, 6, 99);
+	Address add(streetname, 51, 81);
 	updated.setAddress(&add);
 
 	model->updatePerson(t, updated);

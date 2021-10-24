@@ -17,189 +17,456 @@ void Model::addPhone(PhoneNumber pn)
 Person& Model::insertPerson(Person p)
 {
 	personTable.push_back(p);	
-
-	//Если БД доступна - записать объект
-	if (dbc != nullptr) 
-	{ 
-		sync(&personTable.back());
-	}
-
+	sync(&personTable.back());
 	return personTable.back();
+}
+void Model::updatePerson(Person* pOld, Address* add)
+{
+}
+void Model::updatePerson(Person* pOld, PhoneNumber* pn)
+{
+}
+void Model::updatePerson(Person* pOld, Person* fio)
+{
+	wcscpy_s(pOld->lastName, fio->lastName);
+	wcscpy_s(pOld->firstName, fio->firstName);
+	wcscpy_s(pOld->fatherName, fio->fatherName);
+}
+int Model::getState(Person* p)
+{
+	bool bd = p->id > -1;
+	if (!bd) 
+	{
+		if (!p->isSynced)
+			return 2;
+		else
+			return 3;
+	}
+	else 
+	{
+		if (!p->isSynced)
+			return 6;
+		else
+			return 5;
+	}
 };
 
 void Model::download(Person* p)
 {
 	//адреса
-	int count = 0;
+	//int count = 0;
 
 	std::list<Address>::iterator it = addressTable.begin();
-	while (it != addressTable.end()) 
-	{
-				
-		//Если нашёлся адрес по id в СД
-		if ((*it).id == p->idAddress)
-		{
-			p->address = &(*it);
-			count++;
-			break;
-		}
-		it++;
-	}
+	//while (it != addressTable.end()) 
+	//{
+	//			
+	//	//Если нашёлся адрес по id в СД
+	//	if ((*it).id == p->idAddress)
+	//	{
+	//		p->address = &(*it);
+	//		count++;
+	//		break;
+	//	}
+	//	it++;
+	//}
 	//Адреса в памяти нет
-	if (count == 0) 
-	{
+	//if (count == 0) 
+	//{
+		
+		//качаем адрес
+		//вставляем его в СД
+		//привязываем его по id
 		Address ad;
 		ad.id = p->idAddress;
 		adMap.setBuf(&ad);
 		adMap.findObj(ad.id);
 		addressTable.push_back(ad);
 		p->address = &addressTable.back();
-	}
+	//}
 	p->address->isSynced = 1;
 
 	//телефоны
 	//цикл обхода id телефонов
 	for (int i = 0; i < p->idPhones.size(); i++) 
 	{
-		count = 0;
+		//count = 0;
 		int id = p->idPhones[i];
 
 		std::list<PhoneNumber>::iterator jt = phoneNumberTable.begin();
 		
-		while (jt != phoneNumberTable.end())
-		{
-			//Если нашёлся телефон по id в СД
-			if ((*jt).id == id)
-			{
-				p->phoneNumbers.push_back(&(*jt));
-				count++;
-				break;
-			}
-			jt++;
-		}
-		//Телефона в памяти нет
-		if (count == 0)
-		{
+		//while (jt != phoneNumberTable.end())
+		//{
+		//	//Если нашёлся телефон по id в СД
+		//	if ((*jt).id == id)
+		//	{
+		//		p->phoneNumbers.push_back(&(*jt));
+		//		count++;
+		//		break;
+		//	}
+		//	jt++;
+		//}
+		////Телефона в памяти нет
+		//if (count == 0)
+		//{
+			
+		//Качаем телефон по его id
+		
 			PhoneNumber pn;
 			pn.id = id;
 			pnMap.setBuf(&pn);
 			pnMap.findObj(id);
 			phoneNumberTable.push_back(pn);
 			p->phoneNumbers.push_back(&phoneNumberTable.back());
-		}
+		//}
 		p->phoneNumbers.back()->isSynced = 1;
 	}
 };
 
 void Model::upload(Person* p)
 {
-	//Работа с телефонами
-	for (int i = 0; i < p->phoneNumbers.size(); i++) 
-	{
-		PhoneNumber* pn = p->phoneNumbers[i];
-		//состояние объекта 01
-		if (pn->id < 0) 
-		{
-			pnMap.setBuf(pn);
-			pnMap.insertObj();
-			p->idPhones[i] = pn->id;
-		}
-		//состояние объекта 12
-		else if (pn->id > 0 && !pn->isSynced)
-		{
-			pnMap.setBuf(pn);
-			pnMap.updateObj();
-		}
-	}
+	if(p->address!=nullptr) 
+		sync(p->address);
+	for (
+		std::vector<PhoneNumber*>::iterator i = p->phoneNumbers.begin();
+		i != p->phoneNumbers.end();
+		++i
+		)
+		sync(*i);
+		
+	////Работа с телефонами
+	//for (int i = 0; i < p->phoneNumbers.size(); i++) 
+	//{
+	//	PhoneNumber* pn = p->phoneNumbers[i];
+	//	//состояние объекта 01
+	//	if (pn->id < 0) 
+	//	{
+	//		pnMap.setBuf(pn);
+	//		pnMap.insertObj();
+	//		p->idPhones[i] = pn->id;
+	//	}
+	//	//состояние объекта 12
+	//	else if (pn->id > 0 && !pn->isSynced)
+	//	{
+	//		pnMap.setBuf(pn);
+	//		pnMap.updateObj();
+	//	}
+	//}
 
-	//Работа с адресами
-	//состояние объекта 01
+	////Работа с адресами
+	////состояние объекта 01
 
-	if (p->address == nullptr) return;
-	if (p->idAddress < 0)
-	{
-		adMap.setBuf(p->address);
-		adMap.insertObj();
-		p->idAddress = p->address->id;
-	}
-	//состояние объекта 12
-	else if (p->idAddress > 0 && !p->address->isSynced)
-	{
-		adMap.setBuf(p->address);
-		adMap.updateObj();
-	}
+	//if (p->address == nullptr) return;
+	//if (p->idAddress < 0)
+	//{
+	//	adMap.setBuf(p->address);
+	//	adMap.insertObj();
+	//	p->idAddress = p->address->id;
+	//}
+	////состояние объекта 12
+	//else if (p->idAddress > 0 && !p->address->isSynced)
+	//{
+	//	adMap.setBuf(p->address);
+	//	adMap.updateObj();
+	//}
 };
+
+PhoneNumber& Model::insertPhone(PhoneNumber pn)
+{
+	int q(0);
+	PhoneNumber* res = &findPhone(pn, q);
+	if (q == 1)
+		return *res;
+	phoneNumberTable.push_back(pn);
+	sync(&phoneNumberTable.back());
+	return phoneNumberTable.back();
+}
 
 PhoneNumber& Model::findPhone(PhoneNumber pn, int& ctr)
 {
+	//вызов синхронизации
+	syncAllPhones();
+	int sd(0);
+	int bd(0);
 	PhoneNumber* res = &pn;
-	for (std::list<PhoneNumber>::iterator i = phoneNumberTable.begin(); i != phoneNumberTable.end(); ++i)
+	for (std::list<PhoneNumber>::iterator i = phoneNumberTable.begin(); 
+		i != phoneNumberTable.end(); 
+		++i)
 	{
 		if ((*i).isEqual(&pn))
 		{
-			ctr++;
+			sd++;
 			res = &(*i);
 		}
 	}
-	return *res;
+	//Поиск совпадений в базе
+	pnMap.setBuf(&pn);
+	bd = pnMap.findObj();
+
+	//Если найденный элемент есть только в БД
+	//, то добавляем его в память приложения
+	if (bd == 1 && sd == 0)
+	{
+		phoneNumberTable.push_back(pn);
+		res = &phoneNumberTable.back();
+		res->isSynced = 1;
+	}
+	ctr = bd;
+	return *res;	
+}
+
+int Model::getState(PhoneNumber* pn)
+{
+	bool bd = pn->id > -1;
+	if (!bd)
+	{
+		if (!pn->isSynced)
+			return 2;
+		else
+			return 3;
+	}
+	else
+	{
+		if (!pn->isSynced)
+			return 6;
+		else
+			return 5;
+	}
+}
+
+void Model::sync(PhoneNumber* pn)
+{
+	int state = getState(pn);
+	if ((state == 2 || state == 3 || state == 6) && dbc != nullptr)
+	{
+		pnMap.setBuf(pn);
+		pnMap.insertObj();
+	}
+	if (state == 2)
+		pn->isSynced = 1;
+}
+
+void Model::syncAllPhones()
+{
+	for (std::list<PhoneNumber>::iterator i = phoneNumberTable.begin();
+		i != phoneNumberTable.end();
+		++i)
+		sync(&(*i));
+}
+
+int Model::findReferences(PhoneNumber* pn)
+{
+	int state = getState(pn);
+	int res(0);
+	if (state == 3 || state == 5)
+	{
+		for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
+			if ((*i).containPhoneNumber(pn))
+				res++;
+	};
+	if (state == 5)
+	{
+		pnMap.setBuf(pn);
+		//res = res + pnMap.findReferences();
+	};
+	return res;
+}
+
+void Model::deletePhone(PhoneNumber* pn)
+{
+	switch (getState(pn))
+	{
+		case 5:
+		{
+			pnMap.setBuf(pn);
+			pnMap.deleteObj();
+		}
+		case 3:
+		{
+			std::list<PhoneNumber>::iterator i = phoneNumberTable.begin();
+			while (i != phoneNumberTable.end() && &(*i) != pn)
+				++i;
+			phoneNumberTable.erase(i);
+			break;
+		}
+	}
 }
 
 Address& Model::findAddress(Address add, int& ctr)
 {
+	//вызов синхронизации
+	syncAllAddresses();
+	int sd(0);
+	int bd(0);
 	Address* res = &add;
-	for (std::list<Address>::iterator i = addressTable.begin(); i != addressTable.end(); ++i) 
+	for (std::list<Address>::iterator i = addressTable.begin();
+		i != addressTable.end();
+		++i)
 	{
 		if ((*i).isEqual(&add))
 		{
-			ctr++;
+			sd++;
 			res = &(*i);
 		}
 	}
+	//Поиск совпадений в базе
+	adMap.setBuf(&add);
+	bd = adMap.findObj();
+
+	//Если найденный элемент есть только в БД
+	//, то добавляем его в память приложения
+	if (bd == 1 && sd == 0)
+	{
+		addressTable.push_back(add);
+		res = &addressTable.back();
+		res->isSynced = 1;
+	}
+	ctr = bd;
 	return *res;
+}
+
+Address& Model::insertAddress(Address add)
+{
+	int q(0);
+	Address* res = &findAddress(add, q);
+	if (q == 1)
+		return *res;
+	addressTable.push_back(add);
+	sync(&addressTable.back());
+	return addressTable.back();
+}
+
+int Model::getState(Address* add)
+{
+	bool bd = add->id > -1;
+	if (!bd)
+	{
+		if (!add->isSynced)
+			return 2;
+		else
+			return 3;
+	}
+	else
+	{
+		if (!add->isSynced)
+			return 6;
+		else
+			return 5;
+	}
+}
+
+void Model::sync(Address* add)
+{
+	int state = getState(add);
+	if ((state == 2 || state == 3 || state == 6) && dbc != nullptr)
+	{
+		adMap.setBuf(add);
+		adMap.insertObj();
+	}
+	if (state == 2)
+		add->isSynced = 1;
+}
+
+void Model::syncAllAddresses()
+{
+	for (std::list<Address>::iterator i = addressTable.begin();
+		i != addressTable.end();
+		++i)
+		sync(&(*i));
+}
+
+void Model::deleteAddress(Address* add)
+{
+	switch (getState(add))
+	{
+		case 5:
+		{
+			adMap.setBuf(add);
+			adMap.deleteObj();
+		}
+		case 3: 
+		{
+			std::list<Address>::iterator i = addressTable.begin();
+			while (i != addressTable.end() && &(*i) != add)
+				++i;
+			addressTable.erase(i);
+			break;
+		}
+	}
+}
+
+int Model::findReferences(Address* add)
+{
+	int state = getState(add);
+	int res(0);
+	if (state == 3 || state == 5)
+	{
+		for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i) 
+			if ((*i).address == add)
+				res++;
+	};
+	if (state == 5) 
+	{
+		adMap.setBuf(add);
+		res = res + adMap.findReferences();
+	};
+	return res;
 }
 
 void Model::syncAll()
 {
 	for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end();++i) 
-	{
-		sync(&(*i));
-	}
+		sync(&(*i));	
 };
 
 void Model::sync( Person* p)
 {
-	if (!p->isSynced)
+	int state = getState(p);
+	if ( (state == 2 || state == 3) && dbc != nullptr ) 
 	{
 		pMap.setBuf(p);
-
-		//Подготовка вторичных сущностей к загрузке
 		upload(p);
-
-		//состояние 01
-		if (p->id == -1)
-		{
-			pMap.insertObj();
-		}
-		//состояние 12
-		else
-		{
-			pMap.updateObj();
-		}
+		pMap.insertObj();
+	}
+	if (state == 2)
 		p->isSynced = 1;
-	}	
+	if (state == 6 && dbc != nullptr)
+	{
+		pMap.setBuf(p);
+		upload(p);
+		pMap.updateObj();
+		p->isSynced = 1;
+	}
+	//
+	//if (!p->isSynced)
+	//{
+	//	pMap.setBuf(p);
+	//	//Подготовка вторичных сущностей к загрузке
+	//	upload(p);
+	//	//состояние 01
+	//	if (p->id == -1)
+	//	{
+	//		pMap.insertObj();
+	//	}
+	//	//состояние 12
+	//	else
+	//	{
+	//		pMap.updateObj();
+	//	}
+	//	p->isSynced = 1;
+	//}	
 };
 
+//Тестируем update
 void Model::updatePerson(Person* pOld, Person pNew)
 {
+	Address* buf = nullptr;
+	
 	pOld->isSynced = 0;
 
 	//Если обновляли ФИО
 	if (!pOld->isEqual(&pNew)) 
-	{
-		wcscpy_s(pOld->lastName, pNew.lastName);
-		wcscpy_s(pOld->firstName, pNew.firstName);
-		wcscpy_s(pOld->fatherName, pNew.fatherName);
-	}
+		updatePerson(pOld, &pNew);
+	
 	
 	//работа с адресами
 	int q = 0;
@@ -212,81 +479,30 @@ void Model::updatePerson(Person* pOld, Person pNew)
 
 	if (!pOld->address->isEqual(pNew.address))
 	{
-		Address* finded = &findAddress(*(pNew.address), q);
-		//Если адреса в справочнике нет
-		//Тогда мы производим замену вторичных атрибутов 
-		//случай, когда элемента в коллекции не было и к контакту не был привязан адрес
-		if (q == 0 && pOld->address != &empty)
-		{
-			int buf = pOld->address->id;
-			int buf1 = pOld->address->idStreet;
+		buf = pOld->address;
+		Address* addN = &insertAddress(*pNew.address);
+		pOld->address = addN;
+		pOld->idAddress = pOld->address->id;
+		int q(0);
+		//findAddress(*buf, q);
+		//findReferences(*buf,q);
 
-			*(pOld->address) = *(pNew.address);
-			pOld->address->id = buf;
-			pOld->address->idStreet = buf1;
-			
-		}
-		//случай, когда элемента в коллекции не было и к контакту был привязан адрес
-		//тогда объект копируется целиком
-		else if (pOld->address == &empty)
-		{
-			addressTable.push_back(*pNew.address);
-			pOld->address = &addressTable.back();
-		}		
-		//переприсваивание указателей. Так как новый адрес был в коллекции
-		else 
-			pOld->address = finded;
 		
-	}
 
-	//работа с телефонами
-	PhoneNumber* findedd = nullptr;
-
-	PhoneNumber emptyy;
-	//сначала осмотр элементов вектора, присутствующих в обоих
-	//контактах
-	for (int i = 0; i < pNew.phoneNumbers.size(); i++)
-	{
-		//расширяем коллекции оригинала 
-		//если в новом объекте больше элементов
-		if (i >= pOld->phoneNumbers.size())
-		{
-			pOld->phoneNumbers.push_back(&emptyy);
-			pOld->idPhones.push_back(-1);
-		}
-		
-		//Если телефоны не совпали
-		if (!pOld->phoneNumbers[i]->isEqual(pNew.phoneNumbers[i])) 
-		{
-			findedd = &findPhone(*(pNew.phoneNumbers[i]), q);
-			//Если телефона в справочнике нет и у контакта переписывают один из телефонов
-			//необходима замена вторичных атрибутов
-			if (q == 0 && pOld->phoneNumbers[i] != &emptyy)
-			{
-				*(pOld->phoneNumbers[i]) = *(pNew.phoneNumbers[i]);
-				pOld->phoneNumbers[i]->id = pOld->idPhones[i];
-			}
-			//Если телефона в справочнике нет и контакту приписывают новый телефон
-			//тогда объект копируется целиком
-			else if (pOld->phoneNumbers[i] == &emptyy) 
-			{
-				phoneNumberTable.push_back(*pNew.phoneNumbers[i]);
-				pOld->phoneNumbers[i] = &phoneNumberTable.back();
-				pOld->idPhones[i] = pOld->phoneNumbers[i]->id;
-			}
-			//Если телефон был в справочнике. Тогда просто переписываем ссылку
-			else
-			{
-				pOld->phoneNumbers[i] = findedd;
-				pOld->idPhones[i] = pOld->phoneNumbers[i]->id;
-			}
-
-			
-		}		
+		pOld->address->isSynced = 0;
 	}
 	
-	if (dbc != nullptr)
-		sync(pOld);
+	
+	sync(pOld);
+
+	//Когда обновляли адрес. Нужно проверить количество ссылок на старый объект. 
+	//Если их не будет, то удалить объект.
+	if (buf != nullptr)
+	{
+		adMap.setBuf(buf);
+		if (findReferences(buf) == 0)
+			deleteAddress(buf);
+	}
 }
 
 //Метод делает атомарную операцию поиска 1 контакта.
@@ -297,6 +513,9 @@ void Model::updatePerson(Person* pOld, Person pNew)
 
 Person& Model::findPerson(Person p, bool isEmpty, int& ctr)
 {
+	//вызов синхронизации
+	syncAll();
+	
 	//Общая часть
 	Person* res = &p;
 	
@@ -317,52 +536,34 @@ Person& Model::findPerson(Person p, bool isEmpty, int& ctr)
 			sd++;
 		}
 	}
-	
-	//Онлайн-часть
 	//Поиск совпадений в базе
-	if (dbc != nullptr) 
-	{
-		//вызов синхронизации
-		syncAll();
-		
-		pMap.setBuf(&p);
-		if (isEmpty)
-			bd = pMap.findObj(isEmpty);
-		else		
-			bd = pMap.findObjj();
+	pMap.setBuf(&p);
+	if (isEmpty)
+		bd = pMap.findObj(isEmpty);
+	else		
+		bd = pMap.findObjj();
 	
-		//Если найденный элемент есть только в БД
-		//, то добавляем его в память приложения
-		if (bd == 1 && sd == 0) 
-		{
-			//сделать вспомогательный метод загрузки
-			//контакта из БД
-			personTable.push_back(p);
-			//работа со второстепенными атрибутами, если таковые присутствовали
-			if(!isEmpty)
-				download(&personTable.back());			
-			personTable.back().isSynced = 1;
-			res = &personTable.back();
-		}
-
-		//если найденный объект находится в бд и сд
-		if (bd == sd && bd == 1)
-			ctr = 1;
-		else 
-			ctr = bd - sd;
-		return *res;
-	}
-	else 
+	//Если найденный элемент есть только в БД
+	//, то добавляем его в память приложения
+	if (bd == 1 && sd == 0) 
 	{
-		//Офлайн часть
-		ctr = sd;
-		return *res;
+		//вставка контакта
+		personTable.push_back(p);
+		//работа со второстепенными атрибутами, если таковые присутствовали
+		if(!isEmpty)
+			download(&personTable.back());			
+		personTable.back().isSynced = 1;
+		res = &personTable.back();
 	}
+	ctr = bd;
+	return *res;
 }
-
 
 Person& Model::findPerson(Person p, PhoneNumber pn, int& ctr) 
 {
+	//вызов синхронизации
+	syncAll();
+
 	//Общая часть
 	Person* res = &p;
 
@@ -373,7 +574,7 @@ Person& Model::findPerson(Person p, PhoneNumber pn, int& ctr)
 	int sd = 0;
 	int bd = 0;
 
-	//Ищем в СД совпадение по ФИО и ТЕЛЕФОНУ
+	//Ищем в СД совпадение по ФИО
 
 	for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
 	{
@@ -383,49 +584,30 @@ Person& Model::findPerson(Person p, PhoneNumber pn, int& ctr)
 			sd++;
 		}
 	}
-
-	//Онлайн-часть
 	//Поиск совпадений в базе
-	if (dbc != nullptr)
+	pMap.setBuf(&p);
+	bd = pMap.findObjj();
+
+	//Если найденный элемент есть только в БД
+	//, то добавляем его в память приложения
+	if (bd == 1 && sd == 0)
 	{
-		//вызов синхронизации
-		syncAll();
-
-		pMap.setBuf(&p);
-		/*bd = pMap.findObjj();*/
-		bd = pMap.findObj(&pn);
-
-		//Если найденный элемент есть только в БД
-		//, то добавляем его в память приложения
-		if (bd == 1 && sd == 0)
-		{
-			//сделать вспомогательный метод загрузки
-			//контакта из БД
-			personTable.push_back(p);
-			//работа со второстепенными атрибутами
-			download(&personTable.back());
-			personTable.back().isSynced = 1;
-			res = &personTable.back();
-		}
-
-		//если найденный объект находится в бд и сд
-		if (bd == sd && bd == 1)
-			ctr = 1;
-		else
-			ctr = bd - sd;
-		return *res;
+		//вставка контакта
+		personTable.push_back(p);
+		//работа со второстепенными атрибутами, если таковые присутствовали
+		download(&personTable.back());
+		personTable.back().isSynced = 1;
+		res = &personTable.back();
 	}
-	else
-	{
-		//Офлайн часть
-		ctr = sd;
-		return *res;
-	}
+	ctr = bd;
+	return *res;
 }
 
-//НЕ ЮЗАТЬ ОН КРИВОЙ
 Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
 {
+	//вызов синхронизации
+	syncAll();
+
 	//Общая часть
 	Person* res = &p;
 
@@ -436,7 +618,7 @@ Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
 	int sd = 0;
 	int bd = 0;
 
-	//Ищем в СД совпадение по ФИО и ТЕЛЕФОНУ
+	//Ищем в СД совпадение по ФИО
 
 	for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
 	{
@@ -446,42 +628,21 @@ Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
 			sd++;
 		}
 	}
-
-	//Онлайн-часть
 	//Поиск совпадений в базе
-	if (dbc != nullptr)
+	pMap.setBuf(&p);
+	bd = pMap.findObjj();
+
+	//Если найденный элемент есть только в БД
+	//, то добавляем его в память приложения
+	if (bd == 1 && sd == 0)
 	{
-		//вызов синхронизации
-		syncAll();
-
-		pMap.setBuf(&p);
-		//bd = pMap.findObj(&pn);
-		bd = pMap.findObj(&pn, &add);
-
-		//Если найденный элемент есть только в БД
-		//, то добавляем его в память приложения
-		if (bd == 1 && sd == 0)
-		{
-			//сделать вспомогательный метод загрузки
-			//контакта из БД
-			personTable.push_back(p);
-			//работа со второстепенными атрибутами
-			download(&personTable.back());
-			personTable.back().isSynced = 1;
-			res = &personTable.back();
-		}
-
-		//если найденный объект находится в бд и сд
-		if (bd == sd && bd == 1)
-			ctr = 1;
-		else
-			ctr = bd - sd;
-		return *res;
+		//вставка контакта
+		personTable.push_back(p);
+		//работа со второстепенными атрибутами, если таковые присутствовали
+		download(&personTable.back());
+		personTable.back().isSynced = 1;
+		res = &personTable.back();
 	}
-	else
-	{
-		//Офлайн часть
-		ctr = sd;
-		return *res;
-	}
+	ctr = bd;
+	return *res;
 }

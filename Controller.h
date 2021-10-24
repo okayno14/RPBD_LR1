@@ -101,6 +101,8 @@ public:
 
 
 	void experiment();
+	void testFindFIO();
+	void testFindPhone01();
 	void testFindPhone01(bool isOnline);
 	void testFindPhone10();
 	void testFindPhoneNameErr();

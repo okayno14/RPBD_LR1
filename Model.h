@@ -240,7 +240,7 @@ public:
 	virtual void updateObj() {};
 	virtual void deleteObj() {};
 	virtual void findObj(int id) {};
-	virtual bool findObj() = 0;
+	virtual int findObj() = 0;
 
 protected:
 	void checkErr();
@@ -266,7 +266,7 @@ public:
 	int findObjj();
 	
 	//ПУСТЫШКА
-	bool findObj() { return false; };
+	int findObj() { return false; };
 
 	//ФИО ТЕЛЕФОН
 	int findObj(PhoneNumber* phone);
@@ -300,7 +300,7 @@ public:
 	void updateObj() override;
 	void deleteObj()  override;
 	void findObj(int id) override;
-	bool findObj() override;
+	int findObj() override;
 	void insertStreet();
 	//Если объект улицы не связан с контактами, то удалить его из базы
 	void delStreet(SQLINTEGER idStreet);
@@ -308,6 +308,7 @@ public:
 	void updateStreet();
 	bool findStreet();
 	bool findStreet(int personId);
+	int findReferences();
 };
 
 class PhoneMapper : public AbstractMapper
@@ -323,13 +324,15 @@ public:
 
 	void findObj(int id) override;
 
-	bool findObj() override;
+	int findObj() override;
 
 	void insertObj() override;
 
 	void deleteObj() override;
 
 	void updateObj() override;
+
+	int findReferences();
 };
 
 //Убрать
@@ -374,10 +377,19 @@ public:
 	//<Person>
 		Person& insertPerson(Person p);
 
-		void updatePerson(Person pOld, Address add);
-		void updatePerson(Person pOld, PhoneNumber pn);
-		void updatePerson(Person pOld, Person fio);
+private:
+		void updatePerson(Person* pOld, Address* add);
+		void updatePerson(Person* pOld, PhoneNumber* pn);
+		void updatePerson(Person* pOld, Person* fio);
+		//Получить состояние Контакта из СД
+		int getState(Person* p);
+		//Синхронизация контакта
+		void sync(Person* p);
+		void upload(Person* p);
+		void download(Person* p);
+		void syncAll();
 
+public:
 		void updatePerson(Person* pOld, Person pNew);
 
 		void deletePerson(Person p);
@@ -391,21 +403,28 @@ public:
 	//</Person>
 
 	//<Phone>
-		void insertPhone(Person* p, PhoneNumber pn);
-		void updatePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
-		void deletePhone(Person* p, PhoneNumber pnOld, PhoneNumber pnNew);
+private:
+		PhoneNumber& insertPhone(PhoneNumber pn);
+		int getState(PhoneNumber* pn);
+		void sync(PhoneNumber* pn);
+		void syncAllPhones();
+		int findReferences(PhoneNumber* pn);
+		void deletePhone(PhoneNumber* pn);
 		PhoneNumber& findPhone(PhoneNumber pn, int& ctr);
+public:
 	//</Phone>
 
 	//<Address>
-		Address& findAddress(Address add, int& ctr);
-	//</Address>
-
 private:
-		void syncAll();
-		void sync(Person* p);
-		void upload(Person* p);
-		void download(Person* p);
+		Address& findAddress(Address add, int& ctr);
+		Address& insertAddress(Address add);
+		int getState(Address* add);
+		void sync(Address* add);
+		void syncAllAddresses();
+		void deleteAddress(Address* add);
+		int findReferences(Address* add);
+public:
+	//</Address>
 
 	//Person& findByAllAtributes() {};
 	//Person& findBy4() {};
