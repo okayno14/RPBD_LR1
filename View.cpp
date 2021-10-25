@@ -60,13 +60,25 @@ void ConsoleApp::run()
 		{
 
 		case 1: {
+			system("cls");
+			findPerson();
 
+			_getwch();
+			break;
 		}
 		case 2: {
+			system("cls");
+			addContact();
+			if (toRunMenuTwo())
+				runPC();
 
+			_getwch();
+			break;
 		}
 		case 3: {
-
+			system("cls");
+			findto4();
+			break;
 		}
 		case 0: {
 			this->runTimeProgram = false;
@@ -84,6 +96,8 @@ void ConsoleApp::run()
 	system("pause");
 }
 
+
+
 void ConsoleApp::runPC()
 {
 	bool exitWhileLocal = true;
@@ -93,28 +107,42 @@ void ConsoleApp::runPC()
 		switch (MainMenu)
 		{
 		case 1: {
-
+			system("cls");
+			updateFIOcontacte();
+			break;
 		}
 		case 2: {
-
+			system("cls");
+			addAddress();
+			break;
 		}
 		case 3: {
-
+			system("cls");
+			deleteAddress();
+			break;
 		}
 		case 4: {
-
+			system("cls");
+			addPhoneNumber();
+			break;
 		}
 		case 5: {
-
+			system("cls");
+			deletePhoneNumber();
+			break;
 		}
 		case 6: {
-
+			system("cls");
+			deleteContact();
+			break;
 		}
 		case 0: {
+			system("cls");
 			exitWhileLocal = false;
 			break;
 		}
 		default:
+			system("cls");
 			cout << "Очепятка!" << endl;
 			break;
 		}
@@ -174,7 +202,11 @@ void ConsoleApp::deleteContact()
 }
 
 
-/*числа на вход поступают в виде массива int*/
+void ConsoleApp::addPhoneNumber()
+{
+}
+
+/*числа на вход поступают в виде vector int*/
 void ConsoleApp::findto4()
 {
 	cout << "------------------------------------------------" << endl;
@@ -329,6 +361,27 @@ void ConsoleApp::success()
 	cout << "Success!!!!))" << endl;
 }
 
+bool ConsoleApp::toRunMenuTwo()
+{
+	cout << "Желаете редактировать контакт" << endl
+		<< "[1] - Да;   [0] - Нет" << endl;
+	int tmp;
+	cin >> tmp;
+	if (tmp == 0)
+	{
+		return false;
+	}
+	else if (tmp == 1)
+	{
+		return true;
+
+	}
+	else {
+		return false;
+	}
+	
+}
+
 void ConsoleApp::fail()
 {
 	cout << "Fail" << endl;
@@ -337,17 +390,50 @@ void ConsoleApp::fail()
 wchar_t* ConsoleApp::get_a_number()
 {
 	wchar_t* numder = new wchar_t[20];
-	cout <<  "Введите номер телефона для дальнейшего поиска контакта" << endl;
+	cout << "Введите номер телефона для дальнейшего поиска контакта" << endl
+		<< "X(XXX)XXX-XX-XX" << endl;
  	wcin >> numder;
 	return numder;
 }
 
-wchar_t* ConsoleApp::get_a_address()
+
+wchar_t* ConsoleApp::get_a_addressName()
 {
 	wchar_t* numder = new wchar_t[20];
-	cout << "Введите номер телефона для дальнейшего поиска контакта" << endl;
+	cout << "Введите название улицы проживаия для дальнейшего поиска контакта" << endl;
 	wcin >> numder;
 	return numder;
+}
+
+int ConsoleApp::get_a_type_number()
+{
+	int type;
+	while(true)
+	{
+		cout << "Введите тип телефона" << endl
+			<< "[1] - мобильный" << endl
+			<< "[2] - рабочий" << endl
+			<< "[3] - домашний" << endl;
+		cin >> type;
+		if (type == 1 || type == 2 || type == 3)
+			return type;
+	}
+}
+
+int ConsoleApp::get_a_apartment()
+{
+	int num;
+	cout << "Введите номер квартиры" << endl;
+	cin >> num;
+	return num;
+}
+
+int ConsoleApp::get_a_numberhome()
+{
+	int num;
+	cout << "Введите номер домо" << endl;
+	cin >> num;
+	return num;
 }
 
 void ConsoleApp::offlineStatus()

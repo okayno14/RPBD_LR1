@@ -80,68 +80,12 @@ bool Controller::deletePhoneNumberContact(
 	return false;
 }
 
-bool Controller::toChangePhoneNumberContact(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	SQLWCHAR* oldnumber,
-	SQLWCHAR* newnumber)
-{
-	return false;
-}
 
-bool Controller::toChangeTypePhoneNumber(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	SQLWCHAR* number, int type)
-{
-	return false;
-}
 
-bool Controller::findPhoneByFIO(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact)
-{
-	return false;
-}
 
-bool Controller::toChangeStreetContacn(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	SQLWCHAR* nameStret)
-{
-	return false;
-}
 
-bool Controller::toChangeNumberHome(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	int numberHome)
-{
-	return false;
-}
 
-bool Controller::toChangeNumberApartment(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	int numemberApartment)
-{
-	return false;
-}
-
-bool Controller::findAddressByFIO(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact)
-{
-	return false;
-}
-
+/*нужно получать int[]*/
 bool Controller::findContactBy4NumberPhone(SQLWCHAR* number4)
 {
 	return false;
@@ -163,6 +107,86 @@ bool Controller::deleteAddress(
 	SQLWCHAR* fatherNameContact)
 {
 	return false;
+}
+Person* Controller::findPerson(
+	SQLWCHAR* lastNameContact,
+	SQLWCHAR* firstNameContact, 
+	SQLWCHAR* fatherNameContact)
+{
+	Person p(lastNameContact, firstNameContact, fatherNameContact);
+	Person* tmp;
+	int count;
+
+	tmp = &model->findPerson(p, true, count);
+	if (count == 1)
+		return tmp;
+
+	if(count == 0 || count > 1)
+	{
+		int cont;
+		tmp = &model->findPerson(p, false, cont);
+		if (count == 0) {
+			cout << "Контактов не обнаружено" << endl;
+			throw - 1;
+		}
+
+		if (cont == 1)
+		{
+			return tmp;
+		}
+		if (cont > 1) 
+		{
+			int count2;
+			wchar_t* number;
+			number = this->consoleApp->get_a_number();
+			int type = this->consoleApp->get_a_type_number();
+			PhoneNumber ph(number, type);
+			tmp = &model->findPerson(p, ph, count2);
+
+			if (count2 == 0) {
+				cout << "Контактов не обнаружено" << endl;
+				throw - 1;
+			}
+			if (count2 == 1) 
+			{
+				return tmp;
+			}
+			if (count2 > 1) {
+				int count3;
+				wchar_t* address;
+				int numHome;
+				int numApartment;
+				address = this->consoleApp->get_a_addressName();
+				numHome = this->consoleApp->get_a_numberhome();
+				numApartment = this->consoleApp->get_a_apartment();
+				Address ad(address,numHome,numApartment);
+				tmp = &model->findPerson(p, ph, ad, count3);
+				if (count3 == 0) 
+				{
+					cout << "Контактов не обнаружено" << endl;
+					throw - 1;
+				}
+				if (count3 == 1)
+				{
+					return tmp;
+				}
+				if (count > 1)
+				{
+					cout << "Атака клонов" << endl;
+					throw - 2;
+				}
+			}
+		}
+	}
+	
+
+
+
+	
+
+	
+
+
 }
 /* изменить**
 тепрь нужно передовать сылку счетчика  в медоты модели

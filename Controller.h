@@ -53,41 +53,7 @@ public:
 		SQLWCHAR* firstNameContact,
 		SQLWCHAR* fatherNameContact,
 		SQLWCHAR* number);
-	bool toChangePhoneNumberContact(
-		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact,
-		SQLWCHAR* oldnumber,
-		SQLWCHAR* newnumber);
-	bool toChangeTypePhoneNumber(
-		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact,
-		SQLWCHAR* number,
-		int type);
-	bool findPhoneByFIO(
-		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact);
-	bool toChangeStreetContacn(
-		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact,
-		SQLWCHAR* nameStret);
-	bool toChangeNumberHome(
-		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact,
-		int numberHome);
-	bool toChangeNumberApartment(
-		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact,
-		int numemberApartment);
-	bool findAddressByFIO(
-		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact);
+	
 	bool findContactBy4NumberPhone(SQLWCHAR* number4);
 	bool addAddress(
 		SQLWCHAR* lastNameContact,
@@ -100,6 +66,12 @@ public:
 		SQLWCHAR* lastNameContact,
 		SQLWCHAR* firstNameContact,
 		SQLWCHAR* fatherNameContact);
+	Person* findPerson(
+		SQLWCHAR* lastNameContact,
+		SQLWCHAR* firstNameContact,
+		SQLWCHAR* fatherNameContact);
+
+
 private:
 
 

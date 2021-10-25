@@ -39,6 +39,7 @@ public:
 	void findto4();
 	void updateFIOcontacte();
 	void addAddress();
+	void addPhoneNumber();
 
 	void deletePhoneNumber();
 	void deleteAddress();
@@ -46,8 +47,13 @@ public:
 	void success();
 	void offlineStatus();
 	void fail();
+	void What();
+	bool toRunMenuTwo();
 
 	wchar_t* get_a_number();/*find fio and phoneNumber*/
-	wchar_t* get_a_address();/*find fio and phoneNumber and address*/
+	wchar_t* get_a_addressName();/*find fio and phoneNumber and address*/
+	int get_a_type_number();
+	int get_a_apartment();
+	int get_a_numberhome();
 	
 };
