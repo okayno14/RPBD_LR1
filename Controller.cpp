@@ -211,17 +211,21 @@ void Controller::experiment()
 
 	Person* f = nullptr;
 	int q(0);
-	f = &model->findPerson(p,false,q);
+	
+
+
+	
+	f = &model->insertPerson(p);
 
 	SQLWCHAR number[strSZ];
 	wcscpy_s(number, L"8888888888888");
 	PhoneNumber pn(number, 1);
 
-	p = *f;
-	
-	p.setPhoneNumber(0, &pn);
+	p.addPhoneNumber(&pn);
 
 	model->updatePerson(f, p);
+
+	model->deletePerson(f);
 }
 
 void Controller::testFindFIO() 

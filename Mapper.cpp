@@ -157,17 +157,18 @@ void PersonMapper::findObj(int id)
 
 	getIdPhone();
 }
-//ÔÈÎ
+//ÔÈÎ íåïóñòîé
 int PersonMapper::findObjj()
 
 {
 	SQLLEN a;
 	bool res = false;
 	statementText =
-		(SQLWCHAR*)L"SELECT * FROM person WHERE"
-		" lastname = ? and"
-		" firstname = ? and"
-		" fathername = ?";
+		(SQLWCHAR*)L"SELECT p.id, p.idaddress, p.lastname, p.firstname, p.fathername FROM person as p, persone_number as pn WHERE"
+		" p.lastname = ? and"
+		" p.firstname = ? and"
+		" p.fathername = ? and ("
+		" p.idaddress > 0 or pn.idperson = p.id)";
 
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 	checkErr();

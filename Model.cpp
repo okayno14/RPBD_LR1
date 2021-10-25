@@ -74,13 +74,16 @@ void Model::download(Person* p)
 	//качаем адрес
 	//вставляем его в СД
 	//привязываем его по id
-	Address ad;
-	ad.id = p->idAddress;
-	adMap.setBuf(&ad);
-	adMap.findObj(ad.id);
-	addressTable.push_back(ad);
-	p->address = &addressTable.back();
-	p->address->isSynced = 1;
+	if (p->idAddress != -1) 
+	{
+		Address ad;
+		ad.id = p->idAddress;
+		adMap.setBuf(&ad);
+		adMap.findObj(ad.id);
+		addressTable.push_back(ad);
+		p->address = &addressTable.back();
+		p->address->isSynced = 1;
+	}
 
 	//телефоны
 	//цикл обхода id телефонов
@@ -417,6 +420,9 @@ void Model::updatePerson(Person* pOld, Person pNew)
 		Address empty;
 		if (pOld->address == nullptr)
 			pOld->address = &empty;
+		
+		if (pNew.address == nullptr)
+			pNew.address = &empty;
 
 		if (!pOld->address->isEqual(pNew.address))
 		{
@@ -425,6 +431,12 @@ void Model::updatePerson(Person* pOld, Person pNew)
 			pOld->address = addN;
 			pOld->idAddress = pOld->address->id;
 		}
+
+		if (pOld->address == &empty)
+			pOld->address = nullptr;
+
+		if (pNew.address == &empty)
+			pNew.address = nullptr;
 	//</address>
 		
 	//<phoneNumber>
@@ -474,47 +486,47 @@ void Model::updatePerson(Person* pOld, Person pNew)
 void Model::deletePerson(Person* p)
 {
 	std::list<Person>::iterator i = personTable.begin();
-	while (i != personTable.end()) 
+	while (i != personTable.end() && &(*i) != p)
+	{}
+	//удостоверились, полученный указатель ссылается на объект коллекции
+	if (&(*i) == p)
 	{
-		//удостоверились, полученный указатель ссылается на объект коллекции
-		if (&(*i) == p)
+		//резервирование указателей перед удалением объекта
+		Address* add = p->address;
+		std::vector<PhoneNumber*> pn = p->phoneNumbers;
+			
+		int state = getState(p);
+		//онлайн часть удаления, если контакт есть в БД
+		if (state == 5 && dbc != nullptr) 
 		{
-			//резервирование указателей перед удалением объекта
-			Address* add = p->address;
-			std::vector<PhoneNumber*> pn = p->phoneNumbers;
-			
-			int state = getState(p);
-			//онлайн часть удаления, если контакт есть в БД
-			if (state == 5 && dbc != nullptr) 
-			{
-				pMap.setBuf(p);
-				pMap.deleteObj();
-			}
-			//универсальная часть, которая проверяет второстепенные сущности
-			if (state == 5 || state == 3)
-			{
-				personTable.erase(i);
-
-				if (add != nullptr)
-				{
-					adMap.setBuf(add);
-					if (findReferences(add) == 0)
-						deleteAddress(add);
-				}
-				for (int i = 0; i < pn.size(); i++)
-				{
-					if (pn[i] != nullptr)
-					{
-						pnMap.setBuf(pn[i]);
-						if (findReferences(pn[i]) == 0)
-							deletePhone(pn[i]);
-					}
-				}
-			}
-			
-			
+			pMap.setBuf(p);
+			pMap.deleteObj();
 		}
+		//универсальная часть, которая проверяет второстепенные сущности
+		if (state == 5 || state == 3)
+		{
+			personTable.erase(i);
+
+			if (add != nullptr)
+			{
+				adMap.setBuf(add);
+				if (findReferences(add) == 0)
+					deleteAddress(add);
+			}
+			for (int i = 0; i < pn.size(); i++)
+			{
+				if (pn[i] != nullptr)
+				{
+					pnMap.setBuf(pn[i]);
+					if (findReferences(pn[i]) == 0)
+						deletePhone(pn[i]);
+				}
+			}
+		}
+			
+			
 	}
+	
 
 }
 
@@ -555,7 +567,7 @@ Person& Model::findPerson(Person p, bool isEmpty, int& ctr)
 		if (isEmpty)
 			bd = pMap.findObj(isEmpty);
 		else		
-			bd = pMap.findObjj();
+			bd = abs( pMap.findObjj());
 	
 		//Если найденный элемент есть только в БД
 		//, то добавляем его в память приложения
