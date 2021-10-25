@@ -14,11 +14,10 @@ int main()
 {
 	
 	ConsoleApp app;
-	Model model;
+	//Model model;
 	
 	
-	Controller controller(&model);
-	controller.setView(&app);
+	Controller controller(&app);
 	app.setController(&controller);
 
 

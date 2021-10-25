@@ -49,6 +49,7 @@ public:
 	void deleteAddress();
 
 	void success();
+	void offlineStatus();
 	void fail();
 
 	wchar_t* get_a_number();/*find fio and phoneNumber*/

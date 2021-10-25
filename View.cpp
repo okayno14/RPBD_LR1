@@ -17,11 +17,12 @@ void ConsoleApp::Main_menu_output()
 	cout << "------------------------------------------------" << endl;
 	cout << "-----------------------Menu---------------------" << endl;
 	cout << "------------------------------------------------" << endl;
-	cout << "1 - поиск контакта" << endl;
+	cout << "1 - Поиск контакта" << endl;
 	cout << "2 - Добавить контакт в тк" << endl;
 	cout << "3 - Редактирование контакта в тк" << endl;
 	cout << "4 - Удаление контакта" << endl;
-	cout << "Нажмите 0 для выхода" << endl;
+	cout << "5 - ЕКСПЕРИМЕНТ\n";
+	cout << "Нажмите 9 для выхода" << endl;
 	cout << "------------------------------------------------" << endl;
 	cout << ">>";
 }
@@ -44,15 +45,15 @@ void ConsoleApp::Update_menu()
 	cout << "------------------------------------------------" << endl;
 	cout << "1 - Обновить ФИО контакта" << endl;
 	cout << "2 - Добавить адрес контакту" << endl;
-	cout << "3 - изменить улицу контакту" << endl;
-	cout << "4 - изменить номер квартиры контакьта" << endl;
-	cout << "5 - изменить номер дома контакту" << endl;
+	cout << "3 - Изменить улицу контакту" << endl;
+	cout << "4 - Изменить номер квартиры контакта" << endl;
+	cout << "5 - Изменить номер дома контакту" << endl;
 	cout << "6 - Добавить номер телефона контакта" << endl;
 	cout << "7 - Изменить номер контакта" << endl;
 	cout << "8 - Изменить тип номера контакту" << endl;
 	cout << "9 - Удалить номер контакту" << endl;
 	cout << "10 - Удалить адрес проживания контакта" << endl;
-	cout << "0 - Выход из меню обновление информации" << endl;
+	cout << "0 - Выход из меню обновления информации" << endl;
 	cout << "------------------------------------------------" << endl;
 	cout << ">>";
 }
@@ -112,7 +113,15 @@ void ConsoleApp::run()
 			system("cls");
 			break;
 		}
-		case 0: break;
+		case 5:
+		{
+			system("cls");
+			con->experiment();
+			_getwch();
+			system("cls");
+			break;
+		}
+		case 9: break;
 		}
 	}
 	system("pause");
@@ -249,9 +258,9 @@ void ConsoleApp::addContact()
 	wchar_t* lastnamecontact = new wchar_t[20];
 	wchar_t* firstnamecontact = new wchar_t[20];
 	wchar_t* fathernamecontact = new wchar_t[20];
-	cout << "Введите имя контакта : ";
-	wcin >> lastnamecontact;
 	cout << "Введите фамилию контакта : ";
+	wcin >> lastnamecontact;
+	cout << "Введите имя контакта : ";
 	wcin >> firstnamecontact;
 	cout << "Введите отчество контакта : ";
 	wcin >> fathernamecontact;
@@ -707,6 +716,13 @@ wchar_t* ConsoleApp::get_a_address()
 	cout << "Введите номер телефона для дальнейшего поиска контакта" << endl;
 	wcin >> numder;
 	return numder;
+}
+
+void ConsoleApp::offlineStatus()
+{
+	cout << "Ошибка подключения к бд. Приложение работает в оффлайн режиме.\n";
+	_getwch();
+	system("cls");
 }
 
 

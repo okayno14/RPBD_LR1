@@ -23,6 +23,8 @@ private:
 
 public:
 	Controller(Model* model);
+	Controller(ConsoleApp* view);
+	~Controller() { delete model; }
 	void setView(ConsoleApp* consoleApp);
 
 	bool add—ontact(
@@ -100,14 +102,18 @@ public:
 		SQLWCHAR* fatherNameContact);
 private:
 
-	Person* find_Person(
-		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact);
-	Person* find_Person(
-		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact,
-		SQLWCHAR* phonenumber);
-	Person* find_Person();
+
+	void experiment();
+	void testFindFIO();
+	void testFindPhone01();
+	void testFindPhone01(bool isOnline);
+	void testFindPhone10();
+	void testFindPhoneNameErr();
+	void testFindPhoneAddress01(bool isOnline);
+	void testFindPhoneAddress10();
+	void testUpdateAddrOffline();
+	void testUpdateAddrPhoneOffline();
+	void testUpdateAddrPhoneOnline();
+	void testUpdateAddrOnline();
+	void testUpdatePhoneOnline();
 };
