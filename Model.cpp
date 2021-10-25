@@ -353,10 +353,10 @@ void Model::sync( Person* p)
 	}
 };
 
-//Тестируем update
 void Model::updatePerson(Person* pOld, Person pNew)
 {
-	Address* buf = nullptr;	
+	Address* bufA = nullptr;	
+	std::vector<PhoneNumber*> bufP;
 	pOld->isSynced = 0;
 	//Если обновляли ФИО
 	if (!pOld->isEqual(&pNew)) 
@@ -371,28 +371,57 @@ void Model::updatePerson(Person* pOld, Person pNew)
 
 		if (!pOld->address->isEqual(pNew.address))
 		{
-			buf = pOld->address;
+			bufA = pOld->address;
 			Address* addN = &insertAddress(*pNew.address);
 			pOld->address = addN;
 			pOld->idAddress = pOld->address->id;
 			pOld->address->isSynced = 0;
 		}
-
-		sync(pOld);
-
-		//Когда обновляли адрес. Нужно проверить количество ссылок на старый объект. 
-		//Если их не будет, то удалить объект.
-		if (buf != nullptr)
-		{
-			adMap.setBuf(buf);
-			if (findReferences(buf) == 0)
-				deleteAddress(buf);
-		}
 	//</address>
 		
 	//<phoneNumber>
-		
+		PhoneNumber emptyy;
+		for (int i = 0; i < pNew.phoneNumbers.size(); i++)
+		{
+			//расширяем коллекции оригинала 
+			//если в новом объекте больше элементов
+			if (i >= pOld->phoneNumbers.size())
+			{
+				pOld->phoneNumbers.push_back(&emptyy);
+				pOld->idPhones.push_back(-1);
+			}
+
+			//Если телефоны не совпали
+			if (!pOld->phoneNumbers[i]->isEqual(pNew.phoneNumbers[i]))
+			{
+				bufP.push_back(pOld->phoneNumbers[i]);
+				PhoneNumber* pnN = &insertPhone(*pNew.phoneNumbers[i]);
+				pOld->phoneNumbers[i] = pnN;
+				pOld->idPhones[i] = pnN->getId();
+				pOld->phoneNumbers[i]->isSynced = 0;
+			}
+		}
 	//</phoneNumber>
+
+	sync(pOld);
+
+	//Когда обновляли адрес. Нужно проверить количество ссылок на старый объект. 
+	//Если их не будет, то удалить объект.
+	if (bufA != nullptr)
+	{
+		adMap.setBuf(bufA);
+		if (findReferences(bufA) == 0)
+			deleteAddress(bufA);
+	}
+	for (int i = 0; i < bufP.size(); i++) 
+	{
+		if (bufP[i] != nullptr)
+		{
+			pnMap.setBuf(bufP[i]);
+			if (findReferences(bufP[i]) == 0)
+				deletePhone(bufP[i]);
+		}
+	}	
 }
 
 //Метод делает атомарную операцию поиска 1 контакта.
