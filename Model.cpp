@@ -471,6 +471,53 @@ void Model::updatePerson(Person* pOld, Person pNew)
 	}	
 }
 
+void Model::deletePerson(Person* p)
+{
+	std::list<Person>::iterator i = personTable.begin();
+	while (i != personTable.end()) 
+	{
+		//удостоверились, полученный указатель ссылается на объект коллекции
+		if (&(*i) == p)
+		{
+			//резервирование указателей перед удалением объекта
+			Address* add = p->address;
+			std::vector<PhoneNumber*> pn = p->phoneNumbers;
+			
+			int state = getState(p);
+			//онлайн часть удаления, если контакт есть в БД
+			if (state == 5 && dbc != nullptr) 
+			{
+				pMap.setBuf(p);
+				pMap.deleteObj();
+			}
+			//универсальная часть, которая проверяет второстепенные сущности
+			if (state == 5 || state == 3)
+			{
+				personTable.erase(i);
+
+				if (add != nullptr)
+				{
+					adMap.setBuf(add);
+					if (findReferences(add) == 0)
+						deleteAddress(add);
+				}
+				for (int i = 0; i < pn.size(); i++)
+				{
+					if (pn[i] != nullptr)
+					{
+						pnMap.setBuf(pn[i]);
+						if (findReferences(pn[i]) == 0)
+							deletePhone(pn[i]);
+					}
+				}
+			}
+			
+			
+		}
+	}
+
+}
+
 //Метод делает атомарную операцию поиска 1 контакта.
 //Возвращается ссылка на объект и изменяется значение поступившего счётчика
 //Если поиск успешный, то счётчик = 1

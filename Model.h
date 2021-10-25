@@ -383,7 +383,7 @@ public:
 	//<Person>
 		Person& insertPerson(Person p);
 		void updatePerson(Person* pOld, Person pNew);
-		void deletePerson(Person p);
+		void deletePerson(Person* p);
 		//тхн
 		Person& findPerson(Person p, bool isEmpty, int& ctr);
 		//тхн рекетнм
