@@ -697,4 +697,11 @@ void ConsoleApp::success()
 	cout << "Success!!!!))" << endl;
 }
 
+void ConsoleApp::offlineStatus()
+{
+	cout << "Ошибка подключения к бд. Приложение работает в оффлайн режиме.\n";
+	_getwch();
+	system("cls");
+}
+
 

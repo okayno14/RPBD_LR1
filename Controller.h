@@ -23,6 +23,8 @@ private:
 
 public:
 	Controller(Model* model);
+	Controller(ConsoleApp* view);
+	~Controller() { delete model; }
 	void setView(ConsoleApp* consoleApp);
 
 	bool add—ontact(

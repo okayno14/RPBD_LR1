@@ -4,6 +4,7 @@
 #include <sqlext.h>
 #include <sql.h>
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <list>
 #include <vector>
@@ -301,6 +302,8 @@ public:
 	void deleteObj()  override;
 
 	void updateObj() override;
+
+	void createDB();
 };
 
 class AddressMapper : public AbstractMapper
@@ -370,14 +373,7 @@ private:
 
 	DataBaseConnection* dbc = nullptr;
 public:	
-	Model() 
-	{
-		try
-		{
-			dbc = DataBaseConnection::getInstance();
-		}
-		catch (int err) {}
-	}	
+	Model();
 
 	/*insert
 	update

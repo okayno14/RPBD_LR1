@@ -747,6 +747,25 @@ void PersonMapper::updateObj()
 	//</обновить person>
 	commitTransaction();
 }
+void PersonMapper::createDB()
+{
+	std::wstringstream command;
+	std::wstring buf;
+	std::wifstream file("rpbd_databaseNULL.txt", std::ios::binary);
+	while (std::getline(file,buf)) 
+	{ 
+		if (!buf.empty())
+			command << buf;
+	};
+	buf = command.str();
+	statementText = (SQLWCHAR*) buf.c_str();	
+	file.close();
+
+	retcode = SQLExecDirect(hstmt, statementText, SQL_NTS);
+	checkErr();
+
+	commitTransaction();
+}
 int PersonMapper::findObj(bool q)
 {
 	SQLLEN a;

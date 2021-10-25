@@ -6,6 +6,21 @@ Controller::Controller(Model* model)
 	this->model = model;
 }
 
+Controller::Controller(ConsoleApp* view)
+{
+	try 
+	{
+		this->consoleApp = view;
+		this->model = new Model();
+	}
+	catch (int) 
+	{
+		consoleApp->offlineStatus();
+		//вывести на экран инфу
+	};
+	
+}
+
 void Controller::setView(ConsoleApp* consoleApp)
 {
 	this->consoleApp = consoleApp;

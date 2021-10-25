@@ -3,6 +3,34 @@
 #include "math.h"
 
 
+Model::Model()
+{
+	try
+	{
+		dbc = DataBaseConnection::getInstance();
+		//тестируем наличие таблиц в БД
+		Person p;
+		Address add;
+		PhoneNumber pn;
+
+		pMap.setBuf(&p);
+		adMap.setBuf(&add);
+		pnMap.setBuf(&pn);
+
+		try 
+		{
+			pMap.findObj(1);
+			adMap.findObj(1);
+			pnMap.findObj(1);
+		}
+		catch (std::wstring msg) 
+		{
+			pMap.createDB();
+		}
+	}
+	catch (int err) { throw err; }
+}
+
 Person& Model::insertPerson(Person p)
 {
 	personTable.push_back(p);	
