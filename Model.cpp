@@ -2,18 +2,7 @@
 #include "Model.h"
 #include "math.h"
 
-void Model::addRecord()
-{
-}
-void Model::addPhone(PhoneNumber pn)
-{
-	/*this->phoneNumberTable.push_back(pn);
 
-	this->pnMap.setBuf(&phoneNumberTable.back());
-
-	pnMap.insertObj();
-	pnMap.deleteObj();*/
-}
 Person& Model::insertPerson(Person p)
 {
 	personTable.push_back(p);	
@@ -53,121 +42,47 @@ int Model::getState(Person* p)
 
 void Model::download(Person* p)
 {
-	//адреса
-	//int count = 0;
-
 	std::list<Address>::iterator it = addressTable.begin();
-	//while (it != addressTable.end()) 
-	//{
-	//			
-	//	//Если нашёлся адрес по id в СД
-	//	if ((*it).id == p->idAddress)
-	//	{
-	//		p->address = &(*it);
-	//		count++;
-	//		break;
-	//	}
-	//	it++;
-	//}
-	//Адреса в памяти нет
-	//if (count == 0) 
-	//{
-		
-		//качаем адрес
-		//вставляем его в СД
-		//привязываем его по id
-		Address ad;
-		ad.id = p->idAddress;
-		adMap.setBuf(&ad);
-		adMap.findObj(ad.id);
-		addressTable.push_back(ad);
-		p->address = &addressTable.back();
-	//}
+	//качаем адрес
+	//вставляем его в СД
+	//привязываем его по id
+	Address ad;
+	ad.id = p->idAddress;
+	adMap.setBuf(&ad);
+	adMap.findObj(ad.id);
+	addressTable.push_back(ad);
+	p->address = &addressTable.back();
 	p->address->isSynced = 1;
 
 	//телефоны
 	//цикл обхода id телефонов
 	for (int i = 0; i < p->idPhones.size(); i++) 
 	{
-		//count = 0;
 		int id = p->idPhones[i];
-
-		std::list<PhoneNumber>::iterator jt = phoneNumberTable.begin();
-		
-		//while (jt != phoneNumberTable.end())
-		//{
-		//	//Если нашёлся телефон по id в СД
-		//	if ((*jt).id == id)
-		//	{
-		//		p->phoneNumbers.push_back(&(*jt));
-		//		count++;
-		//		break;
-		//	}
-		//	jt++;
-		//}
-		////Телефона в памяти нет
-		//if (count == 0)
-		//{
-			
+		std::list<PhoneNumber>::iterator jt = phoneNumberTable.begin();		
 		//Качаем телефон по его id
-		
-			PhoneNumber pn;
-			pn.id = id;
-			pnMap.setBuf(&pn);
-			pnMap.findObj(id);
-			phoneNumberTable.push_back(pn);
-			p->phoneNumbers.push_back(&phoneNumberTable.back());
-		//}
+		PhoneNumber pn;
+		pn.id = id;
+		pnMap.setBuf(&pn);
+		pnMap.findObj(id);
+		phoneNumberTable.push_back(pn);
+		p->phoneNumbers.push_back(&phoneNumberTable.back());
 		p->phoneNumbers.back()->isSynced = 1;
 	}
 };
 
 void Model::upload(Person* p)
 {
+	//синхронизация адреса
 	if(p->address!=nullptr) 
 		sync(p->address);
+	//синхронизация телефонов
 	for (
 		std::vector<PhoneNumber*>::iterator i = p->phoneNumbers.begin();
 		i != p->phoneNumbers.end();
 		++i
 		)
 		sync(*i);
-		
-	////Работа с телефонами
-	//for (int i = 0; i < p->phoneNumbers.size(); i++) 
-	//{
-	//	PhoneNumber* pn = p->phoneNumbers[i];
-	//	//состояние объекта 01
-	//	if (pn->id < 0) 
-	//	{
-	//		pnMap.setBuf(pn);
-	//		pnMap.insertObj();
-	//		p->idPhones[i] = pn->id;
-	//	}
-	//	//состояние объекта 12
-	//	else if (pn->id > 0 && !pn->isSynced)
-	//	{
-	//		pnMap.setBuf(pn);
-	//		pnMap.updateObj();
-	//	}
-	//}
-
-	////Работа с адресами
-	////состояние объекта 01
-
-	//if (p->address == nullptr) return;
-	//if (p->idAddress < 0)
-	//{
-	//	adMap.setBuf(p->address);
-	//	adMap.insertObj();
-	//	p->idAddress = p->address->id;
-	//}
-	////состояние объекта 12
-	//else if (p->idAddress > 0 && !p->address->isSynced)
-	//{
-	//	adMap.setBuf(p->address);
-	//	adMap.updateObj();
-	//}
 };
 
 PhoneNumber& Model::insertPhone(PhoneNumber pn)
@@ -266,7 +181,7 @@ int Model::findReferences(PhoneNumber* pn)
 	if (state == 5)
 	{
 		pnMap.setBuf(pn);
-		//res = res + pnMap.findReferences();
+		res = res + pnMap.findReferences();
 	};
 	return res;
 }
@@ -436,81 +351,55 @@ void Model::sync( Person* p)
 		pMap.updateObj();
 		p->isSynced = 1;
 	}
-	//
-	//if (!p->isSynced)
-	//{
-	//	pMap.setBuf(p);
-	//	//Подготовка вторичных сущностей к загрузке
-	//	upload(p);
-	//	//состояние 01
-	//	if (p->id == -1)
-	//	{
-	//		pMap.insertObj();
-	//	}
-	//	//состояние 12
-	//	else
-	//	{
-	//		pMap.updateObj();
-	//	}
-	//	p->isSynced = 1;
-	//}	
 };
 
 //Тестируем update
 void Model::updatePerson(Person* pOld, Person pNew)
 {
-	Address* buf = nullptr;
-	
+	Address* buf = nullptr;	
 	pOld->isSynced = 0;
-
 	//Если обновляли ФИО
 	if (!pOld->isEqual(&pNew)) 
-		updatePerson(pOld, &pNew);
+		updatePerson(pOld, &pNew);	
 	
-	
-	//работа с адресами
-	int q = 0;
-	
-	//Инициализируем указатель на случай, если
-	//у контакта не было адреса до этого 
-	Address empty;
-	if (pOld->address == nullptr)
-		pOld->address = &empty;
+	//<address>
+		//Инициализируем указатель на случай, если
+		//у контакта не было адреса до этого 
+		Address empty;
+		if (pOld->address == nullptr)
+			pOld->address = &empty;
 
-	if (!pOld->address->isEqual(pNew.address))
-	{
-		buf = pOld->address;
-		Address* addN = &insertAddress(*pNew.address);
-		pOld->address = addN;
-		pOld->idAddress = pOld->address->id;
-		int q(0);
-		//findAddress(*buf, q);
-		//findReferences(*buf,q);
+		if (!pOld->address->isEqual(pNew.address))
+		{
+			buf = pOld->address;
+			Address* addN = &insertAddress(*pNew.address);
+			pOld->address = addN;
+			pOld->idAddress = pOld->address->id;
+			pOld->address->isSynced = 0;
+		}
 
+		sync(pOld);
+
+		//Когда обновляли адрес. Нужно проверить количество ссылок на старый объект. 
+		//Если их не будет, то удалить объект.
+		if (buf != nullptr)
+		{
+			adMap.setBuf(buf);
+			if (findReferences(buf) == 0)
+				deleteAddress(buf);
+		}
+	//</address>
 		
-
-		pOld->address->isSynced = 0;
-	}
-	
-	
-	sync(pOld);
-
-	//Когда обновляли адрес. Нужно проверить количество ссылок на старый объект. 
-	//Если их не будет, то удалить объект.
-	if (buf != nullptr)
-	{
-		adMap.setBuf(buf);
-		if (findReferences(buf) == 0)
-			deleteAddress(buf);
-	}
+	//<phoneNumber>
+		
+	//</phoneNumber>
 }
 
 //Метод делает атомарную операцию поиска 1 контакта.
-//Возвращается копия найденного объекта и изменяется значение поступившего счётчика
+//Возвращается ссылка на объект и изменяется значение поступившего счётчика
 //Если поиск успешный, то счётчик = 1
 //Если счётчик > 0 значит недостаточно вторичных атрибутов
 //Если счётчик == 0 значит ничего не нашлось
-
 Person& Model::findPerson(Person p, bool isEmpty, int& ctr)
 {
 	//вызов синхронизации

@@ -43,7 +43,11 @@ private:
 	bool isSynced = false;
 
 public:
-	Address(int id = -1, int idStreet = -1);
+	Address(int id = -1, int idStreet = -1)
+	{
+		this->id = id;
+		this->idStreet = idStreet;
+	};
 	Address(SQLWCHAR* streetName, int home, int appartement) 
 	{
 		wcscpy_s(this->streetName, streetName);
@@ -89,7 +93,11 @@ private:
 
 public:
 
-	PhoneNumber(int id = -1, int idType = -1);
+	PhoneNumber(int id = -1, int idType = -1)
+	{
+		this->id = id;
+		this->idType = idType;
+	};
 
 	PhoneNumber(SQLWCHAR* number, int type) 
 	{
@@ -362,12 +370,6 @@ public:
 		}
 		catch (int err) {}
 	}	
-	
-	Person* findPerson() {};
-	void removeRecord() {};
-	void editRecord() {};
-	void addRecord();
-	void addPhone(PhoneNumber pn);
 
 	/*insert
 	update
@@ -376,6 +378,17 @@ public:
 
 	//<Person>
 		Person& insertPerson(Person p);
+		void updatePerson(Person* pOld, Person pNew);
+		void deletePerson(Person p);
+		//тхн
+		Person& findPerson(Person p, bool isEmpty, int& ctr);
+		//тхн рекетнм
+		Person& findPerson(Person p, PhoneNumber pn, int& ctr);
+		//тхн рекетнм юдпея
+		Person& findPerson(Person p, PhoneNumber pn, Address add, int& ctr);
+		//Person& findByAllAtributes() {};
+		//Person& findBy4() {};
+		//Person& findById() {};
 
 private:
 		void updatePerson(Person* pOld, Address* add);
@@ -388,45 +401,25 @@ private:
 		void upload(Person* p);
 		void download(Person* p);
 		void syncAll();
-
-public:
-		void updatePerson(Person* pOld, Person pNew);
-
-		void deletePerson(Person p);
-
-		//тхн
-		Person& findPerson(Person p, bool isEmpty, int& ctr);
-		//тхн рекетнм
-		Person& findPerson(Person p, PhoneNumber pn, int& ctr);
-		//тхн рекетнм юдпея
-		Person& findPerson(Person p, PhoneNumber pn, Address add, int& ctr);
 	//</Person>
 
 	//<Phone>
-private:
 		PhoneNumber& insertPhone(PhoneNumber pn);
-		int getState(PhoneNumber* pn);
-		void sync(PhoneNumber* pn);
-		void syncAllPhones();
-		int findReferences(PhoneNumber* pn);
 		void deletePhone(PhoneNumber* pn);
 		PhoneNumber& findPhone(PhoneNumber pn, int& ctr);
-public:
+		int findReferences(PhoneNumber* pn);
+		int getState(PhoneNumber* pn);
+		void sync(PhoneNumber* pn);
+		void syncAllPhones();		
 	//</Phone>
 
 	//<Address>
-private:
-		Address& findAddress(Address add, int& ctr);
 		Address& insertAddress(Address add);
+		void deleteAddress(Address* add);
+		Address& findAddress(Address add, int& ctr);
+		int findReferences(Address* add);
 		int getState(Address* add);
 		void sync(Address* add);
-		void syncAllAddresses();
-		void deleteAddress(Address* add);
-		int findReferences(Address* add);
-public:
+		void syncAllAddresses();		
 	//</Address>
-
-	//Person& findByAllAtributes() {};
-	//Person& findBy4() {};
-	//Person& findById() {};
 };

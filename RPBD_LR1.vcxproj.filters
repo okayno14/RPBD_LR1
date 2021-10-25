@@ -19,9 +19,6 @@
     <ClCompile Include="Controller.cpp">
       <Filter>Controller</Filter>
     </ClCompile>
-    <ClCompile Include="Address.cpp">
-      <Filter>Model</Filter>
-    </ClCompile>
     <ClCompile Include="DataBaseConnection.cpp">
       <Filter>Model</Filter>
     </ClCompile>
@@ -29,12 +26,6 @@
       <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
-      <Filter>Model</Filter>
-    </ClCompile>
-    <ClCompile Include="Person.cpp">
-      <Filter>Model</Filter>
-    </ClCompile>
-    <ClCompile Include="PhoneNumber.cpp">
       <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="View.cpp">
