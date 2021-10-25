@@ -1,0 +1,45 @@
+create table Type_of_phone(
+id serial primary key,
+TypeName varchar(20) not null);
+
+create table PhoneNumber(
+id serial primary key,
+idType integer references Type_of_phone(id),
+Number varchar(20) not null);
+
+create table Street(
+id serial primary key,
+StreetName varchar(20) not null);
+
+create table Address(
+id serial primary key,
+idStreet integer references Street(id),
+Home integer not null,
+Appartement integer not null);
+
+
+create table Person(
+id serial primary key,
+idAddress integer references Address(id),
+LastName varchar(20) not null,
+FirstName varchar(20) not null,
+FatherName varchar(20) not null);
+
+create table Persone_number(
+idPerson integer references Person(id),
+idPhone integer references PhoneNumber(id));
+
+create sequence sec_top owned by Type_of_phone.id;
+alter table Type_of_phone alter column id set default nextval('sec_top');
+create sequence sec_pn owned by PhoneNumber.id;
+alter table PhoneNumber alter column id set default nextval('sec_pn');
+create sequence sec_s owned by Street.id;
+alter table Street alter column id set default nextval('sec_s');
+create sequence sec_a owned by Address.id;
+alter table Address alter column id set default nextval('sec_a');
+create sequence sec_p owned by Person.id;
+alter table Person alter column id set default nextval('sec_p');
+
+insert into type_of_phone (id, typename) VALUES (1,'mobile');
+insert into type_of_phone (id, typename) VALUES (2,'work');
+insert into type_of_phone (id, typename) VALUES (3,'home');

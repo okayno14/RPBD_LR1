@@ -49,4 +49,5 @@ public:
 	void deleteAddress();
 
 	void success();
+	void offlineStatus();
 };

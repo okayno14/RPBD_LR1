@@ -12,14 +12,14 @@ using namespace std;
 
 int main() 
 {
-	Model model;
-	ConsoleApp app;
 	
-	Controller controller(&model);
-	controller.setView(&app);
+	ConsoleApp app;
+	//Model model;
+	
+	
+	Controller controller(&app);
 	app.setController(&controller);
 
-	cout << &controller << endl;
 
 	app.run();
 
