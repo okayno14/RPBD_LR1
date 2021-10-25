@@ -199,7 +199,7 @@ void Controller::experiment()
 	//testUpdateAddrPhoneOnline();
 
 
-	SQLWCHAR lastname[strSZ];
+	/*SQLWCHAR lastname[strSZ];
 	SQLWCHAR firstname[strSZ];
 	SQLWCHAR fathername[strSZ];
 
@@ -225,7 +225,21 @@ void Controller::experiment()
 
 	model->updatePerson(f, p);
 
-	model->deletePerson(f);
+	model->deletePerson(f);*/
+
+	SQLWCHAR a[strSZ];
+	wcscpy_s(a, L"7(913)817-18-79");
+
+	PhoneNumber pn(a,1);
+	std::vector<int> nums;
+	nums.push_back(1);
+	nums.push_back(8);
+	nums.push_back(7);
+	nums.push_back(9);
+	
+	pn.isContain(&nums);
+
+	model->pMap.findby4(&nums);
 }
 
 void Controller::testFindFIO() 

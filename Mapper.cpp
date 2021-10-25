@@ -1698,4 +1698,77 @@ int PhoneMapper::findReferences()
 	commitTransaction();
 
 	return finded;
+}
+std::vector<Person> PersonMapper::findby4(std::vector<int>* args)
+{
+	statementText = (SQLWCHAR*)L" SELECT "
+		" 	person.id,"
+		" 	person.idaddress,"
+		" 	person.lastname,"
+		" 	person.firstname,"
+		" 	person.fathername,"
+		" 	persone_number.idPhone,"
+		" 	phoneNumber.idtype,"
+		" 	phoneNumber.number,"
+		" 	address.idstreet,"
+		" 	address.home,"
+		" 	address.appartement,"
+		" 	street.streetname"
+		" FROM"
+		" 	person INNER JOIN persone_number"
+		" 	ON"
+		" 		person.id = persone_number.idPerson"
+		" 	INNER JOIN phonenumber"
+		" 	ON "
+		" 		persone_number.idPhone = phoneNumber.id"
+		" 	INNER JOIN address"
+		" 	ON"
+		" 		person.idAddress = address.id"
+		" 	INNER JOIN street"
+		" 	ON"
+		" 		address.idstreet = street.id"
+		" WHERE"
+		" 	phoneNumber.number like ";
+	
+	std::wstring str(statementText);
+	
+	SQLWCHAR sym[2];
+	
+	str.append(L"%");
+	
+	_itow_s(args->at(0),sym,2,10);
+		
+	str.push_back(sym[0]);
+	
+	_itow_s(args->at(1), sym,2, 10);
+	str.push_back(sym[0]);
+	
+	str.append(L"%");
+	
+	_itow_s(args->at(2), sym,2, 10);
+	str.push_back(sym[0]);
+	
+	_itow_s(args->at(3), sym,2, 10);
+	str.push_back(sym[0]);
+
+	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+	checkErr();
+
+	retcode = SQLExecute(hstmt);
+	checkErr();
+
+	std::vector<Person> res;
+
+	
+	while (retcode = SQLFetch(hstmt) != SQL_NO_DATA)
+	{
+		res.push_back(*buf);
+	}	
+
+	retcode = SQLCloseCursor(hstmt);
+	checkErr();
+	commitTransaction();
+
+
+	return res;
 };

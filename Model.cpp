@@ -703,3 +703,22 @@ Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
 		ctr = bd;
 	return *res;
 }
+
+bool PhoneNumber::isContain(std::vector<int>* nums)
+{
+	bool res = true;
+
+	SQLWCHAR cur =number[10];
+	res = res && _wtoi(&cur) == nums->at(0);
+
+	cur = number[11];
+	res = res && _wtoi(&cur) == nums->at(1);
+
+	cur = number[13];
+	res = res && _wtoi(&cur) == nums->at(2);
+
+	cur = number[14];
+	res = res && _wtoi(&cur) == nums->at(3);
+
+	return res;
+}
