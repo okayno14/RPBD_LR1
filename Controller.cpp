@@ -169,112 +169,112 @@ bool Controller::deleteAddress(
 */
 
 
-Person* Controller::find_Person(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact)
-{
-	/*Person tmp(lastNameContact,firstNameContact,fatherNameContact);*/
-	wchar_t* number;
-	wchar_t* address;
-	int T = 0; // schetchik
-
-	/*tmp = this->model->findPerson();*/
-
-	if (T > 1)
-	{
-		number = this->consoleApp->get_a_number();
-		/*tmp = this->model->findPerson()*///fio number
-
-		/*????
-		if (???)
-		{
-			addres = this->consoleApp->get_a_address();
-			tmp = this->model->findPerson();
-
-			if(???)
-			{
-				tmp = this->model->findPerson();// poisk pustogo
-				
-				if(voobwe netu)
-				{
-					throw -1;// oblamivaem returny
-				}
-
-				return tmp;
-			}
-
-			return tmp;
-		}
-		*/
-
-		/*return tmp*/
-	}
-
-	/*suda */
-	
-	return nullptr;///<----- poka tut
-}
-
-
-void Controller::experiment() 
-{
-	//testFindPhone01(true);
-	//testFindPhone10();
-
-	//testFindPhoneNameErr();
-	//testFindPhoneAddress01(false);
-	//testFindPhoneAddress10();
-
-	//testUpdateAddrOffline();
-	//testUpdateAddrPhoneOffline();
-
-	//testUpdateAddrOnline();
-
-	//testUpdatePhoneOnline();
-
-	/*SQLWCHAR streetName[strSZ];
-	wcscpy_s(streetName, L"Voennaya");
-	Address add(streetName,40,37);
-	
-	int q(0);
-
-	Address* f = &model->insertAddress(add);
-	model->getState(f);*/
-	
-	//testUpdateAddrPhoneOffline();
-
-	//testFindFIO();
-
-	//testUpdateAddrOffline();
-	//testUpdateAddrOnline();
-	//testUpdateAddrPhoneOnline();
+//Person* Controller::find_Person(
+//	SQLWCHAR* lastNameContact,
+//	SQLWCHAR* firstNameContact,
+//	SQLWCHAR* fatherNameContact)
+//{
+//	/*Person tmp(lastNameContact,firstNameContact,fatherNameContact);*/
+//	wchar_t* number;
+//	wchar_t* address;
+//	int T = 0; // schetchik
+//
+//	/*tmp = this->model->findPerson();*/
+//
+//	if (T > 1)
+//	{
+//		number = this->consoleApp->get_a_number();
+//		/*tmp = this->model->findPerson()*///fio number
+//
+//		/*????
+//		if (???)
+//		{
+//			addres = this->consoleApp->get_a_address();
+//			tmp = this->model->findPerson();
+//
+//			if(???)
+//			{
+//				tmp = this->model->findPerson();// poisk pustogo
+//				
+//				if(voobwe netu)
+//				{
+//					throw -1;// oblamivaem returny
+//				}
+//
+//				return tmp;
+//			}
+//
+//			return tmp;
+//		}
+//		*/
+//
+//		/*return tmp*/
+//	}
+//
+//	/*suda */
+//	
+//	return nullptr;///<----- poka tut
+//}
 
 
-	SQLWCHAR lastname[strSZ];
-	SQLWCHAR firstname[strSZ];
-	SQLWCHAR fathername[strSZ];
-
-	wcscpy_s(lastname, L"Ivanov");
-	wcscpy_s(firstname, L"Ivan");
-	wcscpy_s(fathername, L"Ivanovich");
-
-	Person p(lastname, firstname, fathername);
-
-	Person* f = nullptr;
-	int q(0);
-	f = &model->findPerson(p,false,q);
-
-	SQLWCHAR number[strSZ];
-	wcscpy_s(number, L"8888888888888");
-	PhoneNumber pn(number, 1);
-
-	p = *f;
-	
-	p.setPhoneNumber(0, &pn);
-
-	model->updatePerson(f, p);
-}
+//void Controller::experiment() 
+//{
+//	//testFindPhone01(true);
+//	//testFindPhone10();
+//
+//	//testFindPhoneNameErr();
+//	//testFindPhoneAddress01(false);
+//	//testFindPhoneAddress10();
+//
+//	//testUpdateAddrOffline();
+//	//testUpdateAddrPhoneOffline();
+//
+//	//testUpdateAddrOnline();
+//
+//	//testUpdatePhoneOnline();
+//
+//	/*SQLWCHAR streetName[strSZ];
+//	wcscpy_s(streetName, L"Voennaya");
+//	Address add(streetName,40,37);
+//	
+//	int q(0);
+//
+//	Address* f = &model->insertAddress(add);
+//	model->getState(f);*/
+//	
+//	//testUpdateAddrPhoneOffline();
+//
+//	//testFindFIO();
+//
+//	//testUpdateAddrOffline();
+//	//testUpdateAddrOnline();
+//	//testUpdateAddrPhoneOnline();
+//
+//
+//	SQLWCHAR lastname[strSZ];
+//	SQLWCHAR firstname[strSZ];
+//	SQLWCHAR fathername[strSZ];
+//
+//	wcscpy_s(lastname, L"Ivanov");
+//	wcscpy_s(firstname, L"Ivan");
+//	wcscpy_s(fathername, L"Ivanovich");
+//
+//	Person p(lastname, firstname, fathername);
+//
+//	Person* f = nullptr;
+//	int q(0);
+//	f = &model->findPerson(p,false,q);
+//
+//	SQLWCHAR number[strSZ];
+//	wcscpy_s(number, L"8888888888888");
+//	PhoneNumber pn(number, 1);
+//
+//	p = *f;
+//	
+//	p.setPhoneNumber(0, &pn);
+//
+//	model->updatePerson(f, p);
+//}
 
 void Controller::testFindFIO() 
 {

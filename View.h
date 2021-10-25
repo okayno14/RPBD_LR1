@@ -11,40 +11,35 @@ class Controller;
 class ConsoleApp
 {
 private:
-	int MainMenu;
-	int UntMenu;
-	int ch;
-	bool findmenu;
-	bool updatemenu;
+	bool runTimeProgram;// служит в первом цикле программы
+	int MainMenu;//используетс€ дл€ ввода пользователем
+	//int UntMenu;//?????
+	int ch;//???????
 	Controller* con;
 //указатель на контроллер не забудь
 
 public:
 	ConsoleApp();
-	void Main_menu_output();
-	void Find_menu();
-	void Update_menu();
+
+	/*Ќовое меню приложени€*/
+	void Menu();
+	void MenuPC();
+
 
 	void setController(Controller* con);
 	
 	void run();
-	void runFind(bool findmenu);
-	void runUpdate(bool updatemenu);
+	void runPC();
+
+	void findPerson();
 
 	void addContact();
 	void deleteContact();
-	void findAddresstoFIO();
-	void findPhoneNumbertoFIO();
+
 	void findto4();
 	void updateFIOcontacte();
 	void addAddress();
-	void updateStreet();
-	void updateNumberHome();
-	
-	void updateNumberAppartment();
-	void addPhoneNumber();
-	void updatePhoneNumber();
-	void updateTypePhoneNumber();
+
 	void deletePhoneNumber();
 	void deleteAddress();
 
