@@ -110,6 +110,7 @@ public:
 	void testFindPhoneAddress10();
 	void testUpdateAddrOffline();
 	void testUpdateAddrPhoneOffline();
+	void testUpdateAddrPhoneOnline();
 	void testUpdateAddrOnline();
 	void testUpdatePhoneOnline();
 };

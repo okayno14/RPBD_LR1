@@ -1656,7 +1656,7 @@ void PhoneMapper::updateObj()
 }
 int PhoneMapper::findReferences()
 {
-	statementText = (SQLWCHAR*)L" SELECT * FROM personenumber WHERE idphone = ?";
+	statementText = (SQLWCHAR*)L" SELECT * FROM persone_number WHERE idphone = ?";
 
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 	checkErr();

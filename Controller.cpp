@@ -180,7 +180,33 @@ void Controller::experiment()
 	//testFindFIO();
 
 	//testUpdateAddrOffline();
-	testUpdateAddrOnline();
+	//testUpdateAddrOnline();
+	//testUpdateAddrPhoneOnline();
+
+
+	SQLWCHAR lastname[strSZ];
+	SQLWCHAR firstname[strSZ];
+	SQLWCHAR fathername[strSZ];
+
+	wcscpy_s(lastname, L"Ivanov");
+	wcscpy_s(firstname, L"Ivan");
+	wcscpy_s(fathername, L"Ivanovich");
+
+	Person p(lastname, firstname, fathername);
+
+	Person* f = nullptr;
+	int q(0);
+	f = &model->findPerson(p,false,q);
+
+	SQLWCHAR number[strSZ];
+	wcscpy_s(number, L"8888888888888");
+	PhoneNumber pn(number, 1);
+
+	p = *f;
+	
+	p.setPhoneNumber(0, &pn);
+
+	model->updatePerson(f, p);
 }
 
 void Controller::testFindFIO() 
@@ -447,6 +473,44 @@ void Controller::testUpdateAddrPhoneOffline()
 
 	model->updatePerson(f, copy);
 }
+
+void Controller::testUpdateAddrPhoneOnline() 
+{
+	SQLWCHAR lastname[strSZ];
+	SQLWCHAR firstname[strSZ];
+	SQLWCHAR fathername[strSZ];
+
+	wcscpy_s(lastname, L"Ivanov");
+	wcscpy_s(firstname, L"Ivan");
+	wcscpy_s(fathername, L"Ivanovich");
+
+	Person p(lastname, firstname, fathername);
+
+	Person* f = nullptr;
+	f = &model->insertPerson(p);
+
+	SQLWCHAR streetName[strSZ];
+	wcscpy_s(streetName, L"Ivanova");
+
+	Address add(streetName, 1, 2);
+
+	SQLWCHAR number[strSZ];
+	wcscpy_s(number, L"334-58-96");
+	PhoneNumber pn(number, 1);
+
+	SQLWCHAR number1[strSZ];
+	wcscpy_s(number, L"44444444");
+	PhoneNumber pn1(number, 2);
+
+	Person copy = p;
+
+	copy.addPhoneNumber(&pn);
+	copy.addPhoneNumber(&pn1);
+	copy.setAddress(&add);
+
+	model->updatePerson(f, copy);
+}
+
 
 void Controller::testUpdateAddrOnline() 
 {
