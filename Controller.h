@@ -32,40 +32,28 @@ public:
 		SQLWCHAR* firstNameContact,
 		SQLWCHAR* fatherNameContact);
 	bool deleteContact(
-		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact);
+		Person* p);
 	bool to—hangeContact(
-		SQLWCHAR* oldlastNameContact,
-		SQLWCHAR* oldfirstNameContact,
-		SQLWCHAR* oldfatherNameContact,
+		Person* p,
 		SQLWCHAR* newlastNameContact,
 		SQLWCHAR* newfirstNameContact,
 		SQLWCHAR* newfatherNameContact);
 	bool addPhoneNumberContact(
-		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact,
+		Person* p,
 		SQLWCHAR* number,
 		int type);
 	bool deletePhoneNumberContact(
-		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact,
+		Person* p,
 		SQLWCHAR* number);
 	
 	bool findContactBy4NumberPhone(SQLWCHAR* number4);
 	bool addAddress(
-		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact,
+		Person* p,
 		SQLWCHAR* nameStreet,
 		int numberHome,
 		int numberApartment);
 	bool deleteAddress(
-		SQLWCHAR* lastNameContact,
-		SQLWCHAR* firstNameContact,
-		SQLWCHAR* fatherNameContact);
+		Person* p);
 	Person* findPerson(
 		SQLWCHAR* lastNameContact,
 		SQLWCHAR* firstNameContact,

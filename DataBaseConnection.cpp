@@ -4,9 +4,9 @@ DataBaseConnection::DataBaseConnection() : status{ 0 }
 {
 	//dsn = (SQLWCHAR*)L"Pfdfdfffd";
 	//dsn = (SQLWCHAR*)L"Phonebook";
-	dsn = (SQLWCHAR*)L"test";
+	dsn = (SQLWCHAR*)L"PostgreSQL35W";
 	user = (SQLWCHAR*)L"postgres";
-	password = (SQLWCHAR*)L"123";
+	password = (SQLWCHAR*)L"q1w2e3";
 
 	retcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &handleEnv);
 	checkErr();

@@ -13,45 +13,43 @@ class ConsoleApp
 private:
 	bool runTimeProgram;// служит в первом цикле программы
 	int MainMenu;//используется для ввода пользователем
-	//int UntMenu;//?????
-	int ch;//???????
 	Controller* con;
-//указатель на контроллер не забудь
-
+	Person* p;
 public:
 	ConsoleApp();
 
-	/*Новое меню приложения*/
+	/*доп методы для отображения меню программы*/
 	void Menu();
 	void MenuPC();
 
 
 	void setController(Controller* con);
 	
+	/*остовные раны для управления приложением*/
 	void run();
 	void runPC();
 
-	void findPerson();
-
+	/*солянка для вызова внутри switch*/
+	Person* findPerson();
 	void addContact();
 	void deleteContact();
-
 	void findto4();
 	void updateFIOcontacte();
 	void addAddress();
 	void addPhoneNumber();
-
 	void deletePhoneNumber();
 	void deleteAddress();
 
+	/*вспомогательные методы*/
 	void success();
 	void offlineStatus();
 	void fail();
 	void What();
 	bool toRunMenuTwo();
 
-	wchar_t* get_a_number();/*find fio and phoneNumber*/
-	wchar_t* get_a_addressName();/*find fio and phoneNumber and address*/
+	/*методы для запросов полей с данными контакта*/
+	wchar_t* get_a_number();
+	wchar_t* get_a_addressName();
 	int get_a_type_number();
 	int get_a_apartment();
 	int get_a_numberhome();

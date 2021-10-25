@@ -31,7 +31,7 @@ bool Controller::add—ontact(
 	SQLWCHAR* firstNameContact,
 	SQLWCHAR* fatherNameContact)
 {
-	if (lastNameContact == NULL && firstNameContact == NULL && fatherNameContact == NULL)
+	if (lastNameContact == NULL || firstNameContact == NULL || fatherNameContact == NULL)
 		return false;
 	
 	Person p(lastNameContact, firstNameContact, fatherNameContact);
@@ -42,43 +42,59 @@ bool Controller::add—ontact(
 }
 
 bool Controller::deleteContact(
-	SQLWCHAR* lastNameContact, 
-	SQLWCHAR* firstNameContact, 
-	SQLWCHAR* fatherNameContact)
+	Person* p)
 {
+	
+
 	return false;
 }
 
 bool Controller::to—hangeContact(
-	SQLWCHAR* oldlastNameContact,
-	SQLWCHAR* oldfirstNameContact,
-	SQLWCHAR* oldfatherNameContact,
-	SQLWCHAR* newlastNameContact,
-	SQLWCHAR* newfirstNameContact,
+	Person* p, 
+	SQLWCHAR* newlastNameContact, 
+	SQLWCHAR* newfirstNameContact, 
 	SQLWCHAR* newfatherNameContact)
 {
+	if (newlastNameContact == NULL || newfirstNameContact == NULL || newfatherNameContact == NULL)
+	{
+		return false;
+	}
+
 	return false;
 }
 
-bool Controller::addPhoneNumberContact(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	SQLWCHAR* number, int type)
-{
-
-	
-	return false;
-}
-
-bool Controller::deletePhoneNumberContact(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	SQLWCHAR* number)
+bool Controller::addPhoneNumberContact(Person* p, SQLWCHAR* number, int type)
 {
 	return false;
 }
+
+
+//bool Controller::addPhoneNumberContact(
+//	SQLWCHAR* lastNameContact,
+//	SQLWCHAR* firstNameContact,
+//	SQLWCHAR* fatherNameContact,
+//	SQLWCHAR* number, int type)
+//{
+//	if (lastNameContact == NULL || firstNameContact == NULL || fatherNameContact == NULL)
+//		return false;
+//	if (number == NULL)
+//		return false;
+//	return false;
+//}
+
+//bool Controller::deletePhoneNumberContact(
+//	SQLWCHAR* lastNameContact,
+//	SQLWCHAR* firstNameContact,
+//	SQLWCHAR* fatherNameContact,
+//	SQLWCHAR* number)
+//{
+//	if (lastNameContact == NULL || firstNameContact == NULL || fatherNameContact == NULL)
+//		return false;
+//	if (number == NULL)
+//		return false;
+//
+//	return false;
+//}
 
 
 
@@ -91,28 +107,39 @@ bool Controller::findContactBy4NumberPhone(SQLWCHAR* number4)
 	return false;
 }
 
-bool Controller::addAddress(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	SQLWCHAR* nameStreet,
-	int numberHome, int numberApartment)
-{
-	return false;
-}
+//bool Controller::addAddress(
+//	SQLWCHAR* lastNameContact,
+//	SQLWCHAR* firstNameContact,
+//	SQLWCHAR* fatherNameContact,
+//	SQLWCHAR* nameStreet,
+//	int numberHome, int numberApartment)
+//{
+//	if (lastNameContact == NULL || firstNameContact == NULL || fatherNameContact == NULL)
+//		return false;
+//	if (nameStreet == NULL)
+//		return false;
+//	return false;
+//}
 
-bool Controller::deleteAddress(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact)
-{
-	return false;
-}
+//bool Controller::deleteAddress(
+//	SQLWCHAR* lastNameContact,
+//	SQLWCHAR* firstNameContact,
+//	SQLWCHAR* fatherNameContact)
+//{
+//	if(lastNameContact == NULL || firstNameContact == NULL || fatherNameContact == NULL)
+//		return false;
+//}
 Person* Controller::findPerson(
 	SQLWCHAR* lastNameContact,
 	SQLWCHAR* firstNameContact, 
 	SQLWCHAR* fatherNameContact)
 {
+	if (lastNameContact == NULL || firstNameContact == NULL || fatherNameContact == NULL)
+	{
+		cout << "ÌÂ ‚ÒÂ ‰‡ÌÌ˚Â!" << endl;
+		throw - 1;
+	}
+
 	Person p(lastNameContact, firstNameContact, fatherNameContact);
 	Person* tmp;
 	int count;

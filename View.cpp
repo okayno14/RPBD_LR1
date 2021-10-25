@@ -2,9 +2,7 @@
 
 ConsoleApp::ConsoleApp()
 {
-	MainMenu = 0;//proverit etih rebayt
-	//UntMenu = 0;
-	ch = 0;
+	MainMenu = 0;
 	this->runTimeProgram = true;
 	setlocale(LC_ALL, "Russian");
 	system("color 0F");
@@ -39,10 +37,6 @@ void ConsoleApp::MenuPC()
 		<< "[0] - Выход из подменю" << endl << endl << ">>>";
 }
 
-
-
-
-
 void ConsoleApp::setController(Controller* con)
 {
 	this->con = con;
@@ -61,8 +55,13 @@ void ConsoleApp::run()
 
 		case 1: {
 			system("cls");
-			findPerson();
-
+			try {
+				p = findPerson();
+				
+			}
+			catch (...) {
+				cout << "Nety" << endl;
+			}
 			_getwch();
 			break;
 		}
@@ -95,8 +94,6 @@ void ConsoleApp::run()
 
 	system("pause");
 }
-
-
 
 void ConsoleApp::runPC()
 {
@@ -151,9 +148,33 @@ void ConsoleApp::runPC()
 
 }
 
-void ConsoleApp::findPerson()
+//изменить
+Person* ConsoleApp::findPerson()
 {
+	wchar_t* lastnamecontact = new wchar_t[20];
+	wchar_t* firstnamecontact = new wchar_t[20];
+	wchar_t* fathernamecontact = new wchar_t[20];
+	cout << "Введите фамилию контакта : ";
+	wcin >> lastnamecontact;
+	cout << "Введите имя контакта : ";
+	wcin >> firstnamecontact;
+	cout << "Введите отчество контакта : ";
+	wcin >> fathernamecontact;
+	Person* p;
+	try {
+		p = con->findPerson(lastnamecontact, firstnamecontact, fathernamecontact);
+	}
+	catch (...)
+	{
+		cout << "Nety" << endl;
+		throw - 1;
+	}
 	
+
+	delete[] lastnamecontact;
+	delete[] firstnamecontact;
+	delete[] fathernamecontact;
+	return p;
 }
 
 
@@ -181,6 +202,7 @@ void ConsoleApp::addContact()
 	delete[] fathernamecontact;
 }
 
+//изменить
 void ConsoleApp::deleteContact()
 {
 	cout << "------------------------------------------------" << endl;
@@ -195,13 +217,13 @@ void ConsoleApp::deleteContact()
 	wcin >> firstnamecontact;
 	cout << "Введите отчество контакта : ";
 	wcin >> fathernamecontact;
-	con->deleteContact(lastnamecontact, firstnamecontact, fathernamecontact);
+	//con->deleteContact(lastnamecontact, firstnamecontact, fathernamecontact);
 	delete[] lastnamecontact;
 	delete[] firstnamecontact;
 	delete[] fathernamecontact;
 }
 
-
+//изменить
 void ConsoleApp::addPhoneNumber()
 {
 }
@@ -220,6 +242,7 @@ void ConsoleApp::findto4()
 	delete[] four_phonenumber;
 }
 
+//изменить
 void ConsoleApp::updateFIOcontacte()
 {
 	cout << "------------------------------------------------" << endl;
@@ -246,13 +269,13 @@ void ConsoleApp::updateFIOcontacte()
 	cout << "Введите отчество контакта : ";
 	wcin >> newfathernamecontact;
 
-	con->toСhangeContact(
+	/*con->toСhangeContact(
 		oldlastnamecontact,
 		oldfirstnamecontact,
 		oldfathernamecontact,
 		newlastnamecontact,
 		newfirstnamecontact,
-		newfathernamecontact);
+		newfathernamecontact);*/
 
 	delete[] oldlastnamecontact;
 	delete[] oldfirstnamecontact;
@@ -262,6 +285,7 @@ void ConsoleApp::updateFIOcontacte()
 	delete[] newfathernamecontact;
 }
 
+//изменить
 void ConsoleApp::addAddress()
 {
 	cout << "------------------------------------------------" << endl;
@@ -286,12 +310,12 @@ void ConsoleApp::addAddress()
 	cout << "Введите номер квартиры проживания контакта : ";
 	cin >> numberAppotarment;
 
-	con->addAddress(lastnamecontact,
+	/*con->addAddress(lastnamecontact,
 		firstnamecontact,
 		fathernamecontact,
 		nameStreet,
 		numberHome,
-		numberAppotarment);
+		numberAppotarment);*/
 
 	delete[] nameStreet;
 	delete[] lastnamecontact;
@@ -299,7 +323,7 @@ void ConsoleApp::addAddress()
 	delete[] fathernamecontact;
 }
 
-
+//изменить
 void ConsoleApp::deletePhoneNumber()
 {
 	cout << "------------------------------------------------" << endl;
@@ -319,11 +343,11 @@ void ConsoleApp::deletePhoneNumber()
 	cout << "Введите телефонный номер : ";
 	wcin >> phoneNumber;
 
-	con->deletePhoneNumberContact(
+	/*con->deletePhoneNumberContact(
 		lastnamecontact,
 		firstnamecontact,
 		fathernamecontact,
-		phoneNumber);
+		phoneNumber);*/
 
 	delete[] phoneNumber;
 	delete[] lastnamecontact;
@@ -331,6 +355,7 @@ void ConsoleApp::deletePhoneNumber()
 	delete[] fathernamecontact;
 }
 
+//изменить
 void ConsoleApp::deleteAddress()
 {
 	cout << "------------------------------------------------" << endl;
@@ -346,15 +371,16 @@ void ConsoleApp::deleteAddress()
 	cout << "Введите отчество контакта : ";
 	wcin >> fathernamecontact;
 
-	con->deleteAddress(
+	/*con->deleteAddress(
 		lastnamecontact,
 		firstnamecontact,
-		fathernamecontact);
+		fathernamecontact);*/
 
 	delete[] lastnamecontact;
 	delete[] firstnamecontact;
 	delete[] fathernamecontact;
 }
+
 
 void ConsoleApp::success()
 {
