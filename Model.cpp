@@ -113,19 +113,29 @@ PhoneNumber& Model::findPhone(PhoneNumber pn, int& ctr)
 			res = &(*i);
 		}
 	}
-	//Поиск совпадений в базе
-	pnMap.setBuf(&pn);
-	bd = pnMap.findObj();
 
-	//Если найденный элемент есть только в БД
-	//, то добавляем его в память приложения
-	if (bd == 1 && sd == 0)
+	if (dbc != nullptr)
 	{
-		phoneNumberTable.push_back(pn);
-		res = &phoneNumberTable.back();
-		res->isSynced = 1;
+		//Поиск совпадений в базе
+		pnMap.setBuf(&pn);
+		bd = pnMap.findObj();
+
+		//Если найденный элемент есть только в БД
+		//, то добавляем его в память приложения
+		if (bd == 1 && sd == 0)
+		{
+			phoneNumberTable.push_back(pn);
+			res = &phoneNumberTable.back();
+			res->isSynced = 1;
+		}
 	}
-	ctr = bd;
+	if (sd == bd)
+		ctr = bd;
+	else if (bd == 0)
+		ctr = sd;
+	else
+		ctr = bd;
+	//ctr = bd;
 	return *res;	
 }
 
@@ -155,6 +165,7 @@ void Model::sync(PhoneNumber* pn)
 	{
 		pnMap.setBuf(pn);
 		pnMap.insertObj();
+		if (state == 6) pn->isSynced = 1;
 	}
 	if (state == 2)
 		pn->isSynced = 1;
@@ -223,19 +234,27 @@ Address& Model::findAddress(Address add, int& ctr)
 			res = &(*i);
 		}
 	}
-	//Поиск совпадений в базе
-	adMap.setBuf(&add);
-	bd = adMap.findObj();
-
-	//Если найденный элемент есть только в БД
-	//, то добавляем его в память приложения
-	if (bd == 1 && sd == 0)
+	if (dbc != nullptr)
 	{
-		addressTable.push_back(add);
-		res = &addressTable.back();
-		res->isSynced = 1;
+		//Поиск совпадений в базе
+		adMap.setBuf(&add);
+		bd = adMap.findObj();
+
+		//Если найденный элемент есть только в БД
+		//, то добавляем его в память приложения
+		if (bd == 1 && sd == 0)
+		{
+			addressTable.push_back(add);
+			res = &addressTable.back();
+			res->isSynced = 1;
+		}
 	}
-	ctr = bd;
+	if (sd == bd)
+		ctr = bd;
+	else if (bd == 0)
+		ctr = sd;
+	else
+		ctr = bd;
 	return *res;
 }
 
@@ -276,6 +295,7 @@ void Model::sync(Address* add)
 	{
 		adMap.setBuf(add);
 		adMap.insertObj();
+		if (state == 6) add->isSynced = 1;
 	}
 	if (state == 2)
 		add->isSynced = 1;
@@ -341,6 +361,7 @@ void Model::sync( Person* p)
 		pMap.setBuf(p);
 		upload(p);
 		pMap.insertObj();
+		if (state == 6) p->isSynced = 1;
 	}
 	if (state == 2)
 		p->isSynced = 1;
@@ -375,7 +396,6 @@ void Model::updatePerson(Person* pOld, Person pNew)
 			Address* addN = &insertAddress(*pNew.address);
 			pOld->address = addN;
 			pOld->idAddress = pOld->address->id;
-			pOld->address->isSynced = 0;
 		}
 	//</address>
 		
@@ -398,7 +418,6 @@ void Model::updatePerson(Person* pOld, Person pNew)
 				PhoneNumber* pnN = &insertPhone(*pNew.phoneNumbers[i]);
 				pOld->phoneNumbers[i] = pnN;
 				pOld->idPhones[i] = pnN->getId();
-				pOld->phoneNumbers[i]->isSynced = 0;
 			}
 		}
 	//</phoneNumber>
@@ -454,26 +473,36 @@ Person& Model::findPerson(Person p, bool isEmpty, int& ctr)
 			sd++;
 		}
 	}
-	//Поиск совпадений в базе
-	pMap.setBuf(&p);
-	if (isEmpty)
-		bd = pMap.findObj(isEmpty);
-	else		
-		bd = pMap.findObjj();
-	
-	//Если найденный элемент есть только в БД
-	//, то добавляем его в память приложения
-	if (bd == 1 && sd == 0) 
+	if (dbc != nullptr) 
 	{
-		//вставка контакта
-		personTable.push_back(p);
-		//работа со второстепенными атрибутами, если таковые присутствовали
-		if(!isEmpty)
-			download(&personTable.back());			
-		personTable.back().isSynced = 1;
-		res = &personTable.back();
-	}
-	ctr = bd;
+		//Поиск совпадений в базе
+		pMap.setBuf(&p);
+		if (isEmpty)
+			bd = pMap.findObj(isEmpty);
+		else		
+			bd = pMap.findObjj();
+	
+		//Если найденный элемент есть только в БД
+		//, то добавляем его в память приложения
+		if (bd == 1 && sd == 0) 
+		{
+			//вставка контакта
+			personTable.push_back(p);
+			//работа со второстепенными атрибутами, если таковые присутствовали
+			if(!isEmpty)
+				download(&personTable.back());			
+			personTable.back().isSynced = 1;
+			res = &personTable.back();
+		}
+	}	
+	
+	//ctr = bd;
+	if (sd == bd)
+		ctr = bd;
+	else if (bd == 0)
+		ctr = sd;
+	else
+		ctr = bd;
 	return *res;
 }
 
@@ -502,22 +531,33 @@ Person& Model::findPerson(Person p, PhoneNumber pn, int& ctr)
 			sd++;
 		}
 	}
-	//Поиск совпадений в базе
-	pMap.setBuf(&p);
-	bd = pMap.findObjj();
-
-	//Если найденный элемент есть только в БД
-	//, то добавляем его в память приложения
-	if (bd == 1 && sd == 0)
+	if (dbc != nullptr)
 	{
-		//вставка контакта
-		personTable.push_back(p);
-		//работа со второстепенными атрибутами, если таковые присутствовали
-		download(&personTable.back());
-		personTable.back().isSynced = 1;
-		res = &personTable.back();
+		//Поиск совпадений в базе
+		pMap.setBuf(&p);
+		bd = pMap.findObjj();
+
+		//Если найденный элемент есть только в БД
+		//, то добавляем его в память приложения
+		if (bd == 1 && sd == 0)
+		{
+			//вставка контакта
+			personTable.push_back(p);
+			//работа со второстепенными атрибутами, если таковые присутствовали
+			download(&personTable.back());
+			personTable.back().isSynced = 1;
+			res = &personTable.back();
+		}
 	}
-	ctr = bd;
+	
+	
+	//ctr = bd;
+	if (sd == bd)
+		ctr = bd;
+	else if (bd == 0)
+		ctr = sd;
+	else
+		ctr = bd;
 	return *res;
 }
 
@@ -546,21 +586,33 @@ Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
 			sd++;
 		}
 	}
-	//Поиск совпадений в базе
-	pMap.setBuf(&p);
-	bd = pMap.findObjj();
 
-	//Если найденный элемент есть только в БД
-	//, то добавляем его в память приложения
-	if (bd == 1 && sd == 0)
+	if (dbc != nullptr)
 	{
-		//вставка контакта
-		personTable.push_back(p);
-		//работа со второстепенными атрибутами, если таковые присутствовали
-		download(&personTable.back());
-		personTable.back().isSynced = 1;
-		res = &personTable.back();
+		//Поиск совпадений в базе
+		pMap.setBuf(&p);
+		bd = pMap.findObjj();
+
+		//Если найденный элемент есть только в БД
+		//, то добавляем его в память приложения
+		if (bd == 1 && sd == 0)
+		{
+			//вставка контакта
+			personTable.push_back(p);
+			//работа со второстепенными атрибутами, если таковые присутствовали
+			download(&personTable.back());
+			personTable.back().isSynced = 1;
+			res = &personTable.back();
+		}
 	}
-	ctr = bd;
+
+	
+	//ctr = bd;
+	if (sd == bd)
+		ctr = bd;
+	else if (bd == 0)
+		ctr = sd;
+	else
+		ctr = bd;
 	return *res;
 }

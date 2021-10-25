@@ -68,6 +68,10 @@ public:
 		else
 			return false;
 	};
+	int getId() 
+	{
+		return id;
+	}
 };
 
 class PhoneNumber
@@ -226,7 +230,11 @@ public:
 		}
 	}
 
-	void setAddress(Address* add) { this->address = add; };
+	void setAddress(Address* add) 
+	{ 
+		this->address = add; 
+		this->idAddress = add->getId();
+	};
 };
 
 class AbstractMapper

@@ -459,7 +459,9 @@ void Controller::testUpdateAddrOnline()
 	wcscpy_s(fathername, L"Konstantinovich");
 
 	int q = 0;
-	Person* t = & model->findPerson(Person(lastname, firstname, fathername),false, q);
+	
+	Person* t = &model->insertPerson(Person(lastname, firstname, fathername));
+	//Person* t = & model->findPerson(Person(lastname, firstname, fathername),false, q);
 
 	Person updated = *t;
 	
