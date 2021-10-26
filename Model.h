@@ -137,6 +137,8 @@ public:
 		else return false;
 	};
 
+	bool isContain(std::vector<int>* nums);
+
 	SQLINTEGER getId() { return id; }
 };
 
@@ -309,6 +311,8 @@ public:
 	void updateObj() override;
 
 	void createDB();
+
+	std::vector<Person> findby4(std::vector<int>* args);
 };
 
 class AddressMapper : public AbstractMapper
@@ -357,6 +361,8 @@ public:
 	void updateObj() override;
 
 	int findReferences();
+
+	
 };
 
 //”·‡Ú¸
@@ -395,9 +401,8 @@ public:
 		Person& findPerson(Person p, PhoneNumber pn, int& ctr);
 		//‘»Œ “≈À≈‘ŒÕ ¿ƒ–≈—
 		Person& findPerson(Person p, PhoneNumber pn, Address add, int& ctr);
-		//Person& findByAllAtributes() {};
-		//Person& findBy4() {};
-		//Person& findById() {};
+		std::vector<Person*> findBy4(std::vector<int> nums);
+		
 
 private:
 		void updatePerson(Person* pOld, Address* add);
@@ -419,7 +424,8 @@ private:
 		int findReferences(PhoneNumber* pn);
 		int getState(PhoneNumber* pn);
 		void sync(PhoneNumber* pn);
-		void syncAllPhones();		
+		void syncAllPhones();
+		
 	//</Phone>
 
 	//<Address>
