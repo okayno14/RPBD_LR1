@@ -24,7 +24,10 @@ void ConsoleApp::Menu()
 
 void ConsoleApp::MenuPC()
 {
-	cout << ""/*данные об персоне*/ << endl;
+	wcout << L"|Контакт : "
+		<< *this->currentPerson->getLastName() << " "
+		<< *this->currentPerson->getFirstName() << " "
+		<< *this->currentPerson->getFatherName() << L" |" << endl;
 	cout << "------------------------------------------------" << endl
 		<< "--------------|  Редактор контакта |------------" << endl
 		<< "------------------------------------------------" << endl
@@ -57,7 +60,13 @@ void ConsoleApp::run()
 			system("cls");
 			try {
 				this->currentPerson = findPerson();
-				
+				cout << "Найден контакт : ";
+				wcout << this->currentPerson->getLastName() << " "
+					<< this->currentPerson->getFirstName() << " "
+					<< this->currentPerson->getFatherName() << endl << endl;
+
+				if (toRunMenuTwo())
+					runPC();
 			}
 			catch (...) {
 				cout << "Nety" << endl;
@@ -109,6 +118,7 @@ void ConsoleApp::runPC()
 	bool exitWhileLocal = true;
 	while (exitWhileLocal)
 	{
+		MenuPC();
 		cin >> MainMenu;
 		switch (MainMenu)
 		{
@@ -315,36 +325,23 @@ void ConsoleApp::addAddress()
 	delete[] nameStreet;
 }
 
-//изменить
+
 void ConsoleApp::deletePhoneNumber()
 {
 	cout << "------------------------------------------------" << endl;
 	cout << "------- Удалить телефонный номер контакту ------" << endl;
 	cout << "------------------------------------------------" << endl;
 	cout << "Пример ввода -[ +7(999)462-12-42 ]" << endl;
-	wchar_t* lastnamecontact = new wchar_t[20];
-	wchar_t* firstnamecontact = new wchar_t[20];
-	wchar_t* fathernamecontact = new wchar_t[20];
-	cout << "Введите имя контакта : ";
-	wcin >> lastnamecontact;
-	cout << "Введите фамилию контакта : ";
-	wcin >> firstnamecontact;
-	cout << "Введите отчество контакта : ";
-	wcin >> fathernamecontact;
+	
 	wchar_t* phoneNumber = new wchar_t[20];
-	cout << "Введите телефонный номер : ";
-	wcin >> phoneNumber;
+	
+	phoneNumber = get_a_number();
 
-	/*con->deletePhoneNumberContact(
-		lastnamecontact,
-		firstnamecontact,
-		fathernamecontact,
-		phoneNumber);*/
+	con->deletePhoneNumberContact(
+		this->currentPerson,
+		phoneNumber);
 
 	delete[] phoneNumber;
-	delete[] lastnamecontact;
-	delete[] firstnamecontact;
-	delete[] fathernamecontact;
 }
 
 //изменить
@@ -353,24 +350,8 @@ void ConsoleApp::deleteAddress()
 	cout << "------------------------------------------------" << endl;
 	cout << "------------ Удалить адрес контакту -----------" << endl;
 	cout << "------------------------------------------------" << endl;
-	wchar_t* lastnamecontact = new wchar_t[20];
-	wchar_t* firstnamecontact = new wchar_t[20];
-	wchar_t* fathernamecontact = new wchar_t[20];
-	cout << "Введите имя контакта : ";
-	wcin >> lastnamecontact;
-	cout << "Введите фамилию контакта : ";
-	wcin >> firstnamecontact;
-	cout << "Введите отчество контакта : ";
-	wcin >> fathernamecontact;
 
-	/*con->deleteAddress(
-		lastnamecontact,
-		firstnamecontact,
-		fathernamecontact);*/
-
-	delete[] lastnamecontact;
-	delete[] firstnamecontact;
-	delete[] fathernamecontact;
+	con->deleteAddress(this->currentPerson);
 }
 
 
@@ -384,19 +365,23 @@ bool ConsoleApp::toRunMenuTwo()
 	cout << "Желаете редактировать контакт" << endl
 		<< "[1] - Да;   [0] - Нет" << endl;
 	int tmp;
-	cin >> tmp;
-	if (tmp == 0)
+	while (true)
 	{
-		return false;
-	}
-	else if (tmp == 1)
-	{
-		return true;
+		cin >> tmp;
+		if (tmp == 0)
+		{
+			return false;
+		}
+		else if (tmp == 1)
+		{
+			return true;
 
+		}
+		else {
+			cout << "Очепятка" << endl;
+		}
 	}
-	else {
-		return false;
-	}
+	
 	
 }
 
@@ -409,7 +394,7 @@ void ConsoleApp::fail()
 wchar_t* ConsoleApp::get_a_number()
 {
 	wchar_t* numder = new wchar_t[20];
-	cout << "Введите номер телефона для дальнейшего поиска контакта" << endl
+	cout << "Введите номер телефона" << endl
 		<< "X(XXX)XXX-XX-XX" << endl;
  	wcin >> numder;
 	return numder;
@@ -419,7 +404,7 @@ wchar_t* ConsoleApp::get_a_number()
 wchar_t* ConsoleApp::get_a_addressName()
 {
 	wchar_t* numder = new wchar_t[20];
-	cout << "Введите название улицы проживаия для дальнейшего поиска контакта" << endl;
+	cout << "Введите название улицы проживаия" << endl;
 	wcin >> numder;
 	return numder;
 }
@@ -450,7 +435,7 @@ int ConsoleApp::get_a_apartment()
 int ConsoleApp::get_a_numberhome()
 {
 	int num;
-	cout << "Введите номер домо" << endl;
+	cout << "Введите номер дома" << endl;
 	cin >> num;
 	return num;
 }

@@ -231,6 +231,11 @@ public:
 		}
 	}
 
+	wchar_t* getLastName() { return this->lastName; }
+	wchar_t* getFirstName() { return this->firstName; }
+	wchar_t* getFatherName() { return this->fatherName; }
+	
+
 	void setAddress(Address* add) 
 	{ 
 		this->address = add; 

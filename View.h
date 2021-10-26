@@ -44,7 +44,6 @@ public:
 	void success();
 	void offlineStatus();
 	void fail();
-	void What();
 	bool toRunMenuTwo();
 
 	/*методы для запросов полей с данными контакта*/

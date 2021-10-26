@@ -59,21 +59,4 @@ public:
 		SQLWCHAR* firstNameContact,
 		SQLWCHAR* fatherNameContact);
 
-
-private:
-
-
-	void experiment();
-	void testFindFIO();
-	void testFindPhone01();
-	void testFindPhone01(bool isOnline);
-	void testFindPhone10();
-	void testFindPhoneNameErr();
-	void testFindPhoneAddress01(bool isOnline);
-	void testFindPhoneAddress10();
-	void testUpdateAddrOffline();
-	void testUpdateAddrPhoneOffline();
-	void testUpdateAddrPhoneOnline();
-	void testUpdateAddrOnline();
-	void testUpdatePhoneOnline();
 };
