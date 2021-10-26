@@ -622,7 +622,6 @@ Person& Model::findPerson(Person p, PhoneNumber pn, int& ctr)
 	{
 		//Поиск совпадений в базе
 		pMap.setBuf(&p);
-		//bd = pMap.findObjj();
 		bd = pMap.findObj(&pn);
 
 		//Если найденный элемент есть только в БД
@@ -679,7 +678,8 @@ Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
 	{
 		//Поиск совпадений в базе
 		pMap.setBuf(&p);
-		bd = pMap.findObjj();
+		//bd = pMap.findObjj();
+		bd = pMap.findObj(&pn, &add);
 
 		//Если найденный элемент есть только в БД
 		//, то добавляем его в память приложения
