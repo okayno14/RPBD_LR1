@@ -156,6 +156,8 @@ void PersonMapper::findObj(int id)
 	checkErr();
 
 	getIdPhone();
+
+	commitTransaction();
 }
 //ФИО непустой
 int PersonMapper::findObjj()
@@ -1734,7 +1736,7 @@ std::vector<Person> PersonMapper::findby4(std::vector<int>* args)
 	
 	SQLWCHAR sym[2];
 	
-	str.append(L"%");
+	str.append(L"'%");
 	
 	_itow_s(args->at(0),sym,2,10);
 		
@@ -1750,25 +1752,43 @@ std::vector<Person> PersonMapper::findby4(std::vector<int>* args)
 	
 	_itow_s(args->at(3), sym,2, 10);
 	str.push_back(sym[0]);
+	str.append(L"'");
+
+	statementText = (SQLWCHAR*) str.c_str();
 
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+	checkErr();
+
+	std::vector<Person> res;
+
+	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+	checkErr();
+	retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idAddress), 0, &(buf->idAddressLen));
+	checkErr();
+	retcode = SQLBindCol(hstmt, 3, SQL_C_WCHAR, &(buf->lastName), sizeof(SQLWCHAR) * strSZ, &(buf->lastNameLen));
+	checkErr();
+	retcode = SQLBindCol(hstmt, 4, SQL_C_WCHAR, &(buf->firstName), sizeof(SQLWCHAR) * strSZ, &(buf->nameLen));
+	checkErr();
+	retcode = SQLBindCol(hstmt, 5, SQL_C_WCHAR, &(buf->fatherName), sizeof(SQLWCHAR) * strSZ, &(buf->fatherNameLen));
 	checkErr();
 
 	retcode = SQLExecute(hstmt);
 	checkErr();
 
-	std::vector<Person> res;
-
-	
-	while (retcode = SQLFetch(hstmt) != SQL_NO_DATA)
-	{
+	while (SQLFetch(hstmt) != SQL_NO_DATA)
 		res.push_back(*buf);
-	}	
+		
 
 	retcode = SQLCloseCursor(hstmt);
 	checkErr();
+	
+	for (int i = 0; i < res.size(); i++) 
+	{
+		buf = &res[i];
+		getIdPhone();
+	}
+	
 	commitTransaction();
-
 
 	return res;
 };

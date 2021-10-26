@@ -239,7 +239,10 @@ void Controller::experiment()
 	
 	pn.isContain(&nums);
 
+	Person p;
+	model->pMap.setBuf(&p);
 	model->pMap.findby4(&nums);
+
 }
 
 void Controller::testFindFIO() 
