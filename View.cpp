@@ -37,6 +37,8 @@ void ConsoleApp::MenuPC()
 		<< "[4] - Добавить номер телефона контакта" << endl
 		<< "[5] - Обновить номер контакту" << endl
 		<< "[6] - Удаление контакта" << endl
+		<< "[7] - Посмотреть список номеров" << endl
+		<< "[8] - Просмотреть список адресов" << endl
 		<< "[0] - Выход из подменю" << endl << endl << ">>>";
 }
 
@@ -69,6 +71,7 @@ void ConsoleApp::run()
 				cout << "Контактов не обнаружено" << endl;
 			}
 			_getwch();
+			system("cls");
 			break;
 		}
 		case 2: {
@@ -87,11 +90,13 @@ void ConsoleApp::run()
 			}
 			
 			_getwch();
+			system("cls");
 			break;
 		}
 		case 3: {
 			system("cls");
 			findto4();
+			system("cls");
 			break;
 		}
 		case 0: {
@@ -122,31 +127,50 @@ void ConsoleApp::runPC()
 		case 1: {
 			system("cls");
 			updateFIOcontacte();
+			_getwch();
+			system("cls");
 			break;
 		}
 		case 2: {
 			system("cls");
 			addAddress();
+			_getwch();
+			system("cls");
+			
 			break;
 		}
 		case 3: {
 			system("cls");
 			updateAddress();
+			_getwch();
+			system("cls");
 			break;
 		}
 		case 4: {
 			system("cls");
 			addPhoneNumber();
+			_getwch();
+			system("cls");
 			break;
 		}
 		case 5: {
 			system("cls");
 			updatePhoneNumber();
+			_getwch();
+			system("cls");
 			break;
 		}
 		case 6: {
 			system("cls");
 			deleteContact();
+			_getwch();
+			system("cls");
+			break;
+		}
+		case 7: {
+			break;
+		}
+		case 8: {
 			break;
 		}
 		case 0: {
@@ -271,14 +295,21 @@ void ConsoleApp::findto4()
 	cout << "------------------------------------------------" << endl;
 	cout << "Введите 4-е символа телефонного номера контакта : ";
 	std::vector<int> vec;
-	int index;
-	for (int i = 0; i < 4; i++)
+	//string ch;
+	int chetirechisl;
+	while (true)
 	{
-		cout << "[" << i << "] ";
-		cin >> index;
-		vec.push_back(index);
+		cin >> chetirechisl;
+		if (chetirechisl < 10000 && chetirechisl >= 0)
+		{
+			break;
+		}
+		cout << "Введите 4 числа" << endl;
 	}
-
+	vec.push_back(chetirechisl / 1000);
+	vec.push_back((chetirechisl % 1000) / 100);
+	vec.push_back((chetirechisl % 100) / 10);
+	vec.push_back(chetirechisl % 10);
 	con->findContactBy4NumberPhone(vec);
 }
 
