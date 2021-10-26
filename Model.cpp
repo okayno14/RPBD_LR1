@@ -74,13 +74,16 @@ void Model::download(Person* p)
 	//качаем адрес
 	//вставляем его в СД
 	//привязываем его по id
-	Address ad;
-	ad.id = p->idAddress;
-	adMap.setBuf(&ad);
-	adMap.findObj(ad.id);
-	addressTable.push_back(ad);
-	p->address = &addressTable.back();
-	p->address->isSynced = 1;
+	if (p->idAddress != -1) 
+	{
+		Address ad;
+		ad.id = p->idAddress;
+		adMap.setBuf(&ad);
+		adMap.findObj(ad.id);
+		addressTable.push_back(ad);
+		p->address = &addressTable.back();
+		p->address->isSynced = 1;
+	}
 
 	//телефоны
 	//цикл обхода id телефонов
@@ -417,6 +420,9 @@ void Model::updatePerson(Person* pOld, Person pNew)
 		Address empty;
 		if (pOld->address == nullptr)
 			pOld->address = &empty;
+		
+		if (pNew.address == nullptr)
+			pNew.address = &empty;
 
 		if (!pOld->address->isEqual(pNew.address))
 		{
@@ -425,6 +431,12 @@ void Model::updatePerson(Person* pOld, Person pNew)
 			pOld->address = addN;
 			pOld->idAddress = pOld->address->id;
 		}
+
+		if (pOld->address == &empty)
+			pOld->address = nullptr;
+
+		if (pNew.address == &empty)
+			pNew.address = nullptr;
 	//</address>
 		
 	//<phoneNumber>
@@ -474,47 +486,47 @@ void Model::updatePerson(Person* pOld, Person pNew)
 void Model::deletePerson(Person* p)
 {
 	std::list<Person>::iterator i = personTable.begin();
-	while (i != personTable.end()) 
+	while (i != personTable.end() && &(*i) != p)
+	{}
+	//удостоверились, полученный указатель ссылается на объект коллекции
+	if (&(*i) == p)
 	{
-		//удостоверились, полученный указатель ссылается на объект коллекции
-		if (&(*i) == p)
+		//резервирование указателей перед удалением объекта
+		Address* add = p->address;
+		std::vector<PhoneNumber*> pn = p->phoneNumbers;
+			
+		int state = getState(p);
+		//онлайн часть удаления, если контакт есть в БД
+		if (state == 5 && dbc != nullptr) 
 		{
-			//резервирование указателей перед удалением объекта
-			Address* add = p->address;
-			std::vector<PhoneNumber*> pn = p->phoneNumbers;
-			
-			int state = getState(p);
-			//онлайн часть удаления, если контакт есть в БД
-			if (state == 5 && dbc != nullptr) 
-			{
-				pMap.setBuf(p);
-				pMap.deleteObj();
-			}
-			//универсальная часть, которая проверяет второстепенные сущности
-			if (state == 5 || state == 3)
-			{
-				personTable.erase(i);
-
-				if (add != nullptr)
-				{
-					adMap.setBuf(add);
-					if (findReferences(add) == 0)
-						deleteAddress(add);
-				}
-				for (int i = 0; i < pn.size(); i++)
-				{
-					if (pn[i] != nullptr)
-					{
-						pnMap.setBuf(pn[i]);
-						if (findReferences(pn[i]) == 0)
-							deletePhone(pn[i]);
-					}
-				}
-			}
-			
-			
+			pMap.setBuf(p);
+			pMap.deleteObj();
 		}
+		//универсальная часть, которая проверяет второстепенные сущности
+		if (state == 5 || state == 3)
+		{
+			personTable.erase(i);
+
+			if (add != nullptr)
+			{
+				adMap.setBuf(add);
+				if (findReferences(add) == 0)
+					deleteAddress(add);
+			}
+			for (int i = 0; i < pn.size(); i++)
+			{
+				if (pn[i] != nullptr)
+				{
+					pnMap.setBuf(pn[i]);
+					if (findReferences(pn[i]) == 0)
+						deletePhone(pn[i]);
+				}
+			}
+		}
+			
+			
 	}
+	
 
 }
 
@@ -555,7 +567,7 @@ Person& Model::findPerson(Person p, bool isEmpty, int& ctr)
 		if (isEmpty)
 			bd = pMap.findObj(isEmpty);
 		else		
-			bd = pMap.findObjj();
+			bd = abs( pMap.findObjj());
 	
 		//Если найденный элемент есть только в БД
 		//, то добавляем его в память приложения
@@ -610,7 +622,7 @@ Person& Model::findPerson(Person p, PhoneNumber pn, int& ctr)
 	{
 		//Поиск совпадений в базе
 		pMap.setBuf(&p);
-		bd = pMap.findObjj();
+		bd = pMap.findObj(&pn);
 
 		//Если найденный элемент есть только в БД
 		//, то добавляем его в память приложения
@@ -666,7 +678,8 @@ Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
 	{
 		//Поиск совпадений в базе
 		pMap.setBuf(&p);
-		bd = pMap.findObjj();
+		//bd = pMap.findObjj();
+		bd = pMap.findObj(&pn, &add);
 
 		//Если найденный элемент есть только в БД
 		//, то добавляем его в память приложения
@@ -690,4 +703,101 @@ Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
 	else
 		ctr = bd;
 	return *res;
+}
+
+std::vector<Person*> Model::findBy4(std::vector<int> nums)
+{
+	//вызов синхронизации
+	syncAll();
+
+	std::vector<Person*> res;
+
+	//поиск в сд
+	if (dbc == nullptr) 
+	{
+		//итерируемся по таблице контактов
+		for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
+		{
+			//проверка одного из номеров на соответствие полученному критерию
+			for (int j = 0; j < (*i).phoneNumbers.size(); j++) 
+			{
+				if ((*i).phoneNumbers.at(j)->isContain(&nums))
+					res.push_back(&(*i));				
+			}
+		}
+		return res;
+	}
+	//поиск в БД
+	else 
+	{
+		Person empty;
+		std::vector<Person> bd;
+		pMap.setBuf(&empty);
+		bd = pMap.findby4(&nums);
+		
+		//обход результатов из бд
+		for (int i = 0; i < bd.size(); i++) 
+		{
+			std::list<Person>::iterator j = personTable.begin();
+			bool flag = false;
+			
+			//цикл поиска объекта из результата в СД
+			//если флаг переключился на true,
+			//значит объект содержится в СД
+			while (j!= personTable.end())
+			{
+				bool reg = true;
+				reg = reg && (*j).isEqual(&bd[i]);
+				
+				reg = reg && (*j).idPhones == bd[i].idPhones;
+
+				reg = reg && (*j).idAddress == bd[i].idAddress;
+
+				//СД уже содержит этот объект
+				if (reg == true)
+				{
+					flag = reg;
+					break;
+				}	
+			}
+			
+			//Обработка результатов поиска
+			//Если объект есть в памяти СД
+			//значит нет нужды его загружать
+			if (flag)
+				res.push_back(&(*j));
+			//в СД совпадения не было найдено
+			else
+			{
+				//вставка контакта
+				personTable.push_back(bd[i]);
+				//работа со второстепенными атрибутами, если таковые присутствовали
+				download(&personTable.back());
+				personTable.back().isSynced = 1;
+				res.push_back(&personTable.back());
+			}
+
+		}
+
+	}
+	return res;
+}
+
+bool PhoneNumber::isContain(std::vector<int>* nums)
+{
+	bool res = true;
+
+	SQLWCHAR cur =number[10];
+	res = res && _wtoi(&cur) == nums->at(0);
+
+	cur = number[11];
+	res = res && _wtoi(&cur) == nums->at(1);
+
+	cur = number[13];
+	res = res && _wtoi(&cur) == nums->at(2);
+
+	cur = number[14];
+	res = res && _wtoi(&cur) == nums->at(3);
+
+	return res;
 }

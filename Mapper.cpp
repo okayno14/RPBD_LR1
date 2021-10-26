@@ -156,18 +156,21 @@ void PersonMapper::findObj(int id)
 	checkErr();
 
 	getIdPhone();
+
+	commitTransaction();
 }
-//ÔÈÎ
+//ÔÈÎ íåïóñòîé
 int PersonMapper::findObjj()
 
 {
 	SQLLEN a;
 	bool res = false;
 	statementText =
-		(SQLWCHAR*)L"SELECT * FROM person WHERE"
-		" lastname = ? and"
-		" firstname = ? and"
-		" fathername = ?";
+		(SQLWCHAR*)L"SELECT p.id, p.idaddress, p.lastname, p.firstname, p.fathername FROM person as p, persone_number as pn WHERE"
+		" p.lastname = ? and"
+		" p.firstname = ? and"
+		" p.fathername = ? and ("
+		" p.idaddress > 0 or pn.idperson = p.id)";
 
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 	checkErr();
@@ -1697,4 +1700,95 @@ int PhoneMapper::findReferences()
 	commitTransaction();
 
 	return finded;
+}
+std::vector<Person> PersonMapper::findby4(std::vector<int>* args)
+{
+	statementText = (SQLWCHAR*)L" SELECT "
+		" 	person.id,"
+		" 	person.idaddress,"
+		" 	person.lastname,"
+		" 	person.firstname,"
+		" 	person.fathername,"
+		" 	persone_number.idPhone,"
+		" 	phoneNumber.idtype,"
+		" 	phoneNumber.number,"
+		" 	address.idstreet,"
+		" 	address.home,"
+		" 	address.appartement,"
+		" 	street.streetname"
+		" FROM"
+		" 	person INNER JOIN persone_number"
+		" 	ON"
+		" 		person.id = persone_number.idPerson"
+		" 	INNER JOIN phonenumber"
+		" 	ON "
+		" 		persone_number.idPhone = phoneNumber.id"
+		" 	INNER JOIN address"
+		" 	ON"
+		" 		person.idAddress = address.id"
+		" 	INNER JOIN street"
+		" 	ON"
+		" 		address.idstreet = street.id"
+		" WHERE"
+		" 	phoneNumber.number like ";
+	
+	std::wstring str(statementText);
+	
+	SQLWCHAR sym[2];
+	
+	str.append(L"'%");
+	
+	_itow_s(args->at(0),sym,2,10);
+		
+	str.push_back(sym[0]);
+	
+	_itow_s(args->at(1), sym,2, 10);
+	str.push_back(sym[0]);
+	
+	str.append(L"%");
+	
+	_itow_s(args->at(2), sym,2, 10);
+	str.push_back(sym[0]);
+	
+	_itow_s(args->at(3), sym,2, 10);
+	str.push_back(sym[0]);
+	str.append(L"'");
+
+	statementText = (SQLWCHAR*) str.c_str();
+
+	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+	checkErr();
+
+	std::vector<Person> res;
+
+	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+	checkErr();
+	retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idAddress), 0, &(buf->idAddressLen));
+	checkErr();
+	retcode = SQLBindCol(hstmt, 3, SQL_C_WCHAR, &(buf->lastName), sizeof(SQLWCHAR) * strSZ, &(buf->lastNameLen));
+	checkErr();
+	retcode = SQLBindCol(hstmt, 4, SQL_C_WCHAR, &(buf->firstName), sizeof(SQLWCHAR) * strSZ, &(buf->nameLen));
+	checkErr();
+	retcode = SQLBindCol(hstmt, 5, SQL_C_WCHAR, &(buf->fatherName), sizeof(SQLWCHAR) * strSZ, &(buf->fatherNameLen));
+	checkErr();
+
+	retcode = SQLExecute(hstmt);
+	checkErr();
+
+	while (SQLFetch(hstmt) != SQL_NO_DATA)
+		res.push_back(*buf);
+		
+
+	retcode = SQLCloseCursor(hstmt);
+	checkErr();
+	
+	for (int i = 0; i < res.size(); i++) 
+	{
+		buf = &res[i];
+		getIdPhone();
+	}
+	
+	commitTransaction();
+
+	return res;
 };
