@@ -117,7 +117,6 @@ Person* Controller::findPerson(
 		int cont;
 		tmp = &model->findPerson(p, false, cont);
 		if (count == 0) {
-			cout << "Контактов не обнаружено" << endl;
 			throw - 1;
 		}
 
@@ -135,7 +134,6 @@ Person* Controller::findPerson(
 			tmp = &model->findPerson(p, ph, count2);
 
 			if (count2 == 0) {
-				cout << "Контактов не обнаружено" << endl;
 				throw - 1;
 			}
 			if (count2 == 1) 
@@ -154,7 +152,6 @@ Person* Controller::findPerson(
 				tmp = &model->findPerson(p, ph, ad, count3);
 				if (count3 == 0) 
 				{
-					cout << "Контактов не обнаружено" << endl;
 					throw - 1;
 				}
 				if (count3 == 1)

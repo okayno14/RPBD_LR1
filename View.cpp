@@ -69,7 +69,7 @@ void ConsoleApp::run()
 					runPC();
 			}
 			catch (...) {
-				cout << "Nety" << endl;
+				cout << "Контактов не обнаружено" << endl;
 			}
 			_getwch();
 			break;
@@ -188,7 +188,6 @@ Person* ConsoleApp::findPerson()
 	}
 	catch (...)
 	{
-		cout << "Nety" << endl;
 		throw - 1;
 	}
 	
@@ -236,7 +235,10 @@ void ConsoleApp::deleteContact()
 	cout << "----------------| Удаление контакта |-----------" << endl;
 	cout << "------------------------------------------------" << endl;
 
-	con->deleteContact(this->currentPerson);
+	if (con->deleteContact(this->currentPerson))
+		success();
+	else
+		fail();
 	
 }
 
@@ -252,11 +254,15 @@ void ConsoleApp::addPhoneNumber()
 	type = get_a_type_number();
 	
 
-	con->addPhoneNumberContact(this->currentPerson, phoneNumber,type);
+	if (con->addPhoneNumberContact(this->currentPerson, phoneNumber, type))
+		success();
+	else
+		fail();
 
 	delete[] phoneNumber;
 }
 
+/*redactori*/
 /*числа на вход поступают в виде vector int*/
 void ConsoleApp::findto4()
 {
@@ -289,11 +295,12 @@ void ConsoleApp::updateFIOcontacte()
 	cout << "Введите отчество контакта : ";
 	wcin >> newfathernamecontact;
 
-	con->toСhangeContact(
+	if (con->toСhangeContact(
 		this->currentPerson,
 		newlastnamecontact,
 		newfirstnamecontact,
-		newfathernamecontact);
+		newfathernamecontact)) success();
+	else fail();
 
 	
 	delete[] newlastnamecontact;
@@ -316,11 +323,12 @@ void ConsoleApp::addAddress()
 	cout << "Введите номер квартиры проживания контакта : ";
 	numberAppotarment = get_a_apartment();
 
-	con->addAddress(
+	if (con->addAddress(
 		this->currentPerson,
 		nameStreet,
 		numberHome,
-		numberAppotarment);
+		numberAppotarment)) success();
+	else fail();
 
 	delete[] nameStreet;
 }
@@ -337,9 +345,10 @@ void ConsoleApp::deletePhoneNumber()
 	
 	phoneNumber = get_a_number();
 
-	con->deletePhoneNumberContact(
+	if (con->deletePhoneNumberContact(
 		this->currentPerson,
-		phoneNumber);
+		phoneNumber)) success();
+	else fail();
 
 	delete[] phoneNumber;
 }
@@ -351,7 +360,8 @@ void ConsoleApp::deleteAddress()
 	cout << "------------ Удалить адрес контакту -----------" << endl;
 	cout << "------------------------------------------------" << endl;
 
-	con->deleteAddress(this->currentPerson);
+	if (con->deleteAddress(this->currentPerson)) success();
+	else fail();
 }
 
 
