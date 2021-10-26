@@ -241,7 +241,8 @@ void Controller::experiment()
 
 	Person p;
 	model->pMap.setBuf(&p);
-	model->pMap.findby4(&nums);
+	
+	std::vector<Person*> finded =  model->findBy4(nums);
 
 }
 

@@ -396,7 +396,7 @@ public:
 		Person& findPerson(Person p, PhoneNumber pn, int& ctr);
 		//тхн рекетнм юдпея
 		Person& findPerson(Person p, PhoneNumber pn, Address add, int& ctr);
-		std::vector<Person*> findBy4(Person p, std::vector<int> nums, int& ctr);
+		std::vector<Person*> findBy4(std::vector<int> nums);
 		
 
 private:

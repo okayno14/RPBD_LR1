@@ -705,6 +705,84 @@ Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
 	return *res;
 }
 
+std::vector<Person*> Model::findBy4(std::vector<int> nums)
+{
+	//вызов синхронизации
+	syncAll();
+
+	std::vector<Person*> res;
+
+	//поиск в сд
+	if (dbc == nullptr) 
+	{
+		//итерируемся по таблице контактов
+		for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
+		{
+			//проверка одного из номеров на соответствие полученному критерию
+			for (int j = 0; j < (*i).phoneNumbers.size(); j++) 
+			{
+				if ((*i).phoneNumbers.at(j)->isContain(&nums))
+					res.push_back(&(*i));				
+			}
+		}
+		return res;
+	}
+	//поиск в БД
+	else 
+	{
+		Person empty;
+		std::vector<Person> bd;
+		pMap.setBuf(&empty);
+		bd = pMap.findby4(&nums);
+		
+		//обход результатов из бд
+		for (int i = 0; i < bd.size(); i++) 
+		{
+			std::list<Person>::iterator j = personTable.begin();
+			bool flag = false;
+			
+			//цикл поиска объекта из результата в СД
+			//если флаг переключился на true,
+			//значит объект содержится в СД
+			while (j!= personTable.end())
+			{
+				bool reg = true;
+				reg = reg && (*j).isEqual(&bd[i]);
+				
+				reg = reg && (*j).idPhones == bd[i].idPhones;
+
+				reg = reg && (*j).idAddress == bd[i].idAddress;
+
+				//СД уже содержит этот объект
+				if (reg == true)
+				{
+					flag = reg;
+					break;
+				}	
+			}
+			
+			//Обработка результатов поиска
+			//Если объект есть в памяти СД
+			//значит нет нужды его загружать
+			if (flag)
+				res.push_back(&(*j));
+			//в СД совпадения не было найдено
+			else
+			{
+				//вставка контакта
+				personTable.push_back(bd[i]);
+				//работа со второстепенными атрибутами, если таковые присутствовали
+				download(&personTable.back());
+				personTable.back().isSynced = 1;
+				res.push_back(&personTable.back());
+			}
+
+		}
+
+	}
+	return res;
+}
+
 bool PhoneNumber::isContain(std::vector<int>* nums)
 {
 	bool res = true;
