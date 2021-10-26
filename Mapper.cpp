@@ -166,7 +166,7 @@ int PersonMapper::findObjj()
 	SQLLEN a;
 	bool res = false;
 	statementText =
-		(SQLWCHAR*)L"SELECT p.id, p.idaddress, p.lastname, p.firstname, p.fathername FROM person as p, persone_number as pn WHERE"
+		(SQLWCHAR*)L"SELECT DISTINCT p.id, p.idaddress, p.lastname, p.firstname, p.fathername FROM person as p, persone_number as pn WHERE"
 		" p.lastname = ? and"
 		" p.firstname = ? and"
 		" p.fathername = ? and ("

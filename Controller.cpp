@@ -31,11 +31,14 @@ Person* Controller::addÑontact(
 	SQLWCHAR* firstNameContact,
 	SQLWCHAR* fatherNameContact)
 {
+	Person p(lastNameContact, firstNameContact, fatherNameContact);
+	Person* temp = nullptr;
+
 	if (lastNameContact == NULL || firstNameContact == NULL || fatherNameContact == NULL)
 		throw - 1;
 		
-	Person p(lastNameContact, firstNameContact, fatherNameContact);
-	Person* temp;
+	
+	
 	temp = &model->insertPerson(p);
 
 	consoleApp->success();
@@ -75,7 +78,7 @@ bool Controller::addPhoneNumberContact(Person* p, PhoneNumber* pn)
 	newPer.addPhoneNumber(pn);
 
 	model->updatePerson(p, newPer);
-	return false;
+	return true;
 }
 
 bool Controller::deletePhoneNumberContact(Person* p, SQLWCHAR* number)

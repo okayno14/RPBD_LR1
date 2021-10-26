@@ -24,7 +24,7 @@ private:
 public:
 	Controller(Model* model);
 	Controller(ConsoleApp* view);
-	~Controller() { delete model; delete consoleApp; }
+	~Controller() { delete model;}
 	void setView(ConsoleApp* consoleApp);
 
 	Person* add—ontact(

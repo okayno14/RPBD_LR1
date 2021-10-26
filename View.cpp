@@ -217,6 +217,7 @@ Person* ConsoleApp::addContact()
 	}
 	catch (...)
 	{
+		p = nullptr;
 		throw - 1;
 	}
 	
