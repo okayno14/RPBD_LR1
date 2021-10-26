@@ -26,19 +26,21 @@ void Controller::setView(ConsoleApp* consoleApp)
 	this->consoleApp = consoleApp;
 }
 
-bool Controller::addÑontact(
+Person* Controller::addÑontact(
 	SQLWCHAR* lastNameContact,
 	SQLWCHAR* firstNameContact,
 	SQLWCHAR* fatherNameContact)
 {
 	if (lastNameContact == NULL || firstNameContact == NULL || fatherNameContact == NULL)
-		return false;
+		throw - 1;
+		//return false;
 	
 	Person p(lastNameContact, firstNameContact, fatherNameContact);
 	model->insertPerson(p);
 
 	consoleApp->success();
-	return true;
+	//return true;
+	return &p;
 }
 
 bool Controller::deleteContact(
@@ -64,6 +66,11 @@ bool Controller::toÑhangeContact(
 }
 
 bool Controller::addPhoneNumberContact(Person* p, SQLWCHAR* number, int type)
+{
+	return false;
+}
+
+bool Controller::deletePhoneNumberContact(Person* p, SQLWCHAR* number)
 {
 	return false;
 }
@@ -103,6 +110,16 @@ bool Controller::addPhoneNumberContact(Person* p, SQLWCHAR* number, int type)
 
 /*íóæíî ïîëó÷àòü int[]*/
 bool Controller::findContactBy4NumberPhone(SQLWCHAR* number4)
+{
+	return false;
+}
+
+bool Controller::addAddress(Person* p, SQLWCHAR* nameStreet, int numberHome, int numberApartment)
+{
+	return false;
+}
+
+bool Controller::deleteAddress(Person* p)
 {
 	return false;
 }

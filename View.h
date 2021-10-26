@@ -14,7 +14,7 @@ private:
 	bool runTimeProgram;// служит в первом цикле программы
 	int MainMenu;//используется для ввода пользователем
 	Controller* con;
-	Person* p;
+	Person* currentPerson;
 public:
 	ConsoleApp();
 
@@ -31,7 +31,7 @@ public:
 
 	/*солянка для вызова внутри switch*/
 	Person* findPerson();
-	void addContact();
+	Person* addContact();
 	void deleteContact();
 	void findto4();
 	void updateFIOcontacte();

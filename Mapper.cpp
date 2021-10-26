@@ -217,27 +217,27 @@ int PersonMapper::findObj(PhoneNumber* phone)
 	SQLLEN a;
 	statementText =
 		(SQLWCHAR*)
-		L" SELECT "
-		" 	person.id,"
-		" 	person.idaddress,"
-		" 	person.lastname AS lastname,"
-		" 	person.firstname AS firstname,"
-		" 	person.fathername AS fathername,"
-		" 	persone_number.idPhone AS number,"
-		" 	phoneNumber.idtype,"
-		" 	phoneNumber.number"
-		" FROM"
-		" 	person INNER JOIN persone_number"
-		" 	ON"
-		" 		person.id = persone_number.idPerson"
-		" 	INNER JOIN phonenumber"
-		" 	ON "
-		" 		persone_number.idPhone = phoneNumber.id"
-		" WHERE "
-		" lastname = ? and"
-		" firstname = ? and"
-		" fathername = ? and"
-		" number = ?";
+		L" SELECT " 
+"     person.id," 
+"     person.idaddress," 
+"     person.lastname AS lastname," 
+"     person.firstname AS firstname," 
+"     person.fathername AS fathername," 
+"     persone_number.idPhone," 
+"     phoneNumber.idtype," 
+"     phoneNumber.number" 
+"    FROM" 
+"     person INNER JOIN persone_number" 
+"     ON" 
+"      person.id = persone_number.idPerson" 
+"     INNER JOIN phonenumber" 
+"     ON " 
+"      persone_number.idPhone = phoneNumber.id" 
+"    WHERE " 
+"    lastname = ? and" 
+"    firstname = ? and" 
+"    fathername = ? and" 
+"    phonenumber.number = ?;";
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 	checkErr();
 

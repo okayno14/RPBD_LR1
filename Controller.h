@@ -27,7 +27,7 @@ public:
 	~Controller() { delete model; }
 	void setView(ConsoleApp* consoleApp);
 
-	bool add—ontact(
+	Person* add—ontact(
 		SQLWCHAR* lastNameContact, 
 		SQLWCHAR* firstNameContact,
 		SQLWCHAR* fatherNameContact);
