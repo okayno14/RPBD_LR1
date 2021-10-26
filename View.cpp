@@ -122,31 +122,44 @@ void ConsoleApp::runPC()
 		case 1: {
 			system("cls");
 			updateFIOcontacte();
+			_getwch();
+			system("cls");
 			break;
 		}
 		case 2: {
 			system("cls");
 			addAddress();
+			_getwch();
+			system("cls");
+			
 			break;
 		}
 		case 3: {
 			system("cls");
 			updateAddress();
+			_getwch();
+			system("cls");
 			break;
 		}
 		case 4: {
 			system("cls");
 			addPhoneNumber();
+			_getwch();
+			system("cls");
 			break;
 		}
 		case 5: {
 			system("cls");
 			updatePhoneNumber();
+			_getwch();
+			system("cls");
 			break;
 		}
 		case 6: {
 			system("cls");
 			deleteContact();
+			_getwch();
+			system("cls");
 			break;
 		}
 		case 0: {
@@ -270,12 +283,22 @@ void ConsoleApp::findto4()
 	cout << "------------------------------------------------" << endl;
 	cout << "Введите 4-е символа телефонного номера контакта : ";
 	std::vector<int> vec;
+	string ch;
+	while (true)
+	{
+		cin >> ch;
+		if (ch.length() == 4)
+		{
+			break;
+		}
+		cout << "Введите 4 числа" << endl;
+	}
+	
+
 	int index;
 	for (int i = 0; i < 4; i++)
 	{
-		cout << "[" << i << "] ";
-		cin >> index;
-		vec.push_back(index);
+		vec.push_back(ch[i]);
 	}
 
 	con->findContactBy4NumberPhone(vec);

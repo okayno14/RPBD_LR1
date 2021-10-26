@@ -75,7 +75,7 @@ bool Controller::addPhoneNumberContact(Person* p, PhoneNumber* pn)
 	newPer.addPhoneNumber(pn);
 
 	model->updatePerson(p, newPer);
-	return false;
+	return true;
 }
 
 bool Controller::deletePhoneNumberContact(Person* p, SQLWCHAR* number)
