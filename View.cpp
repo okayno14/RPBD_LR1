@@ -271,10 +271,16 @@ void ConsoleApp::findto4()
 	cout << "-------------- телефонного номера --------------" << endl;
 	cout << "------------------------------------------------" << endl;
 	cout << "Введите 4-е символа телефонного номера контакта : ";
-	wchar_t* four_phonenumber = new wchar_t[5];
-	wcin >> four_phonenumber;
-	con->findContactBy4NumberPhone(four_phonenumber);
-	delete[] four_phonenumber;
+	std::vector<int> vec;
+	int index;
+	for (int i = 0; i < 4; i++)
+	{
+		cout << "[" << i << "] ";
+		cin >> index;
+		vec.push_back(index);
+	}
+
+	con->findContactBy4NumberPhone(vec);// try ??
 }
 
 void ConsoleApp::updateFIOcontacte()

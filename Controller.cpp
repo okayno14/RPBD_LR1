@@ -78,9 +78,11 @@ bool Controller::deletePhoneNumberContact(Person* p, SQLWCHAR* number)
 
 
 /*нужно получать int[]*/
-bool Controller::findContactBy4NumberPhone(SQLWCHAR* number4)
+std::vector<Person*> Controller::findContactBy4NumberPhone(std::vector<int> number4)
 {
-	return false;
+
+
+
 }
 
 bool Controller::addAddress(Person* p, SQLWCHAR* nameStreet, int numberHome, int numberApartment)

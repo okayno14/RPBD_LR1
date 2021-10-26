@@ -46,7 +46,7 @@ public:
 		Person* p,
 		SQLWCHAR* number);
 	
-	bool findContactBy4NumberPhone(SQLWCHAR* number4);
+	std::vector<Person*> findContactBy4NumberPhone(std::vector<int> number4);
 	bool addAddress(
 		Person* p,
 		SQLWCHAR* nameStreet,
