@@ -1,7 +1,10 @@
+#pragma once
 #include "View.h"
 
 ConsoleApp::ConsoleApp()
 {
+	Person empty;
+	this->currentPerson = &empty;
 	MainMenu = 0;
 	this->runTimeProgram = true;
 	setlocale(LC_ALL, "Russian");
@@ -24,18 +27,15 @@ void ConsoleApp::Menu()
 
 void ConsoleApp::MenuPC()
 {
-	wcout << L"|Контакт : "
-		<< *this->currentPerson->getLastName() << " "
-		<< *this->currentPerson->getFirstName() << " "
-		<< *this->currentPerson->getFatherName() << L" |" << endl;
+	drawPerson(this->currentPerson);
 	cout << "------------------------------------------------" << endl
 		<< "--------------|  Редактор контакта |------------" << endl
 		<< "------------------------------------------------" << endl
 		<< "[1] - Обновить ФИО контакта" << endl
 		<< "[2] - Добавить адрес контакту" << endl
-		<< "[3] - Удалить адрес проживания контакта" << endl
+		<< "[3] - Обновить адрес проживания контакта" << endl
 		<< "[4] - Добавить номер телефона контакта" << endl
-		<< "[5] - Удалить номер контакту" << endl
+		<< "[5] - Обновить номер контакту" << endl
 		<< "[6] - Удаление контакта" << endl
 		<< "[0] - Выход из подменю" << endl << endl << ">>>";
 }
@@ -60,10 +60,7 @@ void ConsoleApp::run()
 			system("cls");
 			try {
 				this->currentPerson = findPerson();
-				cout << "Найден контакт : ";
-				wcout << this->currentPerson->getLastName() << " "
-					<< this->currentPerson->getFirstName() << " "
-					<< this->currentPerson->getFatherName() << endl << endl;
+				drawPerson(this->currentPerson);// вывод контакта на экран
 
 				if (toRunMenuTwo())
 					runPC();
@@ -134,7 +131,7 @@ void ConsoleApp::runPC()
 		}
 		case 3: {
 			system("cls");
-			deleteAddress();
+			updateAddress();
 			break;
 		}
 		case 4: {
@@ -144,7 +141,7 @@ void ConsoleApp::runPC()
 		}
 		case 5: {
 			system("cls");
-			deletePhoneNumber();
+			updatePhoneNumber();
 			break;
 		}
 		case 6: {
@@ -253,8 +250,9 @@ void ConsoleApp::addPhoneNumber()
 	phoneNumber = get_a_number();
 	type = get_a_type_number();
 	
+	PhoneNumber* pn = new PhoneNumber(phoneNumber, type);
 
-	if (con->addPhoneNumberContact(this->currentPerson, phoneNumber, type))
+	if (con->addPhoneNumberContact(this->currentPerson, pn))
 		success();
 	else
 		fail();
@@ -280,7 +278,7 @@ void ConsoleApp::findto4()
 		vec.push_back(index);
 	}
 
-	con->findContactBy4NumberPhone(vec);// try ??
+	con->findContactBy4NumberPhone(vec);
 }
 
 void ConsoleApp::updateFIOcontacte()
@@ -322,18 +320,16 @@ void ConsoleApp::addAddress()
 	
 	wchar_t* nameStreet = new wchar_t[20];
 	int numberHome, numberAppotarment;
-	cout << "Введите название улицы проживания контакта : ";
+	
 	nameStreet = get_a_addressName();
-	cout << "Введите номер дома проживания контакта : ";
 	numberHome = get_a_numberhome();
-	cout << "Введите номер квартиры проживания контакта : ";
 	numberAppotarment = get_a_apartment();
+
+	Address *ad = new Address(nameStreet, numberHome, numberAppotarment);
 
 	if (con->addAddress(
 		this->currentPerson,
-		nameStreet,
-		numberHome,
-		numberAppotarment)) success();
+		ad)) success();
 	else fail();
 
 	delete[] nameStreet;
@@ -368,6 +364,36 @@ void ConsoleApp::deleteAddress()
 
 	if (con->deleteAddress(this->currentPerson)) success();
 	else fail();
+}
+
+void ConsoleApp::updateAddress()
+{
+	cout << "------------------------------------------------" << endl;
+	cout << "-------- Редактировать адрес контакту ----------" << endl;
+	cout << "------------------------------------------------" << endl;
+	wchar_t* nameStrit = get_a_addressName();
+	int numHom = get_a_numberhome();
+	int numApart = get_a_apartment();
+	Address* ad = new Address(nameStrit, numHom, numApart);
+	if (con->updateAddress(this->currentPerson, ad)) success();
+	else fail();
+
+	delete[] nameStrit;
+}
+
+void ConsoleApp::updatePhoneNumber()
+{
+	cout << "------------------------------------------------" << endl;
+	cout << "-------- Редактировать номер контакту ----------" << endl;
+	cout << "------------------------------------------------" << endl;
+	wchar_t* number = get_a_number();
+	int type = get_a_type_number();
+	PhoneNumber* ph = new PhoneNumber(number, type);
+	
+	if (con->updatePhoneNumber(this->currentPerson,  ph)) success();
+	else fail();
+	delete[] number;
+
 }
 
 
@@ -406,6 +432,14 @@ void ConsoleApp::fail()
 	cout << "Fail" << endl;
 }
 
+void ConsoleApp::drawPerson(Person* pt)
+{
+	wcout << L"контакт : " 
+		<< pt->getLastName() << " "
+		<< pt->getFirstName() << " "
+		<< pt->getFatherName() << endl;
+}
+
 /*ввод номера телефона*/
 wchar_t* ConsoleApp::get_a_number()
 {
@@ -415,7 +449,6 @@ wchar_t* ConsoleApp::get_a_number()
  	wcin >> numder;
 	return numder;
 }
-
 
 wchar_t* ConsoleApp::get_a_addressName()
 {

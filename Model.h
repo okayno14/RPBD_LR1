@@ -175,74 +175,33 @@ private:
 	bool isSynced = false;
 
 public:
-	Person(SQLWCHAR* lastName, SQLWCHAR* firstName, SQLWCHAR* fatherName)
-	{
-		wcscpy_s(this->lastName, lastName);
-		wcscpy_s(this->firstName,firstName);		
-		wcscpy_s(this->fatherName, fatherName);
-	};
+	Person(SQLWCHAR* lastName, SQLWCHAR* firstName, SQLWCHAR* fatherName);
+	
 
 	Person() {};
 	
-	bool isEqual(const Person* b) 
-	{
-		const SQLWCHAR* a_lastname = this->lastName;
-		const SQLWCHAR* a_firstname = this->firstName;
-		const SQLWCHAR* a_fathername = this->fatherName;
-
-		const SQLWCHAR* b_lastname = b->lastName;
-		const SQLWCHAR* b_firstname = b->firstName;
-		const SQLWCHAR* b_fathername = b->fatherName;
-
-		if
-		(
-			wcscmp(a_lastname, b_lastname) == 0 &&
-			wcscmp(a_firstname, b_firstname) == 0 &&
-			wcscmp(a_fathername, b_fathername) == 0
-		)
-			return true;
-		else return false;
-	}
-
-	bool containPhoneNumber(PhoneNumber* pn) 
-	{
-		for (int i = 0; i < phoneNumbers.size(); i++)
-		{
-			if (phoneNumbers[i]->isEqual(pn)) return true;
-		}
-		return false;
-	}
-
-	bool containAddress(Address* ad) 
-	{
-		return this->address->isEqual(ad);
-	}
-
-	void addPhoneNumber(PhoneNumber* pn) 
-	{
-		this->phoneNumbers.push_back(pn);
-		this->idPhones.push_back( phoneNumbers.back()->getId());
-	};
-
-	void setPhoneNumber(int pos, PhoneNumber* pn) 
-	{
-		if (pos < phoneNumbers.size())
-		{
-			phoneNumbers[pos] = pn;
-			idPhones[pos] = pn->getId();
-		}
-	}
-
-	wchar_t* getLastName() { return this->lastName; }
-	wchar_t* getFirstName() { return this->firstName; }
-	wchar_t* getFatherName() { return this->fatherName; }
+	bool isEqual(const Person* b);
 	
 
-	void setAddress(Address* add) 
-	{ 
-		this->address = add; 
-		this->idAddress = add->getId();
-	};
+	bool containPhoneNumber(PhoneNumber* pn);
+	
+
+	bool containAddress(Address* ad);
+	
+
+	void addPhoneNumber(PhoneNumber* pn);
+	
+
+	void setPhoneNumber(int pos, PhoneNumber* pn);
+	
+
+	SQLWCHAR* getLastName();
+	SQLWCHAR* getFirstName();
+	SQLWCHAR* getFatherName();
+	
+
+	void setAddress(Address* add);
+	
 };
 
 class AbstractMapper

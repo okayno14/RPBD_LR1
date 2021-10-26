@@ -33,22 +33,23 @@ Person* Controller::addÑontact(
 {
 	if (lastNameContact == NULL || firstNameContact == NULL || fatherNameContact == NULL)
 		throw - 1;
-		//return false;
-	
+		
 	Person p(lastNameContact, firstNameContact, fatherNameContact);
-	model->insertPerson(p);
+	Person* temp;
+	temp = &model->insertPerson(p);
 
 	consoleApp->success();
-	//return true;
-	return &p;
+	return temp;
 }
 
 bool Controller::deleteContact(
 	Person* p)
 {
-	
+	if (p == NULL)
+		return false;
 
-	return false;
+	model->deletePerson(p);
+	return true;
 }
 
 bool Controller::toÑhangeContact(
@@ -57,42 +58,59 @@ bool Controller::toÑhangeContact(
 	SQLWCHAR* newfirstNameContact, 
 	SQLWCHAR* newfatherNameContact)
 {
-	if (newlastNameContact == NULL || newfirstNameContact == NULL || newfatherNameContact == NULL)
+	if (newlastNameContact == NULL || newfirstNameContact == NULL || newfatherNameContact == NULL || p == NULL)
 	{
 		return false;
 	}
-
-	return false;
+	Person newp(newlastNameContact, newfirstNameContact, newfatherNameContact);
+	model->updatePerson(p, newp);
+	return true;
 }
 
-bool Controller::addPhoneNumberContact(Person* p, SQLWCHAR* number, int type)
+bool Controller::addPhoneNumberContact(Person* p, PhoneNumber* pn)
 {
+	if (p == NULL || pn == NULL)
+		return false;
+	Person newPer = *p;
+	newPer.addPhoneNumber(pn);
+
+	model->updatePerson(p, newPer);
 	return false;
 }
 
 bool Controller::deletePhoneNumberContact(Person* p, SQLWCHAR* number)
 {
-	return false;
+	if (p == NULL || number == NULL)
+		return false;
+	//?????
+	return true;
 }
 
-
-
-/*íóæíî ïîëó÷àòü int[]*/
-std::vector<Person*> Controller::findContactBy4NumberPhone(std::vector<int> number4)
+void Controller::findContactBy4NumberPhone(std::vector<int> number4)
 {
-
-
-
+	std::vector<Person*> tmp = model->findBy4(number4);
+	for (int i = 0; i < tmp.size(); i++)
+	{
+		Person* p = tmp[i];
+		this->consoleApp->drawPerson(p);
+	}
 }
 
-bool Controller::addAddress(Person* p, SQLWCHAR* nameStreet, int numberHome, int numberApartment)
+bool Controller::addAddress(Person* p, Address* ad)
 {
-	return false;
+	if (p == NULL || ad == NULL)
+		return false;
+
+	Person newPer = *p;
+	newPer.setAddress(ad);
+
+	model->updatePerson(p, newPer);
+	return true;
 }
 
 bool Controller::deleteAddress(Person* p)
 {
-	return false;
+	return false;////????????????
 }
 
 Person* Controller::findPerson(
@@ -168,4 +186,28 @@ Person* Controller::findPerson(
 			}
 		}
 	}
+}
+
+bool Controller::updateAddress(Person* p, Address* ad)
+{
+	if (p == NULL || ad == NULL)
+		return false;
+
+	Person newPer = *p;
+	newPer.setAddress(ad);
+
+	model->updatePerson(p, newPer);
+	return true;
+}
+
+bool Controller::updatePhoneNumber(Person* p, PhoneNumber* ph)
+{
+	if (p == NULL || ph == NULL)
+		return false;
+
+	Person newPer = *p;
+	newPer.addPhoneNumber(ph);
+
+	model->updatePerson(p, newPer);
+	return true;
 }

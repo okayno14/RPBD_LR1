@@ -2,7 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
-
+#include "Model.h"
 #include "Controller.h"
 using namespace std;
 
@@ -39,12 +39,15 @@ public:
 	void addPhoneNumber();
 	void deletePhoneNumber();
 	void deleteAddress();
+	void updateAddress();
+	void updatePhoneNumber();
 
 	/*вспомогательные методы*/
 	void success();
 	void offlineStatus();
 	void fail();
 	bool toRunMenuTwo();
+	void drawPerson(Person* p);
 
 	/*методы для запросов полей с данными контакта*/
 	wchar_t* get_a_number();

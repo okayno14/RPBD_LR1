@@ -24,7 +24,7 @@ private:
 public:
 	Controller(Model* model);
 	Controller(ConsoleApp* view);
-	~Controller() { delete model; }
+	~Controller() { delete model; delete consoleApp; }
 	void setView(ConsoleApp* consoleApp);
 
 	Person* add—ontact(
@@ -40,23 +40,27 @@ public:
 		SQLWCHAR* newfatherNameContact);
 	bool addPhoneNumberContact(
 		Person* p,
-		SQLWCHAR* number,
-		int type);
+		PhoneNumber* pn);
 	bool deletePhoneNumberContact(
 		Person* p,
 		SQLWCHAR* number);
 	
-	std::vector<Person*> findContactBy4NumberPhone(std::vector<int> number4);
+	void findContactBy4NumberPhone(std::vector<int> number4);
 	bool addAddress(
 		Person* p,
-		SQLWCHAR* nameStreet,
-		int numberHome,
-		int numberApartment);
+		Address* ad);
 	bool deleteAddress(
 		Person* p);
 	Person* findPerson(
 		SQLWCHAR* lastNameContact,
 		SQLWCHAR* firstNameContact,
 		SQLWCHAR* fatherNameContact);
+
+	bool updateAddress(
+		Person* p,
+		Address* ad);
+	bool updatePhoneNumber(
+		Person* p,
+		PhoneNumber* ph);
 
 };
