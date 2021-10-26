@@ -48,6 +48,8 @@ public:
 	void fail();
 	bool toRunMenuTwo();
 	void drawPerson(Person* p);
+	void drawAddress();
+	void drawPhoneNumber();
 
 	/*методы для запросов полей с данными контакта*/
 	wchar_t* get_a_number();
