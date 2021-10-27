@@ -237,6 +237,13 @@ public:
 	virtual void findObj(int id) {};
 	virtual int findObj() = 0;
 
+	void setDBC(DataBaseConnection* dbc) 
+	{ 
+		this->db = dbc; 
+		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
+		checkErr();
+	}
+
 protected:
 	void checkErr();
 	void commitTransaction();

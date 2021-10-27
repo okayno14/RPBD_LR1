@@ -25,7 +25,7 @@ void AbstractMapper::checkErr()
 			SQL_MAX_MESSAGE_LENGTH,
 			&infoL);
 		cerr << info << std::endl;
-		std::wcout << cerr.str() << std::endl;
+		//std::wcout << cerr.str() << std::endl;
 		throw cerr.str();
 	}
 }
@@ -118,8 +118,8 @@ PersonMapper::PersonMapper(Person* buf)
 	try
 	{
 		this->buf = buf;
-		db = DataBaseConnection::getInstance();
-		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
+		//db = DataBaseConnection::getInstance();
+		//retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
 	}
 	catch (int err) {}
 }
@@ -755,19 +755,24 @@ void PersonMapper::createDB()
 	std::wstringstream command;
 	std::wstring buf;
 	std::wifstream file("rpbd_databaseNULL.txt", std::ios::binary);
-	while (std::getline(file,buf)) 
-	{ 
-		if (!buf.empty())
-			command << buf;
-	};
-	buf = command.str();
-	statementText = (SQLWCHAR*) buf.c_str();	
-	file.close();
+	if (file)
+	{
+		while (std::getline(file, buf))
+		{
+			if (!buf.empty())
+				command << buf;
+		};
+		buf = command.str();
+		statementText = (SQLWCHAR*)buf.c_str();
+		file.close();
 
-	retcode = SQLExecDirect(hstmt, statementText, SQL_NTS);
-	checkErr();
+		retcode = SQLExecDirect(hstmt, statementText, SQL_NTS);
+		checkErr();
 
-	commitTransaction();
+		commitTransaction();
+	}
+	else throw - 1;
+	
 }
 int PersonMapper::findObj(bool q)
 {
@@ -855,8 +860,8 @@ AddressMapper::AddressMapper(Address* buf)
 	try 
 	{
 		this->buf = buf;
-		db = DataBaseConnection::getInstance();
-		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
+		//db = DataBaseConnection::getInstance();
+		//retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
 	}
 	catch (int err) {}
 }
@@ -1373,8 +1378,8 @@ PhoneMapper::PhoneMapper(PhoneNumber* buf)
 	try
 	{
 		this->buf = buf;
-		db = DataBaseConnection::getInstance();
-		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
+		//db = DataBaseConnection::getInstance();
+		//retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
 	}
 	catch (int err) {}
 }

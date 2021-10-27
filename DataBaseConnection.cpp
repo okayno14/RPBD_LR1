@@ -1,12 +1,18 @@
 #include "DataBaseConnection.h"
 
+SQLWCHAR DataBaseConnection::dsn[CONN_DATA_SZ];
+SQLWCHAR DataBaseConnection::user[CONN_DATA_SZ];
+SQLWCHAR DataBaseConnection::password[CONN_DATA_SZ];
+
 DataBaseConnection::DataBaseConnection() : status{ 0 }
 {
 	//dsn = (SQLWCHAR*)L"Pfdfdfffd";
 	//dsn = (SQLWCHAR*)L"Phonebook";
-	dsn = (SQLWCHAR*)L"test";
-	user = (SQLWCHAR*)L"postgres";
-	password = (SQLWCHAR*)L"123";
+	//dsn = (SQLWCHAR*)L"test";
+	//user = (SQLWCHAR*)L"postgres";
+	//password = (SQLWCHAR*)L"123";
+
+		
 
 	retcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &handleEnv);
 	checkErr();

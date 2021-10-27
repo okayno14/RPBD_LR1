@@ -13,10 +13,28 @@ Controller::Controller(ConsoleApp* view)
 		this->consoleApp = view;
 		this->model = new Model();
 	}
-	catch (int) 
+	catch (int err) 
 	{
-		consoleApp->offlineStatus();
-		//вывести на экран инфу
+		switch (err)
+		{
+			case -1:
+			{
+				//нет конфиг файла для новой таблицы
+				consoleApp->noTableConfig();
+				break;
+			}
+			case -2: 
+			{
+				//вывести на экран инфу
+				consoleApp->offlineStatus();
+				break;
+			}
+			case -3: 
+			{
+				//нет конфига подключения к бд
+				break;
+			}
+		}
 	};
 	
 }

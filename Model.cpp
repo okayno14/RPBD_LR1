@@ -7,7 +7,38 @@ Model::Model()
 {
 	try
 	{
+		std::wifstream odbcCon("connectionConfig.txt");
+		std::wstring buf;
+		if (odbcCon)
+		{
+			while (std::getline(odbcCon, buf, L'\t'))
+			{
+				if (buf.compare(L"dsn") == 0)
+				{
+					std::getline(odbcCon, buf);
+					wcscpy_s(DataBaseConnection::dsn, buf.c_str());
+				}
+				if (buf.compare(L"user") == 0)
+				{
+					std::getline(odbcCon, buf);
+					wcscpy_s(DataBaseConnection::user, buf.c_str());
+				}
+				if (buf.compare(L"pass") == 0)
+				{
+					std::getline(odbcCon, buf);
+					wcscpy_s(DataBaseConnection::password, buf.c_str());
+				}
+			}
+		}
+		else throw - 3;
+
+		
 		dbc = DataBaseConnection::getInstance();
+
+		adMap.setDBC(dbc);
+		pnMap.setDBC(dbc);
+		pMap.setDBC(dbc);
+
 		//тестируем наличие таблиц в БД
 		Person p;
 		Address add;
@@ -25,10 +56,22 @@ Model::Model()
 		}
 		catch (std::wstring msg) 
 		{
-			pMap.createDB();
+			try
+				{pMap.createDB();}
+			catch (int err)
+				{throw -1;}
 		}
 	}
-	catch (int err) { throw err; }
+	catch (int err) 
+	{ 
+		adMap.setDBC(dbc);
+		pnMap.setDBC(dbc);
+		pMap.setDBC(dbc);
+		throw err; 
+	}
+
+
+
 }
 
 Person& Model::insertPerson(Person p)

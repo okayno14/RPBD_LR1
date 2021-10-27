@@ -605,7 +605,14 @@ int ConsoleApp::get_a_numberhome()
 
 void ConsoleApp::offlineStatus()
 {
-	cout << "Ошибка подключения к бд. Приложение работает в оффлайн режиме.\n";
+	wcout << L"Ошибка подключения к бд. Приложение работает в оффлайн режиме.\n";
+	_getwch();
+	system("cls");
+}
+
+void ConsoleApp::noTableConfig()
+{
+	wcout << L"Нет конфигурационного файла для таблиц бд\n";
 	_getwch();
 	system("cls");
 }

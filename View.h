@@ -43,10 +43,14 @@ public:
 	void updateAddress();
 	void updatePhoneNumber();
 
-	/*вспомогательные методы*/
-	void success();
+	//вывод инфы о состоянии модели
 	void offlineStatus();
+	void noTableConfig();
+
+	void success();	
 	void fail();
+	
+	/*вспомогательные методы*/
 	bool toRunMenuTwo();
 	void drawPerson(Person* p);
 	void drawAddress();

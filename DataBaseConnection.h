@@ -7,14 +7,18 @@
 #include <iostream>
 #include <sstream>
 
+#define CONN_DATA_SZ 256
+
+class Model;
 class DataBaseConnection
 {
+	friend class Model;
 protected:
 	SQLHENV handleEnv;
 	SQLRETURN retcode;
-	SQLWCHAR* dsn;
-	SQLWCHAR* user;
-	SQLWCHAR* password;
+	static SQLWCHAR dsn[CONN_DATA_SZ];
+	static SQLWCHAR user[CONN_DATA_SZ];
+	static SQLWCHAR password[CONN_DATA_SZ];
 	//Сделать доступ через get и заприватить
 	SQLHDBC hDBC;
 
