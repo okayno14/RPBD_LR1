@@ -105,7 +105,7 @@ void ConsoleApp::run()
 		case 4: 
 		{
 			system("cls");
-			this->fintALLFIO();
+			this->findList_FIO();
 			_getwch();
 			system("cls");
 			break;
@@ -333,7 +333,7 @@ void ConsoleApp::findto4()
 	con->findContactBy4NumberPhone(vec);
 }
 
-void ConsoleApp::fintALLFIO()
+void ConsoleApp::findList_FIO()
 {
 	wchar_t* newlastnamecontact = new wchar_t[20];
 	wchar_t* newfirstnamecontact = new wchar_t[20];

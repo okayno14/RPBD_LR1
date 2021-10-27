@@ -34,7 +34,7 @@ public:
 	Person* addContact();
 	void deleteContact();
 	void findto4();
-	void fintALLFIO();
+	void findList_FIO();
 	void updateFIOcontacte();
 	void addAddress();
 	void addPhoneNumber();

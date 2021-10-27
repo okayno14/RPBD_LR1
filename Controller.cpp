@@ -124,7 +124,7 @@ void Controller::findContactBy4NumberPhone(std::vector<int> number4)
 
 void Controller::findFIOALL(Person p)
 {
-	vector<Person*>tmp= model->finALLFIO(p);
+	vector<Person*>tmp= model->find_List_FIO(p);
 
 	for (int i = 0; i < tmp.size(); i++)
 	{

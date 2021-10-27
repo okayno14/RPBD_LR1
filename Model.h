@@ -382,7 +382,7 @@ public:
 		//тхн рекетнм юдпея
 		Person& findPerson(Person p, PhoneNumber pn, Address add, int& ctr);
 		std::vector<Person*> findBy4(std::vector<int> nums);
-		std::vector<Person*> finALLFIO(Person p);
+		std::vector<Person*> find_List_FIO(Person p);
 
 private:
 		void updatePerson(Person* pOld, Address* add);

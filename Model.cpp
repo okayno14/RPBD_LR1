@@ -29,10 +29,11 @@ Model::Model()
 					wcscpy_s(DataBaseConnection::password, buf.c_str());
 				}
 			}
+			odbcCon.close();
 		}
-		else throw - 3;
-
 		
+		else { odbcCon.close(); throw - 3; }
+
 		dbc = DataBaseConnection::getInstance();
 
 		adMap.setDBC(dbc);
@@ -834,7 +835,7 @@ std::vector<Person*> Model::findBy4(std::vector<int> nums)
 	return res;
 }
 
-std::vector<Person*> Model::finALLFIO(Person p)
+std::vector<Person*> Model::find_List_FIO(Person p)
 {
 	//вызов синхронизации
 	syncAll();
@@ -856,6 +857,8 @@ std::vector<Person*> Model::finALLFIO(Person p)
 	else
 	{
 		std::vector<Person> bd;
+		
+		
 		pMap.setBuf(&p);
 		bd = pMap.findListFIO();
 

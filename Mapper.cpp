@@ -1820,15 +1820,12 @@ std::vector<Person> PersonMapper::findby4(std::vector<int>* args)
 }
 std::vector<Person> PersonMapper::findListFIO()
 {
-	
-		SQLLEN a;
-		//bool res = false;
-		statementText =
-			(SQLWCHAR*)L"SELECT DISTINCT p.id, p.idaddress, p.lastname, p.firstname, p.fathername FROM person as p, persone_number as pn WHERE"
-			" p.lastname = ? and"
-			" p.firstname = ? and"
-			" p.fathername = ? and"
-			" pn.idperson = p.id";
+	statementText =
+		(SQLWCHAR*)L"SELECT DISTINCT p.id, p.idaddress, p.lastname, p.firstname, p.fathername"
+		" FROM person as p WHERE"
+		" p.lastname = ? and"
+		" p.firstname = ? and"
+		" p.fathername = ?";			
 
 		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 		checkErr();
@@ -1837,14 +1834,16 @@ std::vector<Person> PersonMapper::findListFIO()
 
 		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
 		checkErr();
-
 		retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idAddress), 0, &(buf->idAddressLen));
+		checkErr();
+		retcode = SQLBindCol(hstmt, 3, SQL_C_WCHAR, &(buf->lastName), sizeof(SQLWCHAR) * strSZ, &(buf->lastNameLen));
+		checkErr();
+		retcode = SQLBindCol(hstmt, 4, SQL_C_WCHAR, &(buf->firstName), sizeof(SQLWCHAR) * strSZ, &(buf->nameLen));
+		checkErr();
+		retcode = SQLBindCol(hstmt, 5, SQL_C_WCHAR, &(buf->fatherName), sizeof(SQLWCHAR) * strSZ, &(buf->fatherNameLen));
 		checkErr();
 
 		retcode = SQLExecute(hstmt);
-		checkErr();
-
-		retcode = SQLRowCount(hstmt, &a);
 		checkErr();
 
 		std::vector<Person> res;
@@ -1865,14 +1864,4 @@ std::vector<Person> PersonMapper::findListFIO()
 		commitTransaction();
 
 		return res;
-		
-		
-		getIdPhone();
-
-		commitTransaction();
-		//Не забудь поправить
-	
-	
-	
-	return std::vector<Person>();
 };
