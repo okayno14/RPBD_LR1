@@ -64,9 +64,13 @@ Model::Model()
 	}
 	catch (int err) 
 	{ 
-		adMap.setDBC(dbc);
-		pnMap.setDBC(dbc);
-		pMap.setDBC(dbc);
+		try 
+		{
+			adMap.setDBC(dbc);
+			pnMap.setDBC(dbc);
+			pMap.setDBC(dbc);
+		}
+		catch (int err) { throw err; }
 		throw err; 
 	}
 

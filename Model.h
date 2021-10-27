@@ -240,8 +240,9 @@ public:
 	void setDBC(DataBaseConnection* dbc) 
 	{ 
 		this->db = dbc; 
+		if (db == nullptr) throw - 2;
 		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
-		checkErr();
+		
 	}
 
 protected:
