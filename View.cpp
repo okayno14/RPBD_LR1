@@ -17,10 +17,11 @@ void ConsoleApp::Menu()
 	cout << "------------------------------------------------" << endl
 		<< "--------------| Телефонная книга |--------------" << endl
 		<< "------------------------------------------------" << endl
-		<< "[1] - Поиск контакта" << endl
+		<< "[1] - Поиск 1 контакта" << endl
 		<< "[2] - Добавить контакт в тк" << endl
 		<< "------------------------------------------------" << endl
 		<< "[3] - Поиск контакта по 4-м символам номера" << endl
+		<< "[4] - Вывести список контактов по ФИО"<<endl
 		<< "------------------------------------------------" << endl
 		<< "[0] - Выход из программы " << endl << endl << endl << ">>>";
 }
@@ -96,6 +97,16 @@ void ConsoleApp::run()
 		case 3: {
 			system("cls");
 			findto4();
+			_getwch();
+			system("cls");
+			
+			break;
+		}
+		case 4: 
+		{
+			system("cls");
+			this->fintALLFIO();
+			_getwch();
 			system("cls");
 			break;
 		}
@@ -167,7 +178,15 @@ void ConsoleApp::runPC()
 			system("cls");
 			break;
 		}
-		case 7: {
+		case 7: 
+		{
+			std::vector<PhoneNumber*> tmp = currentPerson->getNumbers();
+			for (int i = 0; i < tmp.size(); i++) 
+			{
+				drawPhoneNumber(tmp[i]);
+			}
+
+
 			break;
 		}
 		case 8: {
@@ -283,6 +302,7 @@ void ConsoleApp::addPhoneNumber()
 		fail();
 
 	delete[] phoneNumber;
+	delete pn;
 }
 
 /*redactori*/
@@ -311,6 +331,29 @@ void ConsoleApp::findto4()
 	vec.push_back((chetirechisl % 100) / 10);
 	vec.push_back(chetirechisl % 10);
 	con->findContactBy4NumberPhone(vec);
+}
+
+void ConsoleApp::fintALLFIO()
+{
+	wchar_t* newlastnamecontact = new wchar_t[20];
+	wchar_t* newfirstnamecontact = new wchar_t[20];
+	wchar_t* newfathernamecontact = new wchar_t[20];
+
+	cout << "Введите ФИО контакта" << endl;
+	cout << "Введите имя контакта : ";
+	wcin >> newlastnamecontact;
+	cout << "Введите фамилию контакта : ";
+	wcin >> newfirstnamecontact;
+	cout << "Введите отчество контакта : ";
+	wcin >> newfathernamecontact;
+
+	Person p(newlastnamecontact, newfirstnamecontact, newfathernamecontact);
+
+	con->findFIOALL(p);
+	
+	delete[] newlastnamecontact;
+	delete[] newfirstnamecontact;
+	delete[] newfathernamecontact;
 }
 
 void ConsoleApp::updateFIOcontacte()
@@ -384,7 +427,7 @@ void ConsoleApp::deletePhoneNumber()
 		phoneNumber)) success();
 	else fail();
 
-	delete[] phoneNumber;
+	delete phoneNumber;
 }
 
 //изменить
@@ -418,14 +461,25 @@ void ConsoleApp::updatePhoneNumber()
 	cout << "------------------------------------------------" << endl;
 	cout << "-------- Редактировать номер контакту ----------" << endl;
 	cout << "------------------------------------------------" << endl;
+
+	std::vector<PhoneNumber*> tmp = currentPerson->getNumbers();
+	
+	for (int i = 0; i < tmp.size(); i++)
+		drawPhoneNumber(tmp[i]);
+
+	wcout << L"Введите порядковый номер изменяемого телефона" << endl;
+	int ch;
+	cin >> ch;
+
 	wchar_t* number = get_a_number();
 	int type = get_a_type_number();
-	PhoneNumber* ph = new PhoneNumber(number, type);
-	
-	if (con->updatePhoneNumber(this->currentPerson,  ph)) success();
-	else fail();
-	delete[] number;
 
+	PhoneNumber* ph = new PhoneNumber(number, type);	
+
+	if (con->updatePhoneNumber(this->currentPerson, ph,ch)) success();
+	else fail();	
+	
+	delete[] number;
 }
 
 
@@ -470,6 +524,34 @@ void ConsoleApp::drawPerson(Person* pt)
 		<< pt->getLastName() << " "
 		<< pt->getFirstName() << " "
 		<< pt->getFatherName() << endl;
+}
+
+void ConsoleApp::drawPhoneNumber(PhoneNumber* pn)
+{
+	if (pn != nullptr)
+	{
+		wcout << pn->getNumber()<<"\t";
+
+		switch (pn->getType())
+		{
+			case 1:
+			{
+				wcout << L"mobile"<<endl;
+				break;
+			}
+			case 2:
+			{
+				wcout << L"work" << endl;
+				break;
+			}
+			case 3:
+			{
+				wcout << L"home" << endl;
+				break;
+			}
+		}
+
+	}
 }
 
 /*ввод номера телефона*/

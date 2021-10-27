@@ -71,4 +71,8 @@ void Person::setAddress(Address* add)
 {
 	this->address = add;
 	this->idAddress = add->getId();
+}
+std::vector<PhoneNumber*> Person::getNumbers()
+{
+	return phoneNumbers;
 };

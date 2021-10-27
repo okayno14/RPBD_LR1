@@ -827,21 +827,23 @@ int PersonMapper::findObj(bool q)
 		checkErr();
 
 
-		if (a == 1) 
+		if (a == 1)
 		{
 			retcode = SQLFetch(hstmt);
 			checkErr();
-			
+
 			retcode = SQLCloseCursor(hstmt);
 			checkErr();
 
 		}
-		else 
+		else
 		{
 			retcode = SQLCloseCursor(hstmt);
 			checkErr();
 		}
 	}
+	else
+		a = 0;
 
 	commitTransaction();
 	//Не забудь поправить
@@ -1326,23 +1328,38 @@ bool AddressMapper::findStreet()
 }
 int AddressMapper::findReferences()
 {
-	statementText = (SQLWCHAR*)L" SELECT * FROM person WHERE person.idaddress = ?";
+	statementText = (SQLWCHAR*)L" SELECT COUNT(idaddress) FROM person WHERE idaddress = ?";
 	
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 	checkErr();
 
-	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+	retcode = SQLBindParameter
+	(
+		hstmt,
+		1,
+		SQL_PARAM_INPUT,
+		SQL_C_SLONG,
+		SQL_INTEGER,
+		4,
+		0,
+		&(buf->id),
+		0,
+		NULL
+	);
+	checkErr();
+	
+	int finded;
+	SQLLEN findedLen;
+	
+	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &finded, 0, &findedLen);
 	checkErr();
 	
 	retcode = SQLExecute(hstmt);
 	checkErr();
 
-	SQLLEN finded;
-	retcode = SQLRowCount(hstmt, &finded);
-	checkErr();
-	
 	retcode = SQLFetch(hstmt);
 	checkErr();
+	
 	retcode = SQLCloseCursor(hstmt);
 	checkErr();
 	commitTransaction();
@@ -1678,21 +1695,35 @@ void PhoneMapper::updateObj()
 }
 int PhoneMapper::findReferences()
 {
-	statementText = (SQLWCHAR*)L" SELECT * FROM persone_number WHERE idphone = ?";
+	statementText = (SQLWCHAR*)L"SELECT COUNT(idphone) from persone_number where idphone = ?";
 
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 	checkErr();
 
-	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+
+	retcode = SQLBindParameter(
+		hstmt,
+		1,
+		SQL_PARAM_INPUT,
+		SQL_C_SLONG,
+		SQL_INTEGER,
+		4,
+		0,
+		&(buf->id),
+		0,
+		NULL);
 	checkErr();
+	
+
+	int finded;
+	SQLLEN findedLen;
+
+	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &finded, 0, &findedLen);
+	checkErr();	
 
 	retcode = SQLExecute(hstmt);
 	checkErr();
-
-	SQLLEN finded;
-	retcode = SQLRowCount(hstmt, &finded);
-	checkErr();
-
+	
 	retcode = SQLFetch(hstmt);
 	checkErr();
 	retcode = SQLCloseCursor(hstmt);
@@ -1791,4 +1822,62 @@ std::vector<Person> PersonMapper::findby4(std::vector<int>* args)
 	commitTransaction();
 
 	return res;
+}
+std::vector<Person> PersonMapper::findListFIO()
+{
+	
+		SQLLEN a;
+		//bool res = false;
+		statementText =
+			(SQLWCHAR*)L"SELECT DISTINCT p.id, p.idaddress, p.lastname, p.firstname, p.fathername FROM person as p, persone_number as pn WHERE"
+			" p.lastname = ? and"
+			" p.firstname = ? and"
+			" p.fathername = ? and"
+			" pn.idperson = p.id";
+
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		bindNamePar();
+
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+		checkErr();
+
+		retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idAddress), 0, &(buf->idAddressLen));
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		retcode = SQLRowCount(hstmt, &a);
+		checkErr();
+
+		std::vector<Person> res;
+		
+		while (SQLFetch(hstmt) != SQL_NO_DATA)
+			res.push_back(*buf);
+
+
+		retcode = SQLCloseCursor(hstmt);
+		checkErr();
+
+		for (int i = 0; i < res.size(); i++)
+		{
+			buf = &res[i];
+			getIdPhone();
+		}
+
+		commitTransaction();
+
+		return res;
+		
+		
+		getIdPhone();
+
+		commitTransaction();
+		//Не забудь поправить
+	
+	
+	
+	return std::vector<Person>();
 };

@@ -140,6 +140,16 @@ public:
 	bool isContain(std::vector<int>* nums);
 
 	SQLINTEGER getId() { return id; }
+
+	SQLWCHAR* getNumber()
+	{
+		return number;
+	}
+
+	int getType() 
+	{
+		return idType;
+	}
 };
 
 class Person
@@ -201,6 +211,8 @@ public:
 	
 
 	void setAddress(Address* add);
+
+	std::vector<PhoneNumber*> getNumbers();
 	
 };
 
@@ -272,6 +284,7 @@ public:
 	void createDB();
 
 	std::vector<Person> findby4(std::vector<int>* args);
+	std::vector<Person> findListFIO();
 };
 
 class AddressMapper : public AbstractMapper
@@ -361,7 +374,7 @@ public:
 		//тхн рекетнм юдпея
 		Person& findPerson(Person p, PhoneNumber pn, Address add, int& ctr);
 		std::vector<Person*> findBy4(std::vector<int> nums);
-		
+		std::vector<Person*> finALLFIO(Person p);
 
 private:
 		void updatePerson(Person* pOld, Address* add);

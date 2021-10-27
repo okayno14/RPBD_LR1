@@ -237,12 +237,14 @@ void Model::deletePhone(PhoneNumber* pn)
 			pnMap.setBuf(pn);
 			pnMap.deleteObj();
 		}
+		case 2:
 		case 3:
 		{
 			std::list<PhoneNumber>::iterator i = phoneNumberTable.begin();
 			while (i != phoneNumberTable.end() && &(*i) != pn)
 				++i;
-			phoneNumberTable.erase(i);
+			if(i!= phoneNumberTable.end())
+				phoneNumberTable.erase(i);
 			break;
 		}
 	}
@@ -470,7 +472,8 @@ void Model::updatePerson(Person* pOld, Person pNew)
 	{
 		adMap.setBuf(bufA);
 		if (findReferences(bufA) == 0)
-			deleteAddress(bufA);
+			
+			Address(bufA);
 	}
 	for (int i = 0; i < bufP.size(); i++) 
 	{
@@ -758,9 +761,84 @@ std::vector<Person*> Model::findBy4(std::vector<int> nums)
 				{
 					flag = reg;
 					break;
-				}	
+				}
+				j++;
 			}
 			
+			//Обработка результатов поиска
+			//Если объект есть в памяти СД
+			//значит нет нужды его загружать
+			if (flag)
+				res.push_back(&(*j));
+			//в СД совпадения не было найдено
+			else
+			{
+				//вставка контакта
+				personTable.push_back(bd[i]);
+				//работа со второстепенными атрибутами, если таковые присутствовали
+				download(&personTable.back());
+				personTable.back().isSynced = 1;
+				res.push_back(&personTable.back());
+			}
+
+		}
+
+	}
+	return res;
+}
+
+std::vector<Person*> Model::finALLFIO(Person p)
+{
+	//вызов синхронизации
+	syncAll();
+
+	std::vector<Person*> res;
+
+	//поиск в сд
+	if (dbc == nullptr)
+	{
+		//итерируемся по таблице контактов
+		for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
+		{
+			if ((*i).isEqual(&p))
+				res.push_back(&(*i));
+		}
+		return res;
+	}
+	//поиск в БД
+	else
+	{
+		std::vector<Person> bd;
+		pMap.setBuf(&p);
+		bd = pMap.findListFIO();
+
+		//обход результатов из бд
+		for (int i = 0; i < bd.size(); i++)
+		{
+			std::list<Person>::iterator j = personTable.begin();
+			bool flag = false;
+
+			//цикл поиска объекта из результата в СД
+			//если флаг переключился на true,
+			//значит объект содержится в СД
+			while (j != personTable.end())
+			{
+				bool reg = true;
+				reg = reg && (*j).isEqual(&bd[i]);
+
+				reg = reg && (*j).idPhones == bd[i].idPhones;
+
+				reg = reg && (*j).idAddress == bd[i].idAddress;
+
+				//СД уже содержит этот объект
+				if (reg == true)
+				{
+					flag = reg;
+					break;
+				}
+				j++;
+			}
+
 			//Обработка результатов поиска
 			//Если объект есть в памяти СД
 			//значит нет нужды его загружать

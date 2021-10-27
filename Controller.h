@@ -46,6 +46,8 @@ public:
 		SQLWCHAR* number);
 	
 	void findContactBy4NumberPhone(std::vector<int> number4);
+	void findFIOALL(Person p);
+
 	bool addAddress(
 		Person* p,
 		Address* ad);
@@ -61,6 +63,6 @@ public:
 		Address* ad);
 	bool updatePhoneNumber(
 		Person* p,
-		PhoneNumber* ph);
+		PhoneNumber* ph, int ch);
 
 };
