@@ -242,7 +242,7 @@ public:
 		this->db = dbc; 
 		if (db == nullptr) throw - 2;
 		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
-		
+		if (retcode < 0) throw - 2;
 	}
 
 protected:

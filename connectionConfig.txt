@@ -1,3 +1,3 @@
 dsn	test
 user	postgres
-pass	1234
+pass	123
