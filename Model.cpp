@@ -773,12 +773,15 @@ std::vector<Person*> Model::findBy4(std::vector<int> nums)
 		//итерируемся по таблице контактов
 		for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
 		{
+			int buf(0);
 			//проверка одного из номеров на соответствие полученному критерию
 			for (int j = 0; j < (*i).phoneNumbers.size(); j++) 
 			{
 				if ((*i).phoneNumbers.at(j)->isContain(&nums))
-					res.push_back(&(*i));				
+					buf++;
 			}
+			if(buf>0)
+				res.push_back(&(*i));
 		}
 		return res;
 	}
