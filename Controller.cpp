@@ -12,6 +12,7 @@ Controller::Controller(ConsoleApp* view)
 	{
 		this->consoleApp = view;
 		this->model = new Model();
+		model->tryDB();
 	}
 	catch (int err) 
 	{

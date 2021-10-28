@@ -4,6 +4,9 @@
 
 
 Model::Model()
+{};
+
+void Model::tryDB()
 {
 	try
 	{
@@ -31,7 +34,7 @@ Model::Model()
 			}
 			odbcCon.close();
 		}
-		
+
 		else { odbcCon.close(); throw - 3; }
 
 		dbc = DataBaseConnection::getInstance();
@@ -49,34 +52,35 @@ Model::Model()
 		adMap.setBuf(&add);
 		pnMap.setBuf(&pn);
 
-		try 
+		try
 		{
 			pMap.findObj(1);
 			adMap.findObj(1);
 			pnMap.findObj(1);
 		}
-		catch (std::wstring msg) 
+		catch (std::wstring msg)
 		{
 			try
-				{pMap.createDB();}
+			{
+				pMap.createDB();
+			}
 			catch (int err)
-				{throw -1;}
+			{
+				throw - 1;
+			}
 		}
 	}
-	catch (int err) 
-	{ 
-		try 
+	catch (int err)
+	{
+		try
 		{
 			adMap.setDBC(dbc);
 			pnMap.setDBC(dbc);
 			pMap.setDBC(dbc);
 		}
 		catch (int err) { throw err; }
-		throw err; 
+		throw err;
 	}
-
-
-
 }
 
 Person& Model::insertPerson(Person p)

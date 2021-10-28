@@ -365,6 +365,7 @@ private:
 	DataBaseConnection* dbc = nullptr;
 public:	
 	Model();
+	void tryDB();
 
 	/*insert
 	update
