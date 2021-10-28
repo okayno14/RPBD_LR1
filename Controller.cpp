@@ -115,11 +115,7 @@ void Controller::findContactBy4NumberPhone(std::vector<int> number4)
 	{
 		Person* p = tmp[i];
 		this->consoleApp->drawPerson(p);
-
-		std::vector<PhoneNumber*> pn = p->getNumbers();
-		for (int i = 0; i < pn.size(); i++)
-			consoleApp->drawPhoneNumber(pn[i]);
-
+		consoleApp->drawPhoneNumbers(p->getNumbers());
 	}
 }
 
@@ -131,11 +127,7 @@ void Controller::findFIOALL(Person p)
 	{
 		Person* p = tmp[i];
 		this->consoleApp->drawPerson(p);
-
-		std::vector<PhoneNumber*> pn = p->getNumbers();
-		for (int i = 0; i < pn.size(); i++)
-			consoleApp->drawPhoneNumber(pn[i]);
-
+		consoleApp->drawPhoneNumbers(p->getNumbers());
 	}
 
 }

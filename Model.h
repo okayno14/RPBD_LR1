@@ -73,6 +73,9 @@ public:
 	{
 		return id;
 	}
+	SQLWCHAR* getStreet() { return streetName; }
+	int getHome() { return this->home; }
+	int getAppartement() { return this->appartement; }
 };
 
 class PhoneNumber
@@ -211,6 +214,8 @@ public:
 	
 
 	void setAddress(Address* add);
+
+	Address* getAddress() { return this->address; }
 
 	std::vector<PhoneNumber*> getNumbers();
 	

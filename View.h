@@ -40,7 +40,6 @@ public:
 	void addPhoneNumber();
 	void deletePhoneNumber();
 	void deleteAddress();
-	void updateAddress();
 	void updatePhoneNumber();
 
 	//вывод инфы о состоянии модели
@@ -53,8 +52,9 @@ public:
 	/*вспомогательные методы*/
 	bool toRunMenuTwo();
 	void drawPerson(Person* p);
-	void drawAddress();
+	void drawAddress(Address* add);
 	void drawPhoneNumber(PhoneNumber* pn);
+	bool drawPhoneNumbers(std::vector<PhoneNumber*> args);
 
 	/*методы для запросов полей с данными контакта*/
 	wchar_t* get_a_number();

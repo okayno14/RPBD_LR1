@@ -35,8 +35,7 @@ void ConsoleApp::MenuPC()
 		<< "--------------|  Редактор контакта |------------" << endl
 		<< "------------------------------------------------" << endl
 		<< "[1] - Обновить ФИО контакта" << endl
-		<< "[2] - Добавить адрес контакту" << endl
-		<< "[3] - Переписать адрес проживания контакта" << endl
+		<< "[2] - Обновить адрес контакту" << endl
 		<< "[4] - Добавить номер телефона контакту" << endl
 		<< "[5] - Переписать номер контакта" << endl
 		<< "[6] - Удалить контакт" << endl
@@ -117,7 +116,7 @@ void ConsoleApp::run()
 			break;
 		}
 		default:
-			Sleep(2000);
+			//Sleep(2000);
 			cout << "Очепятка!" << endl;
 			_getwch();
 			system("cls");
@@ -152,13 +151,6 @@ void ConsoleApp::runPC()
 			
 			break;
 		}
-		case 3: {
-			system("cls");
-			updateAddress();
-			_getwch();
-			system("cls");
-			break;
-		}
 		case 4: {
 			system("cls");
 			addPhoneNumber();
@@ -177,20 +169,20 @@ void ConsoleApp::runPC()
 			system("cls");
 			deleteContact();
 			_getwch();
+			exitWhileLocal = false;
 			system("cls");
 			break;
 		}
 		case 7: 
 		{
-			std::vector<PhoneNumber*> tmp = currentPerson->getNumbers();
-			for (int i = 0; i < tmp.size(); i++) 
-			{
-				drawPhoneNumber(tmp[i]);
-			}
+			drawPhoneNumbers(currentPerson->getNumbers());
 			_getwch();
 			break;
 		}
-		case 8: {
+		case 8: 
+		{
+			drawAddress(currentPerson->getAddress());
+			_getwch();
 			break;
 		}
 		case 0: {
@@ -201,6 +193,7 @@ void ConsoleApp::runPC()
 		default:
 			system("cls");
 			cout << "Очепятка!" << endl;
+			_getwch();
 			break;
 		}
 
@@ -442,45 +435,28 @@ void ConsoleApp::deleteAddress()
 	else fail();
 }
 
-void ConsoleApp::updateAddress()
-{
-	cout << "------------------------------------------------" << endl;
-	cout << "-------- Редактировать адрес контакту ----------" << endl;
-	cout << "------------------------------------------------" << endl;
-	wchar_t* nameStrit = get_a_addressName();
-	int numHom = get_a_numberhome();
-	int numApart = get_a_apartment();
-	Address* ad = new Address(nameStrit, numHom, numApart);
-	if (con->updateAddress(this->currentPerson, ad)) success();
-	else fail();
-
-	delete[] nameStrit;
-}
-
 void ConsoleApp::updatePhoneNumber()
 {
 	cout << "------------------------------------------------" << endl;
 	cout << "-------- Редактировать номер контакту ----------" << endl;
 	cout << "------------------------------------------------" << endl;
 
-	std::vector<PhoneNumber*> tmp = currentPerson->getNumbers();
-	
-	for (int i = 0; i < tmp.size(); i++)
-		drawPhoneNumber(tmp[i]);
+	if (drawPhoneNumbers(currentPerson->getNumbers())) 
+	{
+		wcout << L"Введите порядковый номер изменяемого телефона" << endl;
+		int ch;
+		cin >> ch;
 
-	wcout << L"Введите порядковый номер изменяемого телефона" << endl;
-	int ch;
-	cin >> ch;
+		wchar_t* number = get_a_number();
+		int type = get_a_type_number();
 
-	wchar_t* number = get_a_number();
-	int type = get_a_type_number();
+		PhoneNumber* ph = new PhoneNumber(number, type);
 
-	PhoneNumber* ph = new PhoneNumber(number, type);	
+		if (con->updatePhoneNumber(this->currentPerson, ph, ch)) success();
+		else fail();
 
-	if (con->updatePhoneNumber(this->currentPerson, ph,ch)) success();
-	else fail();	
-	
-	delete[] number;
+		delete[] number;
+	}	
 }
 
 
@@ -527,31 +503,61 @@ void ConsoleApp::drawPerson(Person* pt)
 		<< pt->getFatherName() << endl;
 }
 
+void ConsoleApp::drawAddress(Address* add)
+{
+	if (add != nullptr)
+	{
+		wcout << L"ул. " << add->getStreet() << " " <<
+			L"дом " << add->getHome() << " " <<
+			L"кв. " << add->getAppartement() << endl;
+	}
+	else wcout << L"Ошибка чтения\n";
+}
+
 void ConsoleApp::drawPhoneNumber(PhoneNumber* pn)
 {
 	if (pn != nullptr)
 	{
-		wcout << pn->getNumber()<<"\t";
-
+		wcout << pn->getNumber() << "\t";
 		switch (pn->getType())
 		{
-			case 1:
-			{
-				wcout << L"mobile"<<endl;
-				break;
-			}
-			case 2:
-			{
-				wcout << L"work" << endl;
-				break;
-			}
-			case 3:
-			{
-				wcout << L"home" << endl;
-				break;
-			}
+		case 1:
+		{
+			wcout << L"mobile" << endl;
+			break;
+		}
+		case 2:
+		{
+			wcout << L"work" << endl;
+			break;
+		}
+		case 3:
+		{
+			wcout << L"home" << endl;
+			break;
+		}
 		}
 
+	}
+	else
+		wcout << L"Ошибка чтения!. Пустой телефон.\n";
+}
+
+bool ConsoleApp::drawPhoneNumbers(std::vector<PhoneNumber*> args)
+{
+	if (args.size() > 0)
+	{
+		for (int i = 0; i < args.size(); i++)
+		{
+			wcout << L"[" << i << L"] ";
+			drawPhoneNumber(args[i]);
+		}
+		return true;
+	}
+	else
+	{
+		wcout << L"Ошибка. Нет номеров.\n";
+		return false;
 	}
 }
 
