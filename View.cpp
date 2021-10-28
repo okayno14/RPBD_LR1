@@ -73,7 +73,7 @@ void ConsoleApp::run()
 			catch (...) {
 				cout << "Контактов не обнаружено" << endl;
 			}
-			//_getwch();
+			_getwch();
 			system("cls");
 			break;
 		}
