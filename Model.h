@@ -73,6 +73,9 @@ public:
 	{
 		return id;
 	}
+	SQLWCHAR* getStreet() { return streetName; }
+	int getHome() { return this->home; }
+	int getAppartement() { return this->appartement; }
 };
 
 class PhoneNumber
@@ -140,6 +143,16 @@ public:
 	bool isContain(std::vector<int>* nums);
 
 	SQLINTEGER getId() { return id; }
+
+	SQLWCHAR* getNumber()
+	{
+		return number;
+	}
+
+	int getType() 
+	{
+		return idType;
+	}
 };
 
 class Person
@@ -175,69 +188,37 @@ private:
 	bool isSynced = false;
 
 public:
-	Person(SQLWCHAR* lastName, SQLWCHAR* firstName, SQLWCHAR* fatherName)
-	{
-		wcscpy_s(this->lastName, lastName);
-		wcscpy_s(this->firstName,firstName);		
-		wcscpy_s(this->fatherName, fatherName);
-	};
+	Person(SQLWCHAR* lastName, SQLWCHAR* firstName, SQLWCHAR* fatherName);
+	
 
 	Person() {};
 	
-	bool isEqual(const Person* b) 
-	{
-		const SQLWCHAR* a_lastname = this->lastName;
-		const SQLWCHAR* a_firstname = this->firstName;
-		const SQLWCHAR* a_fathername = this->fatherName;
+	bool isEqual(const Person* b);
+	
 
-		const SQLWCHAR* b_lastname = b->lastName;
-		const SQLWCHAR* b_firstname = b->firstName;
-		const SQLWCHAR* b_fathername = b->fatherName;
+	bool containPhoneNumber(PhoneNumber* pn);
+	
 
-		if
-		(
-			wcscmp(a_lastname, b_lastname) == 0 &&
-			wcscmp(a_firstname, b_firstname) == 0 &&
-			wcscmp(a_fathername, b_fathername) == 0
-		)
-			return true;
-		else return false;
-	}
+	bool containAddress(Address* ad);
+	
 
-	bool containPhoneNumber(PhoneNumber* pn) 
-	{
-		for (int i = 0; i < phoneNumbers.size(); i++)
-		{
-			if (phoneNumbers[i]->isEqual(pn)) return true;
-		}
-		return false;
-	}
+	void addPhoneNumber(PhoneNumber* pn);
+	
 
-	bool containAddress(Address* ad) 
-	{
-		return this->address->isEqual(ad);
-	}
+	void setPhoneNumber(int pos, PhoneNumber* pn);
+	
 
-	void addPhoneNumber(PhoneNumber* pn) 
-	{
-		this->phoneNumbers.push_back(pn);
-		this->idPhones.push_back( phoneNumbers.back()->getId());
-	};
+	SQLWCHAR* getLastName();
+	SQLWCHAR* getFirstName();
+	SQLWCHAR* getFatherName();
+	
 
-	void setPhoneNumber(int pos, PhoneNumber* pn) 
-	{
-		if (pos < phoneNumbers.size())
-		{
-			phoneNumbers[pos] = pn;
-			idPhones[pos] = pn->getId();
-		}
-	}
+	void setAddress(Address* add);
 
-	void setAddress(Address* add) 
-	{ 
-		this->address = add; 
-		this->idAddress = add->getId();
-	};
+	Address* getAddress() { return this->address; }
+
+	std::vector<PhoneNumber*> getNumbers();
+	
 };
 
 class AbstractMapper
@@ -260,6 +241,14 @@ public:
 	virtual void deleteObj() {};
 	virtual void findObj(int id) {};
 	virtual int findObj() = 0;
+
+	void setDBC(DataBaseConnection* dbc) 
+	{ 
+		this->db = dbc; 
+		if (db == nullptr) throw - 2;
+		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
+		if (retcode < 0) throw - 2;
+	}
 
 protected:
 	void checkErr();
@@ -308,6 +297,7 @@ public:
 	void createDB();
 
 	std::vector<Person> findby4(std::vector<int>* args);
+	std::vector<Person> findListFIO();
 };
 
 class AddressMapper : public AbstractMapper
@@ -380,6 +370,7 @@ private:
 	DataBaseConnection* dbc = nullptr;
 public:	
 	Model();
+	void tryDB();
 
 	/*insert
 	update
@@ -397,7 +388,7 @@ public:
 		//тхн рекетнм юдпея
 		Person& findPerson(Person p, PhoneNumber pn, Address add, int& ctr);
 		std::vector<Person*> findBy4(std::vector<int> nums);
-		
+		std::vector<Person*> find_List_FIO(Person p);
 
 private:
 		void updatePerson(Person* pOld, Address* add);

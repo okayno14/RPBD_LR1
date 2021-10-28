@@ -4,10 +4,45 @@
 
 
 Model::Model()
+{};
+
+void Model::tryDB()
 {
 	try
 	{
+		std::wifstream odbcCon("connectionConfig.txt");
+		std::wstring buf;
+		if (odbcCon)
+		{
+			while (std::getline(odbcCon, buf, L'\t'))
+			{
+				if (buf.compare(L"dsn") == 0)
+				{
+					std::getline(odbcCon, buf);
+					wcscpy_s(DataBaseConnection::dsn, buf.c_str());
+				}
+				if (buf.compare(L"user") == 0)
+				{
+					std::getline(odbcCon, buf);
+					wcscpy_s(DataBaseConnection::user, buf.c_str());
+				}
+				if (buf.compare(L"pass") == 0)
+				{
+					std::getline(odbcCon, buf);
+					wcscpy_s(DataBaseConnection::password, buf.c_str());
+				}
+			}
+			odbcCon.close();
+		}
+
+		else { odbcCon.close(); throw - 3; }
+
 		dbc = DataBaseConnection::getInstance();
+
+		adMap.setDBC(dbc);
+		pnMap.setDBC(dbc);
+		pMap.setDBC(dbc);
+
 		//тестируем наличие таблиц в БД
 		Person p;
 		Address add;
@@ -17,18 +52,35 @@ Model::Model()
 		adMap.setBuf(&add);
 		pnMap.setBuf(&pn);
 
-		try 
+		try
 		{
 			pMap.findObj(1);
 			adMap.findObj(1);
 			pnMap.findObj(1);
 		}
-		catch (std::wstring msg) 
+		catch (std::wstring msg)
 		{
-			pMap.createDB();
+			try
+			{
+				pMap.createDB();
+			}
+			catch (int err)
+			{
+				throw - 1;
+			}
 		}
 	}
-	catch (int err) { throw err; }
+	catch (int err)
+	{
+		try
+		{
+			adMap.setDBC(dbc);
+			pnMap.setDBC(dbc);
+			pMap.setDBC(dbc);
+		}
+		catch (int err) { throw err; }
+		throw err;
+	}
 }
 
 Person& Model::insertPerson(Person p)
@@ -237,12 +289,14 @@ void Model::deletePhone(PhoneNumber* pn)
 			pnMap.setBuf(pn);
 			pnMap.deleteObj();
 		}
+		case 2:
 		case 3:
 		{
 			std::list<PhoneNumber>::iterator i = phoneNumberTable.begin();
 			while (i != phoneNumberTable.end() && &(*i) != pn)
 				++i;
-			phoneNumberTable.erase(i);
+			if(i!= phoneNumberTable.end())
+				phoneNumberTable.erase(i);
 			break;
 		}
 	}
@@ -470,7 +524,8 @@ void Model::updatePerson(Person* pOld, Person pNew)
 	{
 		adMap.setBuf(bufA);
 		if (findReferences(bufA) == 0)
-			deleteAddress(bufA);
+			
+			Address(bufA);
 	}
 	for (int i = 0; i < bufP.size(); i++) 
 	{
@@ -718,12 +773,15 @@ std::vector<Person*> Model::findBy4(std::vector<int> nums)
 		//итерируемся по таблице контактов
 		for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
 		{
+			int buf(0);
 			//проверка одного из номеров на соответствие полученному критерию
 			for (int j = 0; j < (*i).phoneNumbers.size(); j++) 
 			{
 				if ((*i).phoneNumbers.at(j)->isContain(&nums))
-					res.push_back(&(*i));				
+					buf++;
 			}
+			if(buf>0)
+				res.push_back(&(*i));
 		}
 		return res;
 	}
@@ -758,9 +816,86 @@ std::vector<Person*> Model::findBy4(std::vector<int> nums)
 				{
 					flag = reg;
 					break;
-				}	
+				}
+				j++;
 			}
 			
+			//Обработка результатов поиска
+			//Если объект есть в памяти СД
+			//значит нет нужды его загружать
+			if (flag)
+				res.push_back(&(*j));
+			//в СД совпадения не было найдено
+			else
+			{
+				//вставка контакта
+				personTable.push_back(bd[i]);
+				//работа со второстепенными атрибутами, если таковые присутствовали
+				download(&personTable.back());
+				personTable.back().isSynced = 1;
+				res.push_back(&personTable.back());
+			}
+
+		}
+
+	}
+	return res;
+}
+
+std::vector<Person*> Model::find_List_FIO(Person p)
+{
+	//вызов синхронизации
+	syncAll();
+
+	std::vector<Person*> res;
+
+	//поиск в сд
+	if (dbc == nullptr)
+	{
+		//итерируемся по таблице контактов
+		for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
+		{
+			if ((*i).isEqual(&p))
+				res.push_back(&(*i));
+		}
+		return res;
+	}
+	//поиск в БД
+	else
+	{
+		std::vector<Person> bd;
+		
+		
+		pMap.setBuf(&p);
+		bd = pMap.findListFIO();
+
+		//обход результатов из бд
+		for (int i = 0; i < bd.size(); i++)
+		{
+			std::list<Person>::iterator j = personTable.begin();
+			bool flag = false;
+
+			//цикл поиска объекта из результата в СД
+			//если флаг переключился на true,
+			//значит объект содержится в СД
+			while (j != personTable.end())
+			{
+				bool reg = true;
+				reg = reg && (*j).isEqual(&bd[i]);
+
+				reg = reg && (*j).idPhones == bd[i].idPhones;
+
+				reg = reg && (*j).idAddress == bd[i].idAddress;
+
+				//СД уже содержит этот объект
+				if (reg == true)
+				{
+					flag = reg;
+					break;
+				}
+				j++;
+			}
+
 			//Обработка результатов поиска
 			//Если объект есть в памяти СД
 			//значит нет нужды его загружать

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
-
+#include "Model.h"
 #include "Controller.h"
 using namespace std;
 
@@ -11,43 +11,56 @@ class Controller;
 class ConsoleApp
 {
 private:
-	int MainMenu;
-	int UntMenu;
-	int ch;
-	bool findmenu;
-	bool updatemenu;
+	bool runTimeProgram;// служит в первом цикле программы
+	int MainMenu;//используется для ввода пользователем
 	Controller* con;
-//указатель на контроллер не забудь
-
+	Person* currentPerson;
 public:
 	ConsoleApp();
-	void Main_menu_output();
-	void Find_menu();
-	void Update_menu();
+
+	/*доп методы для отображения меню программы*/
+	void Menu();
+	void MenuPC();
+
 
 	void setController(Controller* con);
 	
+	/*остовные раны для управления приложением*/
 	void run();
-	void runFind(bool findmenu);
-	void runUpdate(bool updatemenu);
+	void runPC();
 
-	void addContact();
+	/*солянка для вызова внутри switch*/
+	Person* findPerson();
+	Person* addContact();
 	void deleteContact();
-	void findAddresstoFIO();
-	void findPhoneNumbertoFIO();
 	void findto4();
+	void findList_FIO();
 	void updateFIOcontacte();
 	void addAddress();
-	void updateStreet();
-	void updateNumberHome();
-	
-	void updateNumberAppartment();
 	void addPhoneNumber();
-	void updatePhoneNumber();
-	void updateTypePhoneNumber();
 	void deletePhoneNumber();
 	void deleteAddress();
+	void updatePhoneNumber();
 
-	void success();
+	//вывод инфы о состоянии модели
 	void offlineStatus();
+	void noTableConfig();
+
+	void success();	
+	void fail();
+	
+	/*вспомогательные методы*/
+	bool toRunMenuTwo();
+	void drawPerson(Person* p);
+	void drawAddress(Address* add);
+	void drawPhoneNumber(PhoneNumber* pn);
+	bool drawPhoneNumbers(std::vector<PhoneNumber*> args);
+
+	/*методы для запросов полей с данными контакта*/
+	wchar_t* get_a_number();
+	wchar_t* get_a_addressName();
+	int get_a_type_number();
+	int get_a_apartment();
+	int get_a_numberhome();
+	
 };

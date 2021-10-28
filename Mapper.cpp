@@ -25,7 +25,7 @@ void AbstractMapper::checkErr()
 			SQL_MAX_MESSAGE_LENGTH,
 			&infoL);
 		cerr << info << std::endl;
-		std::wcout << cerr.str() << std::endl;
+		//std::wcout << cerr.str() << std::endl;
 		throw cerr.str();
 	}
 }
@@ -118,8 +118,8 @@ PersonMapper::PersonMapper(Person* buf)
 	try
 	{
 		this->buf = buf;
-		db = DataBaseConnection::getInstance();
-		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
+		//db = DataBaseConnection::getInstance();
+		//retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
 	}
 	catch (int err) {}
 }
@@ -166,7 +166,7 @@ int PersonMapper::findObjj()
 	SQLLEN a;
 	bool res = false;
 	statementText =
-		(SQLWCHAR*)L"SELECT p.id, p.idaddress, p.lastname, p.firstname, p.fathername FROM person as p, persone_number as pn WHERE"
+		(SQLWCHAR*)L"SELECT DISTINCT p.id, p.idaddress, p.lastname, p.firstname, p.fathername FROM person as p, persone_number as pn WHERE"
 		" p.lastname = ? and"
 		" p.firstname = ? and"
 		" p.fathername = ? and ("
@@ -220,27 +220,27 @@ int PersonMapper::findObj(PhoneNumber* phone)
 	SQLLEN a;
 	statementText =
 		(SQLWCHAR*)
-		L" SELECT "
-		" 	person.id,"
-		" 	person.idaddress,"
-		" 	person.lastname AS lastname,"
-		" 	person.firstname AS firstname,"
-		" 	person.fathername AS fathername,"
-		" 	persone_number.idPhone AS number,"
-		" 	phoneNumber.idtype,"
-		" 	phoneNumber.number"
-		" FROM"
-		" 	person INNER JOIN persone_number"
-		" 	ON"
-		" 		person.id = persone_number.idPerson"
-		" 	INNER JOIN phonenumber"
-		" 	ON "
-		" 		persone_number.idPhone = phoneNumber.id"
-		" WHERE "
-		" lastname = ? and"
-		" firstname = ? and"
-		" fathername = ? and"
-		" number = ?";
+		L" SELECT " 
+"     person.id," 
+"     person.idaddress," 
+"     person.lastname AS lastname," 
+"     person.firstname AS firstname," 
+"     person.fathername AS fathername," 
+"     persone_number.idPhone," 
+"     phoneNumber.idtype," 
+"     phoneNumber.number" 
+"    FROM" 
+"     person INNER JOIN persone_number" 
+"     ON" 
+"      person.id = persone_number.idPerson" 
+"     INNER JOIN phonenumber" 
+"     ON " 
+"      persone_number.idPhone = phoneNumber.id" 
+"    WHERE " 
+"    lastname = ? and" 
+"    firstname = ? and" 
+"    fathername = ? and" 
+"    phonenumber.number = ?;";
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 	checkErr();
 
@@ -755,19 +755,24 @@ void PersonMapper::createDB()
 	std::wstringstream command;
 	std::wstring buf;
 	std::wifstream file("rpbd_databaseNULL.txt", std::ios::binary);
-	while (std::getline(file,buf)) 
-	{ 
-		if (!buf.empty())
-			command << buf;
-	};
-	buf = command.str();
-	statementText = (SQLWCHAR*) buf.c_str();	
-	file.close();
+	if (file)
+	{
+		while (std::getline(file, buf))
+		{
+			if (!buf.empty())
+				command << buf;
+		};
+		buf = command.str();
+		statementText = (SQLWCHAR*)buf.c_str();
+		file.close();
 
-	retcode = SQLExecDirect(hstmt, statementText, SQL_NTS);
-	checkErr();
+		retcode = SQLExecDirect(hstmt, statementText, SQL_NTS);
+		checkErr();
 
-	commitTransaction();
+		commitTransaction();
+	}
+	else throw - 1;
+	
 }
 int PersonMapper::findObj(bool q)
 {
@@ -827,21 +832,23 @@ int PersonMapper::findObj(bool q)
 		checkErr();
 
 
-		if (a == 1) 
+		if (a == 1)
 		{
 			retcode = SQLFetch(hstmt);
 			checkErr();
-			
+
 			retcode = SQLCloseCursor(hstmt);
 			checkErr();
 
 		}
-		else 
+		else
 		{
 			retcode = SQLCloseCursor(hstmt);
 			checkErr();
 		}
 	}
+	else
+		a = 0;
 
 	commitTransaction();
 	//Не забудь поправить
@@ -853,8 +860,8 @@ AddressMapper::AddressMapper(Address* buf)
 	try 
 	{
 		this->buf = buf;
-		db = DataBaseConnection::getInstance();
-		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
+		//db = DataBaseConnection::getInstance();
+		//retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
 	}
 	catch (int err) {}
 }
@@ -1326,23 +1333,38 @@ bool AddressMapper::findStreet()
 }
 int AddressMapper::findReferences()
 {
-	statementText = (SQLWCHAR*)L" SELECT * FROM person WHERE person.idaddress = ?";
+	statementText = (SQLWCHAR*)L" SELECT COUNT(idaddress) FROM person WHERE idaddress = ?";
 	
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 	checkErr();
 
-	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+	retcode = SQLBindParameter
+	(
+		hstmt,
+		1,
+		SQL_PARAM_INPUT,
+		SQL_C_SLONG,
+		SQL_INTEGER,
+		4,
+		0,
+		&(buf->id),
+		0,
+		NULL
+	);
+	checkErr();
+	
+	int finded;
+	SQLLEN findedLen;
+	
+	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &finded, 0, &findedLen);
 	checkErr();
 	
 	retcode = SQLExecute(hstmt);
 	checkErr();
 
-	SQLLEN finded;
-	retcode = SQLRowCount(hstmt, &finded);
-	checkErr();
-	
 	retcode = SQLFetch(hstmt);
 	checkErr();
+	
 	retcode = SQLCloseCursor(hstmt);
 	checkErr();
 	commitTransaction();
@@ -1356,8 +1378,8 @@ PhoneMapper::PhoneMapper(PhoneNumber* buf)
 	try
 	{
 		this->buf = buf;
-		db = DataBaseConnection::getInstance();
-		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
+		//db = DataBaseConnection::getInstance();
+		//retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
 	}
 	catch (int err) {}
 }
@@ -1678,21 +1700,35 @@ void PhoneMapper::updateObj()
 }
 int PhoneMapper::findReferences()
 {
-	statementText = (SQLWCHAR*)L" SELECT * FROM persone_number WHERE idphone = ?";
+	statementText = (SQLWCHAR*)L"SELECT COUNT(idphone) from persone_number where idphone = ?";
 
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 	checkErr();
 
-	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+
+	retcode = SQLBindParameter(
+		hstmt,
+		1,
+		SQL_PARAM_INPUT,
+		SQL_C_SLONG,
+		SQL_INTEGER,
+		4,
+		0,
+		&(buf->id),
+		0,
+		NULL);
 	checkErr();
+	
+
+	int finded;
+	SQLLEN findedLen;
+
+	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &finded, 0, &findedLen);
+	checkErr();	
 
 	retcode = SQLExecute(hstmt);
 	checkErr();
-
-	SQLLEN finded;
-	retcode = SQLRowCount(hstmt, &finded);
-	checkErr();
-
+	
 	retcode = SQLFetch(hstmt);
 	checkErr();
 	retcode = SQLCloseCursor(hstmt);
@@ -1711,11 +1747,7 @@ std::vector<Person> PersonMapper::findby4(std::vector<int>* args)
 		" 	person.fathername,"
 		" 	persone_number.idPhone,"
 		" 	phoneNumber.idtype,"
-		" 	phoneNumber.number,"
-		" 	address.idstreet,"
-		" 	address.home,"
-		" 	address.appartement,"
-		" 	street.streetname"
+		" 	phoneNumber.number"
 		" FROM"
 		" 	person INNER JOIN persone_number"
 		" 	ON"
@@ -1723,12 +1755,6 @@ std::vector<Person> PersonMapper::findby4(std::vector<int>* args)
 		" 	INNER JOIN phonenumber"
 		" 	ON "
 		" 		persone_number.idPhone = phoneNumber.id"
-		" 	INNER JOIN address"
-		" 	ON"
-		" 		person.idAddress = address.id"
-		" 	INNER JOIN street"
-		" 	ON"
-		" 		address.idstreet = street.id"
 		" WHERE"
 		" 	phoneNumber.number like ";
 	
@@ -1791,4 +1817,51 @@ std::vector<Person> PersonMapper::findby4(std::vector<int>* args)
 	commitTransaction();
 
 	return res;
+}
+std::vector<Person> PersonMapper::findListFIO()
+{
+	statementText =
+		(SQLWCHAR*)L"SELECT DISTINCT p.id, p.idaddress, p.lastname, p.firstname, p.fathername"
+		" FROM person as p WHERE"
+		" p.lastname = ? and"
+		" p.firstname = ? and"
+		" p.fathername = ?";			
+
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
+
+		bindNamePar();
+
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+		checkErr();
+		retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idAddress), 0, &(buf->idAddressLen));
+		checkErr();
+		retcode = SQLBindCol(hstmt, 3, SQL_C_WCHAR, &(buf->lastName), sizeof(SQLWCHAR) * strSZ, &(buf->lastNameLen));
+		checkErr();
+		retcode = SQLBindCol(hstmt, 4, SQL_C_WCHAR, &(buf->firstName), sizeof(SQLWCHAR) * strSZ, &(buf->nameLen));
+		checkErr();
+		retcode = SQLBindCol(hstmt, 5, SQL_C_WCHAR, &(buf->fatherName), sizeof(SQLWCHAR) * strSZ, &(buf->fatherNameLen));
+		checkErr();
+
+		retcode = SQLExecute(hstmt);
+		checkErr();
+
+		std::vector<Person> res;
+		
+		while (SQLFetch(hstmt) != SQL_NO_DATA)
+			res.push_back(*buf);
+
+
+		retcode = SQLCloseCursor(hstmt);
+		checkErr();
+
+		for (int i = 0; i < res.size(); i++)
+		{
+			buf = &res[i];
+			getIdPhone();
+		}
+
+		commitTransaction();
+
+		return res;
 };

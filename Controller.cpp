@@ -12,11 +12,30 @@ Controller::Controller(ConsoleApp* view)
 	{
 		this->consoleApp = view;
 		this->model = new Model();
+		model->tryDB();
 	}
-	catch (int) 
+	catch (int err) 
 	{
-		consoleApp->offlineStatus();
-		//вывести на экран инфу
+		switch (err)
+		{
+			case -1:
+			{
+				//нет конфиг файла для новой таблицы
+				consoleApp->noTableConfig();
+				break;
+			}
+			case -2: 
+			{
+				//вывести на экран инфу
+				consoleApp->offlineStatus();
+				break;
+			}
+			case -3: 
+			{
+				//нет конфига подключения к бд
+				break;
+			}
+		}
 	};
 	
 }
@@ -26,576 +45,203 @@ void Controller::setView(ConsoleApp* consoleApp)
 	this->consoleApp = consoleApp;
 }
 
-bool Controller::addСontact(
+Person* Controller::addСontact(
 	SQLWCHAR* lastNameContact,
 	SQLWCHAR* firstNameContact,
 	SQLWCHAR* fatherNameContact)
 {
-	if (lastNameContact == NULL && firstNameContact == NULL && fatherNameContact == NULL)
-		return false;
-	
 	Person p(lastNameContact, firstNameContact, fatherNameContact);
-	model->insertPerson(p);
+	Person* temp = nullptr;
+
+	if (lastNameContact == NULL || firstNameContact == NULL || fatherNameContact == NULL)
+		throw - 1;
+		
+	
+	
+	temp = &model->insertPerson(p);
 
 	consoleApp->success();
-	return true;
+	return temp;
 }
 
 bool Controller::deleteContact(
-	SQLWCHAR* lastNameContact, 
-	SQLWCHAR* firstNameContact, 
-	SQLWCHAR* fatherNameContact)
+	Person* p)
 {
-	return false;
+	if (p == NULL)
+		return false;
+
+	model->deletePerson(p);
+	return true;
 }
 
 bool Controller::toСhangeContact(
-	SQLWCHAR* oldlastNameContact,
-	SQLWCHAR* oldfirstNameContact,
-	SQLWCHAR* oldfatherNameContact,
-	SQLWCHAR* newlastNameContact,
-	SQLWCHAR* newfirstNameContact,
+	Person* p, 
+	SQLWCHAR* newlastNameContact, 
+	SQLWCHAR* newfirstNameContact, 
 	SQLWCHAR* newfatherNameContact)
 {
-	return false;
+	if (newlastNameContact == NULL || newfirstNameContact == NULL || newfatherNameContact == NULL || p == NULL)
+	{
+		return false;
+	}
+	Person newp(newlastNameContact, newfirstNameContact, newfatherNameContact);
+	model->updatePerson(p, newp);
+	return true;
 }
 
-bool Controller::addPhoneNumberContact(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	SQLWCHAR* number, int type)
+bool Controller::addPhoneNumberContact(Person* p, PhoneNumber* pn)
 {
+	if (p == NULL || pn == NULL)
+		return false;
+	Person newPer = *p;
+	newPer.addPhoneNumber(pn);
 
-	
-	return false;
+	model->updatePerson(p, newPer);
+	return true;
 }
 
-bool Controller::deletePhoneNumberContact(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	SQLWCHAR* number)
+bool Controller::deletePhoneNumberContact(Person* p, SQLWCHAR* number)
 {
-	return false;
+	if (p == NULL || number == NULL)
+		return false;
+	//?????
+	return true;
 }
 
-bool Controller::toChangePhoneNumberContact(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	SQLWCHAR* oldnumber,
-	SQLWCHAR* newnumber)
+void Controller::findContactBy4NumberPhone(std::vector<int> number4)
 {
-	return false;
+	std::vector<Person*> tmp = model->findBy4(number4);
+	for (int i = 0; i < tmp.size(); i++)
+	{
+		Person* p = tmp[i];
+		this->consoleApp->drawPerson(p);
+		consoleApp->drawPhoneNumbers(p->getNumbers());
+	}
 }
 
-bool Controller::toChangeTypePhoneNumber(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	SQLWCHAR* number, int type)
+void Controller::findFIOALL(Person p)
 {
-	return false;
+	vector<Person*>tmp = model->find_List_FIO(p);
+
+	for (int i = 0; i < tmp.size(); i++)
+	{
+		Person* p = tmp[i];
+		this->consoleApp->drawPerson(p);
+		consoleApp->drawPhoneNumbers(p->getNumbers());
+	}
+
 }
 
-bool Controller::findPhoneByFIO(
+bool Controller::addAddress(Person* p, Address* ad)
+{
+	if (p == NULL || ad == NULL)
+		return false;
+
+	Person newPer = *p;
+	newPer.setAddress(ad);
+
+	model->updatePerson(p, newPer);
+	return true;
+}
+
+bool Controller::deleteAddress(Person* p)
+{
+	return false;////????????????
+}
+
+Person* Controller::findPerson(
 	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
+	SQLWCHAR* firstNameContact, 
 	SQLWCHAR* fatherNameContact)
 {
-	return false;
+	if (lastNameContact == NULL || firstNameContact == NULL || fatherNameContact == NULL)
+	{
+		cout << "не все данные!" << endl;
+		throw - 1;
+	}
+
+	Person p(lastNameContact, firstNameContact, fatherNameContact);
+	Person* tmp;
+	int count;
+
+	tmp = &model->findPerson(p, true, count);
+	if (count == 1)
+		return tmp;
+
+	if(count == 0 || count > 1)
+	{
+		tmp = &model->findPerson(p, false, count);
+		if (count == 0) {
+			throw - 1;
+		}
+
+		if (count == 1)
+		{
+			return tmp;
+		}
+		if (count > 1) 
+		{
+
+			wchar_t* number;
+			number = this->consoleApp->get_a_number();
+			int type = this->consoleApp->get_a_type_number();
+			PhoneNumber ph(number, type);
+			tmp = &model->findPerson(p, ph, count);
+
+			if (count == 0) {
+				throw - 1;
+			}
+			if (count == 1) 
+			{
+				return tmp;
+			}
+			if (count > 1) {
+				wchar_t* address;
+				int numHome;
+				int numApartment;
+				address = this->consoleApp->get_a_addressName();
+				numHome = this->consoleApp->get_a_numberhome();
+				numApartment = this->consoleApp->get_a_apartment();
+				Address ad(address,numHome,numApartment);
+				tmp = &model->findPerson(p, ph, ad, count);
+				if (count == 0) 
+				{
+					throw - 1;
+				}
+				if (count == 1)
+				{
+					return tmp;
+				}
+				if (count > 1)
+				{
+					cout << "Атака клонов" << endl;
+					throw - 2;
+				}
+			}
+		}
+	}
 }
 
-bool Controller::toChangeStreetContacn(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	SQLWCHAR* nameStret)
+bool Controller::updateAddress(Person* p, Address* ad)
 {
-	return false;
+	if (p == NULL || ad == NULL)
+		return false;
+
+	Person newPer = *p;
+	newPer.setAddress(ad);
+
+	model->updatePerson(p, newPer);
+	return true;
 }
 
-bool Controller::toChangeNumberHome(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	int numberHome)
+bool Controller::updatePhoneNumber(Person* p, PhoneNumber* ph, int ch)
 {
-	return false;
-}
+	if (p == NULL || ph == NULL)
+		return false;
 
-bool Controller::toChangeNumberApartment(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	int numemberApartment)
-{
-	return false;
-}
+	Person newPer = *p;
+	newPer.setPhoneNumber(ch-1,ph);
 
-bool Controller::findAddressByFIO(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact)
-{
-	return false;
-}
-
-bool Controller::findContactBy4NumberPhone(SQLWCHAR* number4)
-{
-	return false;
-}
-
-bool Controller::addAddress(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact,
-	SQLWCHAR* nameStreet,
-	int numberHome, int numberApartment)
-{
-	return false;
-}
-
-bool Controller::deleteAddress(
-	SQLWCHAR* lastNameContact,
-	SQLWCHAR* firstNameContact,
-	SQLWCHAR* fatherNameContact)
-{
-	return false;
-}
-
-void Controller::experiment() 
-{
-	//testFindPhone01(true);
-	//testFindPhone10();
-
-	//testFindPhoneNameErr();
-	//testFindPhoneAddress01(false);
-	//testFindPhoneAddress10();
-
-	//testUpdateAddrOffline();
-	//testUpdateAddrPhoneOffline();
-
-	//testUpdateAddrOnline();
-
-	//testUpdatePhoneOnline();
-
-	/*SQLWCHAR streetName[strSZ];
-	wcscpy_s(streetName, L"Voennaya");
-	Address add(streetName,40,37);
-	
-	int q(0);
-
-	Address* f = &model->insertAddress(add);
-	model->getState(f);*/
-	
-	//testUpdateAddrPhoneOffline();
-
-	//testFindFIO();
-
-	//testUpdateAddrOffline();
-	//testUpdateAddrOnline();
-	//testUpdateAddrPhoneOnline();
-
-
-	/*SQLWCHAR lastname[strSZ];
-	SQLWCHAR firstname[strSZ];
-	SQLWCHAR fathername[strSZ];
-
-	wcscpy_s(lastname, L"Ivanov");
-	wcscpy_s(firstname, L"Ivan");
-	wcscpy_s(fathername, L"Ivanovich");
-
-	Person p(lastname, firstname, fathername);
-
-	Person* f = nullptr;
-	int q(0);
-	
-
-
-	
-	f = &model->insertPerson(p);
-
-	SQLWCHAR number[strSZ];
-	wcscpy_s(number, L"8888888888888");
-	PhoneNumber pn(number, 1);
-
-	p.addPhoneNumber(&pn);
-
-	model->updatePerson(f, p);
-
-	model->deletePerson(f);*/
-
-	SQLWCHAR a[strSZ];
-	wcscpy_s(a, L"7(913)817-18-79");
-
-	PhoneNumber pn(a,1);
-	std::vector<int> nums;
-	nums.push_back(1);
-	nums.push_back(8);
-	nums.push_back(7);
-	nums.push_back(9);
-	
-	pn.isContain(&nums);
-
-	Person p;
-	model->pMap.setBuf(&p);
-	
-	std::vector<Person*> finded =  model->findBy4(nums);
-
-}
-
-void Controller::testFindFIO() 
-{
-	SQLWCHAR lastname[strSZ];
-	SQLWCHAR firstname[strSZ];
-	SQLWCHAR fathername[strSZ];
-
-	wcscpy_s(lastname, L"Zaykin");
-	wcscpy_s(firstname, L"Igor");
-	wcscpy_s(fathername, L"Ivanovich");
-
-	SQLWCHAR phoneNumber[strSZ];
-
-	wcscpy_s(phoneNumber, L"228");
-
-	
-	Person p(lastname, firstname, fathername);
-
-
-	Person* t;
-
-	int q = 0;
-	t = &model->findPerson(p, false, q);
-}
-
-//01 - загрузка из памяти
-void Controller::testFindPhone01(bool isOnline) 
-{
-	if(!isOnline) 
-		model->dbc = nullptr;
-	
-	SQLWCHAR lastname[strSZ];
-	SQLWCHAR firstname[strSZ];
-	SQLWCHAR fathername[strSZ];
-
-	wcscpy_s(lastname, L"Ivanov");
-	wcscpy_s(firstname, L"Ivan");
-	wcscpy_s(fathername, L"Ivanovich");
-
-	SQLWCHAR phoneNumber[strSZ];
-	
-	wcscpy_s(phoneNumber,L"228");
-	
-	int type = 1;
-
-	//инициализаця контакта и телефона
-	PhoneNumber pn(phoneNumber, type);
-	Person p(lastname,firstname,fathername);
-
-	p.addPhoneNumber(&pn);
-
-	//вставка объектов в справочники модели, обходя insert()
-	//model->personTable.push_back(p);
-	//model->phoneNumberTable.push_back(pn);
-
-	//вставленному контакту привязываем указатель вставленного в справочник телефона
-	//model->personTable.back().addPhoneNumber(&model->phoneNumberTable.back());	
-
-	Person* t;
-
-	int q = 0;
-	t = &model->findPerson(p, pn, q);
-}
-
-void Controller::testFindPhone10() 
-{
-	SQLWCHAR lastname[strSZ];
-	SQLWCHAR firstname[strSZ];
-	SQLWCHAR fathername[strSZ];
-
-	wcscpy_s(lastname, L"Ivanov");
-	wcscpy_s(firstname, L"Ivan");
-	wcscpy_s(fathername, L"Ivanovich");
-
-	SQLWCHAR phoneNumber[strSZ];
-
-	wcscpy_s(phoneNumber, L"228");
-
-	int type = 1;
-
-	//инициализаця контакта и телефона
-	PhoneNumber pn(phoneNumber, type);
-	Person p(lastname, firstname, fathername);
-
-	Person* t;
-
-	int q = 0;
-	t = &model->findPerson(p, pn, q);
-}
-
-void Controller::testFindPhoneNameErr() 
-{
-	SQLWCHAR lastname[strSZ];
-	SQLWCHAR firstname[strSZ];
-	SQLWCHAR fathername[strSZ];
-
-	wcscpy_s(lastname, L"Ivfffffeanov");
-	wcscpy_s(firstname, L"Ivan");
-	wcscpy_s(fathername, L"Ivanovich");
-
-	SQLWCHAR phoneNumber[strSZ];
-
-	wcscpy_s(phoneNumber, L"228");
-
-	int type = 1;
-
-	//инициализаця контакта и телефона
-	PhoneNumber pn(phoneNumber, type);
-	Person p(lastname, firstname, fathername);
-
-	Person* t;
-
-	int q = 0;
-	t = &model->findPerson(p, pn, q);
-}
-
-void Controller::testFindPhoneAddress01(bool isOnline) 
-{
-	if (!isOnline)
-		model->dbc = nullptr;
-
-	SQLWCHAR lastname[strSZ];
-	SQLWCHAR firstname[strSZ];
-	SQLWCHAR fathername[strSZ];
-
-	wcscpy_s(lastname, L"Ivanov");
-	wcscpy_s(firstname, L"Ivan");
-	wcscpy_s(fathername, L"Ivanovich");
-
-	SQLWCHAR phoneNumber[strSZ];
-
-	wcscpy_s(phoneNumber, L"228");
-	int type = 1;
-
-	SQLWCHAR streetName[strSZ];
-	wcscpy_s(streetName, L"PUshkina");
-	int home = 404;
-	int apppartement = 502;	
-	
-
-	//инициализаця контакта, телефона, адреса
-	PhoneNumber pn(phoneNumber, type);
-	Person p(lastname, firstname, fathername);
-	Address add(streetName, home, apppartement);
-
-	//вставка объектов в справочники модели, обходя insert()
-	model->personTable.push_back(p);
-	model->phoneNumberTable.push_back(pn);
-	model->addressTable.push_back(add);
-
-	//вставленному контакту привязываем указатель вставленного в справочник телефона и адреса
-	model->personTable.back().addPhoneNumber(&model->phoneNumberTable.back());
-	model->personTable.back().setAddress(&model->addressTable.back());
-
-	Person* t;
-
-	int q = 0;
-	t = &model->findPerson(p, pn, add, q);
-}
-
-void Controller::testFindPhoneAddress10() 
-{
-	SQLWCHAR lastname[strSZ];
-	SQLWCHAR firstname[strSZ];
-	SQLWCHAR fathername[strSZ];
-
-	wcscpy_s(lastname, L"Ivanov");
-	wcscpy_s(firstname, L"Ivan");
-	wcscpy_s(fathername, L"Ivanovich");
-
-	SQLWCHAR phoneNumber[strSZ];
-
-	wcscpy_s(phoneNumber, L"228");
-	int type = 1;
-
-	SQLWCHAR streetName[strSZ];
-	wcscpy_s(streetName, L"PUshkina");
-	int home = 404;
-	int apppartement = 502;
-
-
-	//инициализаця контакта, телефона, адреса
-	PhoneNumber pn(phoneNumber, type);
-	Person p(lastname, firstname, fathername);
-	Address add(streetName, home, apppartement);
-
-	Person* t;
-
-	int q = 0;
-	t = &model->findPerson(p, pn, add, q);
-}
-
-void Controller::testUpdateAddrOffline()
-{
-	model->dbc = nullptr;
-
-	SQLWCHAR lastname[strSZ];
-	SQLWCHAR firstname[strSZ];
-	SQLWCHAR fathername[strSZ];
-
-	wcscpy_s(lastname, L"Ivanov");
-	wcscpy_s(firstname, L"Ivan");
-	wcscpy_s(fathername, L"Ivanovich");
-
-	Person p(lastname, firstname, fathername);
-	
-	Person* f = nullptr;
-	f = &model->insertPerson(p);
-
-	SQLWCHAR streetName[strSZ];
-	wcscpy_s(streetName, L"Ivanova");
-	Address add(streetName, 1,2);
-
-	Person copy = p;
-
-	copy.setAddress(&add);
-
-	model->updatePerson(f, copy);
-
-
-	wcscpy_s(streetName, L"Ivanova");
-	Address add1(streetName, 13, 15);
-	copy.setAddress(&add1);
-
-	model->updatePerson(f,copy);
-};
-
-void Controller::testUpdateAddrPhoneOffline() 
-{
-	model->dbc = nullptr;
-
-	SQLWCHAR lastname[strSZ];
-	SQLWCHAR firstname[strSZ];
-	SQLWCHAR fathername[strSZ];
-
-	wcscpy_s(lastname, L"Ivanov");
-	wcscpy_s(firstname, L"Ivan");
-	wcscpy_s(fathername, L"Ivanovich");
-
-	Person p(lastname, firstname, fathername);
-
-	Person* f = nullptr;
-	f = &model->insertPerson(p);
-
-	SQLWCHAR streetName[strSZ];
-	wcscpy_s(streetName, L"Ivanova");
-
-	Address add(streetName, 1, 2);
-
-	SQLWCHAR number[strSZ];
-	wcscpy_s(number, L"334-58-96");
-	PhoneNumber pn(number,1);
-
-	SQLWCHAR number1[strSZ];
-	wcscpy_s(number, L"44444444");
-	PhoneNumber pn1(number, 2);
-	
-	Person copy = p;
-
-	copy.addPhoneNumber(&pn);
-	copy.addPhoneNumber(&pn1);
-	copy.setAddress(&add);
-
-	model->updatePerson(f, copy);
-}
-
-void Controller::testUpdateAddrPhoneOnline() 
-{
-	SQLWCHAR lastname[strSZ];
-	SQLWCHAR firstname[strSZ];
-	SQLWCHAR fathername[strSZ];
-
-	wcscpy_s(lastname, L"Ivanov");
-	wcscpy_s(firstname, L"Ivan");
-	wcscpy_s(fathername, L"Ivanovich");
-
-	Person p(lastname, firstname, fathername);
-
-	Person* f = nullptr;
-	f = &model->insertPerson(p);
-
-	SQLWCHAR streetName[strSZ];
-	wcscpy_s(streetName, L"Ivanova");
-
-	Address add(streetName, 1, 2);
-
-	SQLWCHAR number[strSZ];
-	wcscpy_s(number, L"334-58-96");
-	PhoneNumber pn(number, 1);
-
-	SQLWCHAR number1[strSZ];
-	wcscpy_s(number, L"44444444");
-	PhoneNumber pn1(number, 2);
-
-	Person copy = p;
-
-	copy.addPhoneNumber(&pn);
-	copy.addPhoneNumber(&pn1);
-	copy.setAddress(&add);
-
-	model->updatePerson(f, copy);
-}
-
-
-void Controller::testUpdateAddrOnline() 
-{
-	SQLWCHAR lastname[strSZ];
-	SQLWCHAR firstname[strSZ];
-	SQLWCHAR fathername[strSZ];
-
-	wcscpy_s(lastname,L"Alekseev");
-	wcscpy_s(firstname, L"Aleksandr");
-	wcscpy_s(fathername, L"Konstantinovich");
-
-	int q = 0;
-	
-	Person* t = &model->insertPerson(Person(lastname, firstname, fathername));
-	//Person* t = & model->findPerson(Person(lastname, firstname, fathername),false, q);
-
-	Person updated = *t;
-	
-	SQLWCHAR streetname[strSZ];
-	wcscpy_s(streetname, L"Lavrentieva");
-
-	Address add(streetname, 51, 81);
-	updated.setAddress(&add);
-
-	model->updatePerson(t, updated);
-}
-
-void Controller::testUpdatePhoneOnline() 
-{
-	SQLWCHAR lastname[strSZ];
-	SQLWCHAR firstname[strSZ];
-	SQLWCHAR fathername[strSZ];
-
-	wcscpy_s(lastname, L"Alekseev");
-	wcscpy_s(firstname, L"Aleksandr");
-	wcscpy_s(fathername, L"Konstantinovich");
-
-	int q = 0;
-	Person* t = &model->findPerson(Person(lastname, firstname, fathername), false, q);
-
-	Person updated = *t;
-
-	SQLWCHAR number[strSZ];
-	wcscpy_s(number, L"332-47-73");
-	
-	PhoneNumber pn(number,3);
-
-	updated.setPhoneNumber(0,&pn);
-
-	model->updatePerson(t, updated);
+	model->updatePerson(p, newPer);
+	return true;
 }
