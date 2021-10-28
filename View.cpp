@@ -14,6 +14,7 @@ ConsoleApp::ConsoleApp()
 
 void ConsoleApp::Menu()
 {
+	system("cls");
 	cout << "------------------------------------------------" << endl
 		<< "--------------| Телефонная книга |--------------" << endl
 		<< "------------------------------------------------" << endl
@@ -28,6 +29,7 @@ void ConsoleApp::Menu()
 
 void ConsoleApp::MenuPC()
 {
+	system("cls");
 	drawPerson(this->currentPerson);
 	cout << "------------------------------------------------" << endl
 		<< "--------------|  Редактор контакта |------------" << endl
@@ -71,7 +73,7 @@ void ConsoleApp::run()
 			catch (...) {
 				cout << "Контактов не обнаружено" << endl;
 			}
-			_getwch();
+			//_getwch();
 			system("cls");
 			break;
 		}
@@ -90,7 +92,7 @@ void ConsoleApp::run()
 				cout << "Ошибка!" << endl;
 			}
 			
-			_getwch();
+			//_getwch();
 			system("cls");
 			break;
 		}
