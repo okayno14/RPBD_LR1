@@ -530,12 +530,14 @@ wchar_t* ConsoleApp::get_a_number()
 		<< "X(XXX)XXX-XX-XX" << endl;
 	wcin.width(20);
 	wcin >> number;
+	wcin.ignore(MAXINT, '\n');
 
 	while (!checkFormat(number))
 	{
 		cout << "¬ведите заново:" << endl;
 		wcin.width(20);
 		wcin >> number;
+		wcin.ignore(MAXINT, '\n');
 	}
 
 	return number;
@@ -547,6 +549,7 @@ wchar_t* ConsoleApp::get_a_addressName()
 	cout << "¬ведите название улицы проживани€" << endl;
 	wcin.width(20);
 	wcin >> street;
+	wcin.ignore(MAXINT,'\n');
 	return street;
 }
 
@@ -589,12 +592,17 @@ void ConsoleApp::inputContact(wchar_t* & lastnamecontact, wchar_t*& firstnamecon
 	cout << "¬ведите фамилию контакта : ";
 	wcin.width(20);
 	wcin >> lastnamecontact;
+	wcin.ignore(MAXINT, '\n');
+	
 	cout << "¬ведите им€ контакта : ";
 	wcin.width(20);
 	wcin >> firstnamecontact;
+	wcin.ignore(MAXINT, '\n');
+	
 	cout << "¬ведите отчество контакта : ";
 	wcin.width(20);
 	wcin >> fathernamecontact;
+	wcin.ignore(MAXINT, '\n');
 }
 
 void ConsoleApp::offlineStatus()
