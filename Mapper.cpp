@@ -510,7 +510,7 @@ int PersonMapper::findObj(PhoneNumber* phone, Address* address)
 void PersonMapper::insertObj()
 
 {
-	SQLLEN a;
+	//SQLLEN a;
 
 	//Добавляем обьект в таблицу Person
 	if (buf->idAddress != -1)
@@ -538,8 +538,8 @@ void PersonMapper::insertObj()
 	retcode = SQLExecute(hstmt);
 	checkErr();
 
-	retcode = SQLRowCount(hstmt, &a);
-	checkErr();
+	//retcode = SQLRowCount(hstmt, &a);
+	//checkErr();
 	//Добавляем обьект в таблицу Person
 
 	//считываем id нового обьекта
@@ -591,8 +591,8 @@ void PersonMapper::insertObj()
 			retcode = SQLExecute(hstmt);
 			checkErr();
 
-			retcode = SQLRowCount(hstmt, &a);
-			checkErr();
+			//retcode = SQLRowCount(hstmt, &a);
+			//checkErr();
 		}
 	}
 	//Добавляем объекты в таблицу-связку телефонов и контактов, если они есть

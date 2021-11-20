@@ -83,11 +83,21 @@ void Model::tryDB()
 	}
 }
 
+
 Person& Model::insertPerson(Person p)
 {
-	personTable.push_back(p);	
-	sync(&personTable.back());
-	return personTable.back();
+	personTable.push_back(p);
+	Person& res = personTable.back();
+	//std:: cout << p.id << std::endl;
+	//foo(&res);
+	
+	sync(&res);
+	//std::cout << p.id << std::endl;
+	//std::list<Person>::reverse_iterator i = personTable.rbegin();
+	//return (*i);
+	
+	//return personTable.back();
+	return res;
 }
 void Model::updatePerson(Person* pOld, Address* add)
 {
@@ -438,24 +448,24 @@ void Model::syncAll()
 		sync(&(*i));	
 };
 
-void Model::sync( Person* p)
+void Model::sync( Person* per)
 {
-	int state = getState(p);
+	int state = getState(per);
 	if ( (state == 2 || state == 3) && dbc != nullptr ) 
 	{
-		pMap.setBuf(p);
-		upload(p);
+		pMap.setBuf(per);
+		upload(per);
 		pMap.insertObj();
-		if (state == 6) p->isSynced = 1;
+		if (state == 6) per->isSynced = 1;
 	}
 	if (state == 2)
-		p->isSynced = 1;
+		per->isSynced = 1;
 	if (state == 6 && dbc != nullptr)
 	{
-		pMap.setBuf(p);
-		upload(p);
+		pMap.setBuf(per);
+		upload(per);
 		pMap.updateObj();
-		p->isSynced = 1;
+		per->isSynced = 1;
 	}
 };
 

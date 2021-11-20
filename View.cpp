@@ -207,25 +207,25 @@ Person* ConsoleApp::findPerson()
 	cout << "------------------------------------------------" << endl
 		<< "----------------| Поиск контакта |--------------" << endl
 		<< "------------------------------------------------" << endl;
-	wchar_t* lastnamecontact = new wchar_t[20];
-	wchar_t* firstnamecontact = new wchar_t[20];
-	wchar_t* fathernamecontact = new wchar_t[20];
-	cout << "Введите фамилию контакта : ";
-	wcin >> lastnamecontact;
-	cout << "Введите имя контакта : ";
-	wcin >> firstnamecontact;
-	cout << "Введите отчество контакта : ";
-	wcin >> fathernamecontact;
+
+	wchar_t* lastnamecontact = nullptr;
+	wchar_t* firstnamecontact = nullptr;
+	wchar_t* fathernamecontact = nullptr;
+	inputContact(lastnamecontact,firstnamecontact,fathernamecontact);
+
 	Person* p;
-	try {
+	try 
+	{
 		p = con->findPerson(lastnamecontact, firstnamecontact, fathernamecontact);
 	}
 	catch (...)
 	{
+		p = nullptr;
+		delete[] lastnamecontact;
+		delete[] firstnamecontact;
+		delete[] fathernamecontact;
 		throw - 1;
 	}
-	
-
 	delete[] lastnamecontact;
 	delete[] firstnamecontact;
 	delete[] fathernamecontact;
@@ -324,6 +324,7 @@ void ConsoleApp::findto4()
 	vec.push_back((chetirechisl % 1000) / 100);
 	vec.push_back((chetirechisl % 100) / 10);
 	vec.push_back(chetirechisl % 10);
+	
 	con->findContactBy4NumberPhone(vec);
 }
 
@@ -341,15 +342,16 @@ void ConsoleApp::findList_FIO()
 	cout << "Введите отчество контакта : ";
 	wcin >> newfathernamecontact;
 
-	Person p(newlastnamecontact, newfirstnamecontact, newfathernamecontact);
+	//Person p(newlastnamecontact, newfirstnamecontact, newfathernamecontact);
 
-	con->findFIOALL(p);
+	con->findFIOALL(newlastnamecontact, newfirstnamecontact, newfathernamecontact);
 	
 	delete[] newlastnamecontact;
 	delete[] newfirstnamecontact;
 	delete[] newfathernamecontact;
 }
 
+//Сделать для ввода ФИО спец. метод, который возвращает указатели на массивы с именами
 void ConsoleApp::updateFIOcontacte()
 {
 	cout << "------------------------------------------------" << endl;
@@ -361,9 +363,9 @@ void ConsoleApp::updateFIOcontacte()
 	wchar_t* newfathernamecontact = new wchar_t[20];
 	
 	cout << "Введите новое ФИО контакта" << endl;
-	cout << "Введите имя контакта : ";
-	wcin >> newlastnamecontact;
 	cout << "Введите фамилию контакта : ";
+	wcin >> newlastnamecontact;
+	cout << "Введите имя контакта : ";
 	wcin >> newfirstnamecontact;
 	cout << "Введите отчество контакта : ";
 	wcin >> newfathernamecontact;
@@ -608,6 +610,19 @@ int ConsoleApp::get_a_numberhome()
 	cout << "Введите номер дома" << endl;
 	cin >> num;
 	return num;
+}
+
+void ConsoleApp::inputContact(wchar_t* & lastnamecontact, wchar_t*& firstnamecontact, wchar_t*& fathernamecontact)
+{
+	lastnamecontact = new wchar_t[strSZ];
+	firstnamecontact = new wchar_t[strSZ];
+	fathernamecontact = new wchar_t[strSZ];
+	cout << "Введите фамилию контакта : ";
+	wcin >> lastnamecontact;
+	cout << "Введите имя контакта : ";
+	wcin >> firstnamecontact;
+	cout << "Введите отчество контакта : ";
+	wcin >> fathernamecontact;
 }
 
 void ConsoleApp::offlineStatus()

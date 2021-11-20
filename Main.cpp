@@ -20,8 +20,19 @@ int main()
 	Controller controller(&app);
 	app.setController(&controller);
 
+	SQLWCHAR lastname[20];
+	SQLWCHAR firstname[20];
+	SQLWCHAR fathername[20];
 
+	wcscpy_s(lastname,L"ivanov");
+	wcscpy_s(firstname, L"ivan");
+	wcscpy_s(fathername, L"ivanovich");
+	
+	Person p(lastname, firstname, fathername);
+	
 	app.run();
+
+
 
 	
 	return 0;	

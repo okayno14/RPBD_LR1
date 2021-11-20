@@ -119,17 +119,19 @@ void Controller::findContactBy4NumberPhone(std::vector<int> number4)
 	}
 }
 
-void Controller::findFIOALL(Person p)
+void Controller::findFIOALL(SQLWCHAR* lastNameContact,
+	SQLWCHAR* firstNameContact,
+	SQLWCHAR* fatherNameContact)
 {
+	Person p(lastNameContact, firstNameContact, fatherNameContact);
 	vector<Person*>tmp = model->find_List_FIO(p);
 
 	for (int i = 0; i < tmp.size(); i++)
 	{
-		Person* p = tmp[i];
-		this->consoleApp->drawPerson(p);
-		consoleApp->drawPhoneNumbers(p->getNumbers());
+		//Person* p = tmp[i];
+		this->consoleApp->drawPerson(tmp[i]);
+		consoleApp->drawPhoneNumbers(tmp[i]->getNumbers());
 	}
-
 }
 
 bool Controller::addAddress(Person* p, Address* ad)
@@ -168,6 +170,9 @@ Person* Controller::findPerson(
 	if (count == 1)
 		return tmp;
 
+	//count >1 не имеет смысла,
+	//так как если пустых объектов несколько,
+	//то другие поиски не помогут разрушить конфликт
 	if(count == 0 || count > 1)
 	{
 		tmp = &model->findPerson(p, false, count);

@@ -6,6 +6,7 @@
 #include "Controller.h"
 using namespace std;
 
+
 class Controller;
 
 class ConsoleApp
@@ -56,11 +57,12 @@ public:
 	void drawPhoneNumber(PhoneNumber* pn);
 	bool drawPhoneNumbers(std::vector<PhoneNumber*> args);
 
-	/*методы для запросов полей с данными контакта*/
+	/*методы для инпута данных*/
 	wchar_t* get_a_number();
 	wchar_t* get_a_addressName();
 	int get_a_type_number();
 	int get_a_apartment();
 	int get_a_numberhome();
+	void inputContact(wchar_t*& lastnamecontact, wchar_t*& firstnamecontact, wchar_t*& fathernamecontact);
 	
 };
