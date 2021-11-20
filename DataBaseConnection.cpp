@@ -6,14 +6,6 @@ SQLWCHAR DataBaseConnection::password[CONN_DATA_SZ];
 
 DataBaseConnection::DataBaseConnection() : status{ 0 }
 {
-	//dsn = (SQLWCHAR*)L"Pfdfdfffd";
-	//dsn = (SQLWCHAR*)L"Phonebook";
-	//dsn = (SQLWCHAR*)L"test";
-	//user = (SQLWCHAR*)L"postgres";
-	//password = (SQLWCHAR*)L"123";
-
-		
-
 	retcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &handleEnv);
 	checkErr();
 
@@ -29,7 +21,6 @@ DataBaseConnection::DataBaseConnection() : status{ 0 }
 
 	retcode = SQLConnect(hDBC, dsn, SQL_NTS, user, SQL_NTS, password, SQL_NTS);
 	checkErr();
-	//установить атрибуты коннекта
 
 	this->status = true;
 }
@@ -78,7 +69,6 @@ DataBaseConnection* DataBaseConnection::getInstance()
 	}
 	catch (std::wstring msg) 
 	{
-		//std::wcout << msg << std::endl;
 		int err = -2;
 		throw err;
 	}

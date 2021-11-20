@@ -59,20 +59,15 @@ public:
 	{
 		const SQLWCHAR* streetNameOrig = this->streetName;
 		const SQLWCHAR* streetNameOther = ad->streetName;
-		if
-		(
+		if(
 			wcscmp(streetNameOrig, streetNameOther) == 0 &&
 			home == ad->home &&
-			appartement == ad->appartement
-		)
+			appartement == ad->appartement)
 			return true;
 		else
 			return false;
 	};
-	int getId() 
-	{
-		return id;
-	}
+	int getId() {return id;}
 	SQLWCHAR* getStreet() { return streetName; }
 	int getHome() { return this->home; }
 	int getAppartement() { return this->appartement; }
@@ -144,15 +139,9 @@ public:
 
 	SQLINTEGER getId() { return id; }
 
-	SQLWCHAR* getNumber()
-	{
-		return number;
-	}
+	SQLWCHAR* getNumber(){return number;}
 
-	int getType() 
-	{
-		return idType;
-	}
+	int getType() {return idType;}
 };
 
 class Person
@@ -171,8 +160,6 @@ private:
 
 	Address* address = nullptr;
 
-	//SQLINTEGER phoneCount;
-
 	std::vector<PhoneNumber*> phoneNumbers;
 	
 	SQLINTEGER id = -1;
@@ -182,43 +169,37 @@ private:
 	SQLLEN idAddressLen;
 
 	std::vector<SQLINTEGER> idPhones;
-	//Если не прокатит, то сделать вектор SQLLEN
+
 	SQLLEN idPhone;
 
 	bool isSynced = false;
 
 public:
-	Person(SQLWCHAR* lastName, SQLWCHAR* firstName, SQLWCHAR* fatherName);
-	
+	Person(SQLWCHAR* lastName, SQLWCHAR* firstName, SQLWCHAR* fatherName);	
 
 	Person() {};
 	
-	bool isEqual(const Person* b);
-	
+	bool isEqual(const Person* b);	
 
-	bool containPhoneNumber(PhoneNumber* pn);
-	
+	bool containPhoneNumber(PhoneNumber* pn);	
 
-	bool containAddress(Address* ad);
-	
+	bool containAddress(Address* ad);	
 
-	void addPhoneNumber(PhoneNumber* pn);
-	
+	void addPhoneNumber(PhoneNumber* pn);	
 
-	void setPhoneNumber(int pos, PhoneNumber* pn);
-	
+	void setPhoneNumber(int pos, PhoneNumber* pn);	
 
 	SQLWCHAR* getLastName();
+
 	SQLWCHAR* getFirstName();
-	SQLWCHAR* getFatherName();
-	
+
+	SQLWCHAR* getFatherName();	
 
 	void setAddress(Address* add);
 
 	Address* getAddress() { return this->address; }
 
-	std::vector<PhoneNumber*> getNumbers();
-	
+	std::vector<PhoneNumber*> getNumbers();	
 };
 
 class AbstractMapper
@@ -245,9 +226,11 @@ public:
 	void setDBC(DataBaseConnection* dbc) 
 	{ 
 		this->db = dbc; 
-		if (db == nullptr) throw - 2;
+		if (db == nullptr) 
+			throw - 2;
 		retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
-		if (retcode < 0) throw - 2;
+		if (retcode < 0) 
+			throw - 2;
 	}
 
 protected:
@@ -320,7 +303,6 @@ public:
 	//Поиск улицы по имени в БД.
 	void updateStreet();
 	bool findStreet();
-	bool findStreet(int personId);
 	int findReferences();
 };
 
@@ -346,8 +328,6 @@ public:
 	void updateObj() override;
 
 	int findReferences();
-
-	
 };
 
 //Убрать
@@ -391,8 +371,6 @@ public:
 		std::vector<Person*> find_List_FIO(Person p);
 
 private:
-		void updatePerson(Person* pOld, Address* add);
-		void updatePerson(Person* pOld, PhoneNumber* pn);
 		void updatePerson(Person* pOld, Person* fio);
 		//Получить состояние Контакта из СД
 		int getState(Person* p);
@@ -402,7 +380,6 @@ private:
 		void download(Person* p);
 		void syncAll();
 	//</Person>
-
 	//<Phone>
 		PhoneNumber& insertPhone(PhoneNumber pn);
 		void deletePhone(PhoneNumber* pn);
@@ -410,10 +387,8 @@ private:
 		int findReferences(PhoneNumber* pn);
 		int getState(PhoneNumber* pn);
 		void sync(PhoneNumber* pn);
-		void syncAllPhones();
-		
+		void syncAllPhones();		
 	//</Phone>
-
 	//<Address>
 		Address& insertAddress(Address add);
 		void deleteAddress(Address* add);

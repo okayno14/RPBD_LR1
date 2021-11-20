@@ -2,7 +2,6 @@
 #include "Model.h"
 
 void AbstractMapper::checkErr()
-
 {
 	if (retcode < 0)
 	{
@@ -25,7 +24,6 @@ void AbstractMapper::checkErr()
 			SQL_MAX_MESSAGE_LENGTH,
 			&infoL);
 		cerr << info << std::endl;
-		//std::wcout << cerr.str() << std::endl;
 		throw cerr.str();
 	}
 }
@@ -43,7 +41,6 @@ void AbstractMapper::rollbackTransaction()
 }
 
 void PersonMapper::bindNamePar()
-
 {
 	retcode = SQLBindParameter(
 		hstmt,
@@ -79,6 +76,7 @@ void PersonMapper::bindNamePar()
 		sizeof(SQLWCHAR) * strSZ, NULL);
 	checkErr();
 }
+
 void PersonMapper::getIdPhone()
 {
 	SQLLEN a;
@@ -102,29 +100,24 @@ void PersonMapper::getIdPhone()
 	retcode = SQLRowCount(hstmt, &a);
 	checkErr();
 
-	//buf->phoneCount = a;
 	if (a > 0)
-	{
 		while (retcode = SQLFetch(hstmt) != SQL_NO_DATA)
-		{
-			buf->idPhones.push_back(phoneId);
-		}
-	}
+			buf->idPhones.push_back(phoneId);		
+
 	retcode = SQLCloseCursor(hstmt);
 	checkErr();
 }
+
 PersonMapper::PersonMapper(Person* buf)
 {
 	try
 	{
 		this->buf = buf;
-		//db = DataBaseConnection::getInstance();
-		//retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
 	}
 	catch (int err) {}
 }
-void PersonMapper::findObj(int id)
 
+void PersonMapper::findObj(int id)
 {
 	SQLINTEGER idT = (SQLINTEGER)id;
 	buf->id = idT;
@@ -156,12 +149,10 @@ void PersonMapper::findObj(int id)
 	checkErr();
 
 	getIdPhone();
-
 	commitTransaction();
 }
 //ФИО непустой
 int PersonMapper::findObjj()
-
 {
 	SQLLEN a;
 	bool res = false;
@@ -207,16 +198,12 @@ int PersonMapper::findObjj()
 	}
 
 	getIdPhone();
-
 	commitTransaction();
-	//Не забудь поправить
 	return a;
 }
 //ФИО+ТЕЛЕФОН
 int PersonMapper::findObj(PhoneNumber* phone)
 {
-	/*if (!buf->containPhoneNumber(phone)) 
-		return 0;*/
 	SQLLEN a;
 	statementText =
 		(SQLWCHAR*)
@@ -241,6 +228,7 @@ int PersonMapper::findObj(PhoneNumber* phone)
 "    firstname = ? and" 
 "    fathername = ? and" 
 "    phonenumber.number = ?;";
+	
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 	checkErr();
 
@@ -291,7 +279,6 @@ int PersonMapper::findObj(PhoneNumber* phone)
 }
 //ФИО+АДРЕС
 int PersonMapper::findObj(Address* address)
-
 {
 	if (address != buf->address) return false;
 	SQLLEN a;
@@ -329,6 +316,7 @@ int PersonMapper::findObj(Address* address)
 
 	retcode = SQLBindParameter(hstmt, 4, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(address->home), 0, NULL);
 	checkErr();
+
 	retcode = SQLBindParameter(
 		hstmt,
 		5,
@@ -341,6 +329,7 @@ int PersonMapper::findObj(Address* address)
 		0,
 		NULL);
 	checkErr();
+
 	retcode = SQLBindParameter(
 		hstmt,
 		6,
@@ -386,12 +375,10 @@ int PersonMapper::findObj(Address* address)
 	}
 
 	commitTransaction();
-	//Не забудь поправить
 	return a;
 }
 //ФИО+ТЕЛЕФОН+АДРЕС
 int PersonMapper::findObj(PhoneNumber* phone, Address* address)
-
 {
 	SQLLEN a;
 	bool res = false;
@@ -507,11 +494,9 @@ int PersonMapper::findObj(PhoneNumber* phone, Address* address)
 	commitTransaction();
 	return a;
 }
+
 void PersonMapper::insertObj()
-
 {
-	//SQLLEN a;
-
 	//Добавляем обьект в таблицу Person
 	if (buf->idAddress != -1)
 	{
@@ -538,74 +523,82 @@ void PersonMapper::insertObj()
 	retcode = SQLExecute(hstmt);
 	checkErr();
 
-	//retcode = SQLRowCount(hstmt, &a);
-	//checkErr();
 	//Добавляем обьект в таблицу Person
+		//считываем id нового обьекта
+			statementText = (SQLWCHAR*)L"SELECT * FROM sec_p";
 
-	//считываем id нового обьекта
-	statementText = (SQLWCHAR*)L"SELECT * FROM sec_p";
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
 
-	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-	checkErr();
-
-	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
-	checkErr();
-
-	retcode = SQLExecute(hstmt);
-	checkErr();
-
-	retcode = SQLFetch(hstmt);
-	checkErr();
-
-	retcode = SQLCloseCursor(hstmt);
-	checkErr();
-	//считываем id нового обьекта
-
-	//Добавляем объекты в таблицу-связку телефонов и контактов, если они есть
-	if (buf->idPhones.size() > 0)
-	{
-		statementText =
-			(SQLWCHAR*)L"INSERT INTO persone_number (idPerson, idPhone) VALUES (?, ?)";
-
-		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-		checkErr();
-
-		retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->id), 0, NULL);
-		checkErr();
-
-		for (int i = 0; i < buf->idPhones.size(); i++)
-		{
-			retcode = SQLBindParameter(
-				hstmt,
-				2,
-				SQL_PARAM_INPUT,
-				SQL_C_SLONG,
-				SQL_INTEGER,
-				4,
-				0,
-				&(buf->idPhones[i]),
-				0,
-				NULL);
+			retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
 			checkErr();
 
 			retcode = SQLExecute(hstmt);
 			checkErr();
 
-			//retcode = SQLRowCount(hstmt, &a);
-			//checkErr();
+			retcode = SQLFetch(hstmt);
+			checkErr();
+
+			retcode = SQLCloseCursor(hstmt);
+			checkErr();
+		//считываем id нового обьекта
+	//Добавляем объекты в таблицу-связку телефонов и контактов, если они есть
+		if (buf->idPhones.size() > 0)
+		{
+			statementText =
+				(SQLWCHAR*)L"INSERT INTO persone_number (idPerson, idPhone) VALUES (?, ?)";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->id), 0, NULL);
+			checkErr();
+
+			for (int i = 0; i < buf->idPhones.size(); i++)
+			{
+				retcode = SQLBindParameter(
+					hstmt,
+					2,
+					SQL_PARAM_INPUT,
+					SQL_C_SLONG,
+					SQL_INTEGER,
+					4,
+					0,
+					&(buf->idPhones[i]),
+					0,
+					NULL);
+				checkErr();
+
+				retcode = SQLExecute(hstmt);
+				checkErr();
+			}
 		}
-	}
 	//Добавляем объекты в таблицу-связку телефонов и контактов, если они есть
 	commitTransaction();
 }
-void PersonMapper::deleteObj()
 
+void PersonMapper::deleteObj()
 {
 	SQLLEN a;
 	//почистить persone_number
-	if (!buf->idPhones.empty())
-	{
-		statementText = (SQLWCHAR*)L"DELETE from persone_number WHERE idPerson = ?";
+		if (!buf->idPhones.empty())
+		{
+			statementText = (SQLWCHAR*)L"DELETE from persone_number WHERE idPerson = ?";
+
+			retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+			checkErr();
+
+			retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->id), 0, NULL);
+			checkErr();
+
+			retcode = SQLExecute(hstmt);
+			checkErr();
+
+			retcode = SQLRowCount(hstmt, &a);
+			checkErr();
+		}
+	//почистить person
+		statementText = (SQLWCHAR*)L"DELETE FROM person WHERE id = ?";
 
 		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 		checkErr();
@@ -618,32 +611,14 @@ void PersonMapper::deleteObj()
 
 		retcode = SQLRowCount(hstmt, &a);
 		checkErr();
-	}
-
-	//почистить person
-
-	statementText = (SQLWCHAR*)L"DELETE FROM person WHERE id = ?";
-
-	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-	checkErr();
-
-	retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->id), 0, NULL);
-	checkErr();
-
-	retcode = SQLExecute(hstmt);
-	checkErr();
-
-	retcode = SQLRowCount(hstmt, &a);
-	checkErr();
 
 	//обьект адреса не трогаем внутри данного класса
 	commitTransaction();
 }
-void PersonMapper::updateObj()
 
+void PersonMapper::updateObj()
 {
 	SQLLEN a;
-
 	//<обновить persone_number>
 		statementText = (SQLWCHAR*)L"DELETE FROM persone_number WHERE idPerson = ?";
 
@@ -704,10 +679,8 @@ void PersonMapper::updateObj()
 				retcode = SQLRowCount(hstmt, &a);
 				checkErr();
 			}
-
 		}
 	//</обновить persone_number>
-
 	//<обновить person>
 		if (buf->idAddress != -1)
 		{
@@ -771,9 +744,9 @@ void PersonMapper::createDB()
 
 		commitTransaction();
 	}
-	else throw - 1;
-	
+	else throw - 1;	
 }
+
 int PersonMapper::findObj(bool q)
 {
 	SQLLEN a;
@@ -785,7 +758,6 @@ int PersonMapper::findObj(bool q)
 		" person.firstname = ? AND"
 		" person.fathername = ? AND"
 		" person.id = persone_number.idPerson";
-
 
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 	checkErr();
@@ -801,7 +773,6 @@ int PersonMapper::findObj(bool q)
 	retcode = SQLRowCount(hstmt, &a);
 	checkErr();
 
-
 	retcode = SQLCloseCursor(hstmt);
 	checkErr();
 
@@ -815,7 +786,6 @@ int PersonMapper::findObj(bool q)
 			" p.firstname = ? AND"
 			" p.fathername = ? AND"
 			" p.idAddress is NULL";
-
 
 		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 		checkErr();
@@ -831,7 +801,6 @@ int PersonMapper::findObj(bool q)
 		retcode = SQLRowCount(hstmt, &a);
 		checkErr();
 
-
 		if (a == 1)
 		{
 			retcode = SQLFetch(hstmt);
@@ -839,7 +808,6 @@ int PersonMapper::findObj(bool q)
 
 			retcode = SQLCloseCursor(hstmt);
 			checkErr();
-
 		}
 		else
 		{
@@ -851,7 +819,6 @@ int PersonMapper::findObj(bool q)
 		a = 0;
 
 	commitTransaction();
-	//Не забудь поправить
 	return a;
 };
 
@@ -860,92 +827,88 @@ AddressMapper::AddressMapper(Address* buf)
 	try 
 	{
 		this->buf = buf;
-		//db = DataBaseConnection::getInstance();
-		//retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
 	}
 	catch (int err) {}
 }
-void AddressMapper::insertObj()
 
+void AddressMapper::insertObj()
 {
 	SQLLEN a;
 	//<Если нет улицы - вставка. Чтение idStreet>
-	if (!findStreet()) { insertStreet(); }
+		if (!findStreet()) 
+			insertStreet();
 	//</Если нет улицы - вставка. Чтение idStreet>
-
 	//Вставка квартиры и дома
-	statementText = (SQLWCHAR*)L"INSERT INTO address (home, appartement, idStreet) VALUES (?,?,?)";
+		statementText = (SQLWCHAR*)L"INSERT INTO address (home, appartement, idStreet) VALUES (?,?,?)";
 
-	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-	checkErr();
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
 
-	retcode = SQLBindParameter(
-		hstmt,
-		1,
-		SQL_PARAM_INPUT,
-		SQL_INTEGER,
-		SQL_C_SLONG,
-		4,
-		0,
-		&(buf->home),
-		0,
-		NULL);
-	checkErr();
-	retcode = SQLBindParameter(
-		hstmt,
-		2,
-		SQL_PARAM_INPUT,
-		SQL_INTEGER,
-		SQL_C_SLONG,
-		4,
-		0,
-		&(buf->appartement),
-		0,
-		NULL);
-	checkErr();
-	retcode = SQLBindParameter(
-		hstmt,
-		3,
-		SQL_PARAM_INPUT,
-		SQL_INTEGER,
-		SQL_C_SLONG,
-		4,
-		0,
-		&(buf->idStreet),
-		0,
-		NULL);
-	checkErr();
+		retcode = SQLBindParameter(
+			hstmt,
+			1,
+			SQL_PARAM_INPUT,
+			SQL_INTEGER,
+			SQL_C_SLONG,
+			4,
+			0,
+			&(buf->home),
+			0,
+			NULL);
+		checkErr();
+		retcode = SQLBindParameter(
+			hstmt,
+			2,
+			SQL_PARAM_INPUT,
+			SQL_INTEGER,
+			SQL_C_SLONG,
+			4,
+			0,
+			&(buf->appartement),
+			0,
+			NULL);
+		checkErr();
+		retcode = SQLBindParameter(
+			hstmt,
+			3,
+			SQL_PARAM_INPUT,
+			SQL_INTEGER,
+			SQL_C_SLONG,
+			4,
+			0,
+			&(buf->idStreet),
+			0,
+			NULL);
+		checkErr();
 
-	retcode = SQLExecute(hstmt);
-	checkErr();
+		retcode = SQLExecute(hstmt);
+		checkErr();
 
-	retcode = SQLRowCount(hstmt, &a);
-	checkErr();
-
+		retcode = SQLRowCount(hstmt, &a);
+		checkErr();
 	//Вставка квартиры и дома
-
 	//<Поиск id нового объекта>
-	statementText = (SQLWCHAR*)L"SELECT * FROM sec_a";
+		statementText = (SQLWCHAR*)L"SELECT * FROM sec_a";
 
-	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-	checkErr();
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
 
-	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
-	checkErr();
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+		checkErr();
 
-	retcode = SQLExecute(hstmt);
-	checkErr();
+		retcode = SQLExecute(hstmt);
+		checkErr();
 
-	retcode = SQLFetch(hstmt);
-	checkErr();
+		retcode = SQLFetch(hstmt);
+		checkErr();
 
-	retcode = SQLCloseCursor(hstmt);
-	checkErr();
+		retcode = SQLCloseCursor(hstmt);
+		checkErr();
 	//</Поиск id нового объекта>
 	commitTransaction();
 }
-void AddressMapper::updateObj()
 
+void AddressMapper::updateObj()
 {
 	SQLLEN a;
 	//проверяем количество адресов, связанных со старой улицей
@@ -953,40 +916,37 @@ void AddressMapper::updateObj()
 	SQLINTEGER oldIdStreet = buf->idStreet;
 
 	//<Если нет улицы - вставка. Чтение idStreet>
-	if (!findStreet()) { insertStreet(); }
-	/*if(buf->idStreet == -1) 
-		insertStreet();*/
+	if (!findStreet()) 
+		insertStreet();
 	//</Если нет улицы - вставка. Чтение idStreet>
-
 	/*делаем апдейт дома, квартиры, идУлицы*/
-	statementText = (SQLWCHAR*)L"UPDATE address SET idstreet = ?, home = ?, appartement = ? WHERE id = ?";
+		statementText = (SQLWCHAR*)L"UPDATE address SET idstreet = ?, home = ?, appartement = ? WHERE id = ?";
 
-	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-	checkErr();
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
 
-	retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->idStreet), 0, NULL);
-	checkErr();
-	retcode = SQLBindParameter(hstmt, 2, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->home), 0, NULL);
-	checkErr();
-	retcode = SQLBindParameter(hstmt, 3, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->appartement), 0, NULL);
-	checkErr();
-	retcode = SQLBindParameter(hstmt, 4, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->id), 0, NULL);
-	checkErr();
+		retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->idStreet), 0, NULL);
+		checkErr();
+		retcode = SQLBindParameter(hstmt, 2, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->home), 0, NULL);
+		checkErr();
+		retcode = SQLBindParameter(hstmt, 3, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->appartement), 0, NULL);
+		checkErr();
+		retcode = SQLBindParameter(hstmt, 4, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &(buf->id), 0, NULL);
+		checkErr();
 
-	retcode = SQLExecute(hstmt);
-	checkErr();
+		retcode = SQLExecute(hstmt);
+		checkErr();
 
-	retcode = SQLRowCount(hstmt, &a);
-	checkErr();
+		retcode = SQLRowCount(hstmt, &a);
+		checkErr();
 
-	//Если старая улица не связана с какими-то адресами, то 
-	//удаляем улицу
-	delStreet(oldIdStreet);
-
+		//Если старая улица не связана с какими-то адресами, то 
+		//удаляем улицу
+		delStreet(oldIdStreet);
 	commitTransaction();
 }
-void AddressMapper::deleteObj()
 
+void AddressMapper::deleteObj()
 {
 	statementText = (SQLWCHAR*)L"DELETE FROM address WHERE id = ?";
 
@@ -1009,8 +969,8 @@ void AddressMapper::deleteObj()
 
 	commitTransaction();
 }
-void AddressMapper::findObj(int id)
 
+void AddressMapper::findObj(int id)
 {
 	SQLINTEGER idT = (SQLINTEGER)id;
 
@@ -1067,8 +1027,8 @@ void AddressMapper::findObj(int id)
 	checkErr();
 	commitTransaction();
 }
-int AddressMapper::findObj()
 
+int AddressMapper::findObj()
 {
 	statementText =
 		(SQLWCHAR*)L"SELECT"
@@ -1145,8 +1105,8 @@ int AddressMapper::findObj()
 
 	return finded;
 }
-void AddressMapper::insertStreet()
 
+void AddressMapper::insertStreet()
 {
 	SQLLEN a;
 
@@ -1177,60 +1137,56 @@ void AddressMapper::insertStreet()
 	checkErr();
 
 	//<Поиск id>
-	statementText = (SQLWCHAR*)L"SELECT * FROM sec_s";
+		statementText = (SQLWCHAR*)L"SELECT * FROM sec_s";
 
-	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-	checkErr();
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
 
-	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->idStreet), 0, &(buf->idLen));
-	checkErr();
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->idStreet), 0, &(buf->idLen));
+		checkErr();
 
-	retcode = SQLExecute(hstmt);
-	checkErr();
+		retcode = SQLExecute(hstmt);
+		checkErr();
 
-	retcode = SQLFetch(hstmt);
-	checkErr();
+		retcode = SQLFetch(hstmt);
+		checkErr();
 
-	retcode = SQLCloseCursor(hstmt);
-	checkErr();
+		retcode = SQLCloseCursor(hstmt);
+		checkErr();
 	//</Поиск id>
-
 	commitTransaction();
 }
-void AddressMapper::delStreet(SQLINTEGER idStreet)
 
+void AddressMapper::delStreet(SQLINTEGER idStreet)
 {
 	//<Поиск связей улицы и адреса>
-	SQLLEN a;
+		SQLLEN a;
 
-	statementText =
-		(SQLWCHAR*)L" SELECT"
-		" street.id as id,"
-		" street.streetname as streetname,"
-		" address.id as idaddress"
-		" FROM"
-		" street INNER JOIN address"
-		" ON"
-		" street.id = address.idstreet"
-		" WHERE street.id = ?";
+		statementText =
+			(SQLWCHAR*)L" SELECT"
+			" street.id as id,"
+			" street.streetname as streetname,"
+			" address.id as idaddress"
+			" FROM"
+			" street INNER JOIN address"
+			" ON"
+			" street.id = address.idstreet"
+			" WHERE street.id = ?";
 
-	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-	checkErr();
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
 
-	retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &idStreet, 0, NULL);
-	checkErr();
+		retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 4, 0, &idStreet, 0, NULL);
+		checkErr();
 
-	retcode = SQLExecute(hstmt);
-	checkErr();
+		retcode = SQLExecute(hstmt);
+		checkErr();
 
-	retcode = SQLRowCount(hstmt, &a);
-	checkErr();
+		retcode = SQLRowCount(hstmt, &a);
+		checkErr();
 
-	/*retcode = SQLFetch(hstmt);
-	checkErr();*/
-
-	retcode = SQLCloseCursor(hstmt);
-	checkErr();
+		retcode = SQLCloseCursor(hstmt);
+		checkErr();
 	//</Поиск связей улицы и адреса>
 
 	if (a == 0)
@@ -1250,8 +1206,8 @@ void AddressMapper::delStreet(SQLINTEGER idStreet)
 		checkErr();
 	}
 }
-void AddressMapper::updateStreet()
 
+void AddressMapper::updateStreet()
 {
 	SQLLEN a;
 
@@ -1283,8 +1239,8 @@ void AddressMapper::updateStreet()
 	retcode = SQLRowCount(hstmt, &a);
 	checkErr();
 }
-bool AddressMapper::findStreet()
 
+bool AddressMapper::findStreet()
 {
 	statementText = (SQLWCHAR*)L"SELECT id FROM street WHERE streetname = ?";
 
@@ -1322,15 +1278,11 @@ bool AddressMapper::findStreet()
 	checkErr();
 
 	if (finded == 1)
-	{
 		return true;
-	}
 	else
-	{
 		return false;
-	}
-
 }
+
 int AddressMapper::findReferences()
 {
 	statementText = (SQLWCHAR*)L" SELECT COUNT(idaddress) FROM person WHERE idaddress = ?";
@@ -1378,13 +1330,11 @@ PhoneMapper::PhoneMapper(PhoneNumber* buf)
 	try
 	{
 		this->buf = buf;
-		//db = DataBaseConnection::getInstance();
-		//retcode = SQLAllocHandle(SQL_HANDLE_STMT, *(db->getHDBC()), &hstmt);
 	}
 	catch (int err) {}
 }
-void PhoneMapper::findObj(int id)
 
+void PhoneMapper::findObj(int id)
 {
 
 	SQLINTEGER idT = (SQLINTEGER)id;
@@ -1450,10 +1400,11 @@ void PhoneMapper::findObj(int id)
 
 	commitTransaction();
 }
-int PhoneMapper::findObj()
 
+//Поиск обьекта в таблице по номеру телефона
+int PhoneMapper::findObj()
 {
-	//Поиск обьекта в таблице по номеру телефона
+	
 
 	statementText =
 		(SQLWCHAR*)L"SELECT"
@@ -1503,7 +1454,6 @@ int PhoneMapper::findObj()
 	retcode = SQLRowCount(hstmt, &finded);
 	checkErr();
 
-
 	retcode = SQLFetch(hstmt);
 	checkErr();
 	retcode = SQLCloseCursor(hstmt);
@@ -1514,135 +1464,102 @@ int PhoneMapper::findObj()
 	return finded;
 	
 }
+
 void PhoneMapper::insertObj()
-
 {
 	//id idType номер телефона
-	statementText = (SQLWCHAR*)L"INSERT INTO phoneNumber (idtype, number) VALUES (?,?)";
+		statementText = (SQLWCHAR*)L"INSERT INTO phoneNumber (idtype, number) VALUES (?,?)";
 
-	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-	checkErr();
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
 
-	retcode = SQLBindParameter(
-		hstmt,
-		1,
-		SQL_PARAM_INPUT,
-		SQL_C_SLONG,
-		SQL_INTEGER,
-		4,
-		0,
-		&(buf->idType),
-		0,
-		NULL);
-	checkErr();
-	retcode = SQLBindParameter
-	(
-		hstmt,
-		2,
-		SQL_PARAM_INPUT,
-		SQL_C_WCHAR,
-		SQL_WCHAR,
-		sizeof(SQLWCHAR) * strSZ,
-		0,
-		buf->number,
-		sizeof(SQLWCHAR) * strSZ,
-		NULL
-	);
-	checkErr();
+		retcode = SQLBindParameter(
+			hstmt,
+			1,
+			SQL_PARAM_INPUT,
+			SQL_C_SLONG,
+			SQL_INTEGER,
+			4,
+			0,
+			&(buf->idType),
+			0,
+			NULL);
+		checkErr();
+		retcode = SQLBindParameter
+		(
+			hstmt,
+			2,
+			SQL_PARAM_INPUT,
+			SQL_C_WCHAR,
+			SQL_WCHAR,
+			sizeof(SQLWCHAR) * strSZ,
+			0,
+			buf->number,
+			sizeof(SQLWCHAR) * strSZ,
+			NULL
+		);
+		checkErr();
 
-	retcode = SQLExecute(hstmt);
-	checkErr();
+		retcode = SQLExecute(hstmt);
+		checkErr();
 
-	SQLLEN rc;
-	retcode = SQLRowCount(hstmt, &rc);
-	checkErr();
-
-	/*statementText = (SQLWCHAR*)L"SELECT id FROM phoneNumber where number = ?";
-
-	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-	checkErr();
-
-	retcode = SQLBindParameter
-	(
-		hstmt,
-		1,
-		SQL_PARAM_INPUT,
-		SQL_C_WCHAR,
-		SQL_WCHAR,
-		sizeof(SQLWCHAR) * strSZ,
-		0,
-		buf->number,
-		sizeof(SQLWCHAR) * strSZ,
-		NULL
-	);
-	checkErr();
-
-	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
-	checkErr();
-
-	retcode = SQLExecute(hstmt);
-	checkErr();
-
-	retcode = SQLFetch(hstmt);
-	checkErr();
-	retcode = SQLCloseCursor(hstmt);
-	checkErr();*/
+		SQLLEN rc;
+		retcode = SQLRowCount(hstmt, &rc);
+		checkErr();
 	//id idType номер телефона
-
 	//<Получение id обьекта>
-	statementText = (SQLWCHAR*)L"SELECT * FROM sec_pn";
+		statementText = (SQLWCHAR*)L"SELECT * FROM sec_pn";
 
-	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-	checkErr();
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
 
-	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
-	checkErr();
+		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+		checkErr();
 
-	retcode = SQLExecute(hstmt);
-	checkErr();
+		retcode = SQLExecute(hstmt);
+		checkErr();
 
-	retcode = SQLFetch(hstmt);
-	checkErr();
+		retcode = SQLFetch(hstmt);
+		checkErr();
 
-	retcode = SQLCloseCursor(hstmt);
-	checkErr();
+		retcode = SQLCloseCursor(hstmt);
+		checkErr();
 	//</Получение id обьекта>
-
 	commitTransaction();
 }
-void PhoneMapper::deleteObj()
 
+void PhoneMapper::deleteObj()
 {
 	//Удаляем из phoneNumber
-	statementText = (SQLWCHAR*)L"DELETE FROM phoneNumber WHERE id = ?";
+		statementText = (SQLWCHAR*)L"DELETE FROM phoneNumber WHERE id = ?";
 
-	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-	checkErr();
+		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+		checkErr();
 
-	retcode = SQLBindParameter(
-		hstmt,
-		1,
-		SQL_PARAM_INPUT,
-		SQL_C_SLONG,
-		SQL_INTEGER,
-		4,
-		0,
-		&(buf->id),
-		0,
-		NULL);
-	checkErr();
+		retcode = SQLBindParameter(
+			hstmt,
+			1,
+			SQL_PARAM_INPUT,
+			SQL_C_SLONG,
+			SQL_INTEGER,
+			4,
+			0,
+			&(buf->id),
+			0,
+			NULL);
+		checkErr();
 
-	retcode = SQLExecute(hstmt);
-	checkErr();
+		retcode = SQLExecute(hstmt);
+		checkErr();
 
-	SQLLEN rc;
-	retcode = SQLRowCount(hstmt, &rc);
-	checkErr();
+		SQLLEN rc;
+		retcode = SQLRowCount(hstmt, &rc);
+		checkErr();
 	//Удаляем из phoneNumber
 	commitTransaction();
 }
-void PhoneMapper::updateObj()
 
+void PhoneMapper::updateObj()
 {
 	statementText = (SQLWCHAR*)L"UPDATE phoneNumber SET idtype = ?, number = ? WHERE id = ?";
 
@@ -1698,13 +1615,13 @@ void PhoneMapper::updateObj()
 	checkErr();
 	commitTransaction();
 }
+
 int PhoneMapper::findReferences()
 {
 	statementText = (SQLWCHAR*)L"SELECT COUNT(idphone) from persone_number where idphone = ?";
 
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 	checkErr();
-
 
 	retcode = SQLBindParameter(
 		hstmt,
@@ -1717,8 +1634,7 @@ int PhoneMapper::findReferences()
 		&(buf->id),
 		0,
 		NULL);
-	checkErr();
-	
+	checkErr();	
 
 	int finded;
 	SQLLEN findedLen;
@@ -1737,6 +1653,7 @@ int PhoneMapper::findReferences()
 
 	return finded;
 }
+
 std::vector<Person> PersonMapper::findby4(std::vector<int>* args)
 {
 	statementText = (SQLWCHAR*)L" SELECT "
@@ -1802,8 +1719,7 @@ std::vector<Person> PersonMapper::findby4(std::vector<int>* args)
 	checkErr();
 
 	while (SQLFetch(hstmt) != SQL_NO_DATA)
-		res.push_back(*buf);
-		
+		res.push_back(*buf);		
 
 	retcode = SQLCloseCursor(hstmt);
 	checkErr();
@@ -1815,9 +1731,9 @@ std::vector<Person> PersonMapper::findby4(std::vector<int>* args)
 	}
 	
 	commitTransaction();
-
 	return res;
 }
+
 std::vector<Person> PersonMapper::findListFIO()
 {
 	statementText =
@@ -1827,41 +1743,40 @@ std::vector<Person> PersonMapper::findListFIO()
 		" p.firstname = ? and"
 		" p.fathername = ?";			
 
-		retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
-		checkErr();
+	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
+	checkErr();
 
-		bindNamePar();
+	bindNamePar();
 
-		retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
-		checkErr();
-		retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idAddress), 0, &(buf->idAddressLen));
-		checkErr();
-		retcode = SQLBindCol(hstmt, 3, SQL_C_WCHAR, &(buf->lastName), sizeof(SQLWCHAR) * strSZ, &(buf->lastNameLen));
-		checkErr();
-		retcode = SQLBindCol(hstmt, 4, SQL_C_WCHAR, &(buf->firstName), sizeof(SQLWCHAR) * strSZ, &(buf->nameLen));
-		checkErr();
-		retcode = SQLBindCol(hstmt, 5, SQL_C_WCHAR, &(buf->fatherName), sizeof(SQLWCHAR) * strSZ, &(buf->fatherNameLen));
-		checkErr();
+	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
+	checkErr();
+	retcode = SQLBindCol(hstmt, 2, SQL_C_SLONG, &(buf->idAddress), 0, &(buf->idAddressLen));
+	checkErr();
+	retcode = SQLBindCol(hstmt, 3, SQL_C_WCHAR, &(buf->lastName), sizeof(SQLWCHAR) * strSZ, &(buf->lastNameLen));
+	checkErr();
+	retcode = SQLBindCol(hstmt, 4, SQL_C_WCHAR, &(buf->firstName), sizeof(SQLWCHAR) * strSZ, &(buf->nameLen));
+	checkErr();
+	retcode = SQLBindCol(hstmt, 5, SQL_C_WCHAR, &(buf->fatherName), sizeof(SQLWCHAR) * strSZ, &(buf->fatherNameLen));
+	checkErr();
 
-		retcode = SQLExecute(hstmt);
-		checkErr();
+	retcode = SQLExecute(hstmt);
+	checkErr();
 
-		std::vector<Person> res;
+	std::vector<Person> res;
 		
-		while (SQLFetch(hstmt) != SQL_NO_DATA)
-			res.push_back(*buf);
+	while (SQLFetch(hstmt) != SQL_NO_DATA)
+		res.push_back(*buf);
 
+	retcode = SQLCloseCursor(hstmt);
+	checkErr();
 
-		retcode = SQLCloseCursor(hstmt);
-		checkErr();
+	for (int i = 0; i < res.size(); i++)
+	{
+		buf = &res[i];
+		getIdPhone();
+	}
 
-		for (int i = 0; i < res.size(); i++)
-		{
-			buf = &res[i];
-			getIdPhone();
-		}
+	commitTransaction();
 
-		commitTransaction();
-
-		return res;
+	return res;
 };

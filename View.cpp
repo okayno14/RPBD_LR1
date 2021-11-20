@@ -9,7 +9,6 @@ ConsoleApp::ConsoleApp()
 	this->runTimeProgram = true;
 	setlocale(LC_ALL, "Russian");
 	system("color 0F");
-
 };
 
 void ConsoleApp::Menu()
@@ -51,7 +50,6 @@ void ConsoleApp::setController(Controller* con)
 
 void ConsoleApp::run()
 {
-	
 	while (this->runTimeProgram)
 	{
 		Menu();
@@ -59,68 +57,68 @@ void ConsoleApp::run()
 		system("cls");
 		switch (MainMenu)
 		{
-
-		case 1: {
-			system("cls");
-			try {
-				this->currentPerson = findPerson();
-				drawPerson(this->currentPerson);// вывод контакта на экран
-
-				if (toRunMenuTwo())
-					runPC();
-			}
-			catch (...) {
-			
-			}
-			_getwch();
-			system("cls");
-			break;
-		}
-		case 2: {
-			system("cls");
-			try
+			case 1: 
 			{
-				this->currentPerson = addContact();
+				system("cls");
+				try {
+					this->currentPerson = findPerson();
+					drawPerson(this->currentPerson);// вывод контакта на экран
 
-				if (toRunMenuTwo())
-					runPC();
-
-			}
-			catch (...)
-			{
-				cout << "Ошибка!" << endl;
-			}
-			system("cls");
-			break;
-		}
-		case 3: {
-			system("cls");
-			findto4();
-			_getwch();
-			system("cls");
+					if (toRunMenuTwo())
+						runPC();
+				}
+				catch (...) {
 			
-			break;
-		}
-		case 4: 
-		{
-			system("cls");
-			this->findList_FIO();
-			_getwch();
-			system("cls");
-			break;
-		}
-		case 0: {
-			this->runTimeProgram = false;
-			break;
-		}
-		default:
-			cout << "Очепятка!" << endl;
-			_getwch();
-			system("cls");
-			break;
+				}
+				_getwch();
+				system("cls");
+				break;
+			}
+			case 2:
+			{
+				system("cls");
+				try
+				{
+					this->currentPerson = addContact();
+
+					if (toRunMenuTwo())
+						runPC();
+
+				}
+				catch (...)
+				{
+					cout << "Ошибка!" << endl;
+				}
+				system("cls");
+				break;
+			}
+			case 3: 
+			{
+				system("cls");
+				findto4();
+				_getwch();
+				system("cls");			
+				break;
+			}
+			case 4: 
+			{
+				system("cls");
+				this->findList_FIO();
+				_getwch();
+				system("cls");
+				break;
+			}
+			case 0: {
+				this->runTimeProgram = false;
+				break;
+			}
+			default:
+				cout << "Очепятка!" << endl;
+				_getwch();
+				system("cls");
+				break;
 		}
 	}
-
 	system("pause");
 }
 
@@ -133,69 +131,71 @@ void ConsoleApp::runPC()
 		cin >> MainMenu;
 		switch (MainMenu)
 		{
-		case 1: {
-			system("cls");
-			updateFIOcontacte();
-			_getwch();
-			system("cls");
-			break;
+			case 1: 
+			{
+				system("cls");
+				updateFIOcontacte();
+				_getwch();
+				system("cls");
+				break;
+			}
+			case 2: 
+			{
+				system("cls");
+				addAddress();
+				_getwch();
+				system("cls");			
+				break;
+			}
+			case 4: 
+			{
+				system("cls");
+				addPhoneNumber();
+				_getwch();
+				system("cls");
+				break;
+			}
+			case 5: 
+			{
+				system("cls");
+				updatePhoneNumber();
+				_getwch();
+				system("cls");
+				break;
+			}
+			case 6: 
+			{
+				system("cls");
+				deleteContact();
+				_getwch();
+				exitWhileLocal = false;
+				system("cls");
+				break;
+			}
+			case 7: 
+			{
+				drawPhoneNumbers(currentPerson->getNumbers());
+				_getwch();
+				break;
+			}
+			case 8: 
+			{
+				drawAddress(currentPerson->getAddress());
+				_getwch();
+				break;
+			}
+			case 0: {
+				system("cls");
+				exitWhileLocal = false;
+				break;
+			}
+			default:
+				system("cls");
+				cout << "Очепятка!" << endl;
+				_getwch();
+				break;
 		}
-		case 2: {
-			system("cls");
-			addAddress();
-			_getwch();
-			system("cls");
-			
-			break;
-		}
-		case 4: {
-			system("cls");
-			addPhoneNumber();
-			_getwch();
-			system("cls");
-			break;
-		}
-		case 5: {
-			system("cls");
-			updatePhoneNumber();
-			_getwch();
-			system("cls");
-			break;
-		}
-		case 6: {
-			system("cls");
-			deleteContact();
-			_getwch();
-			exitWhileLocal = false;
-			system("cls");
-			break;
-		}
-		case 7: 
-		{
-			drawPhoneNumbers(currentPerson->getNumbers());
-			_getwch();
-			break;
-		}
-		case 8: 
-		{
-			drawAddress(currentPerson->getAddress());
-			_getwch();
-			break;
-		}
-		case 0: {
-			system("cls");
-			exitWhileLocal = false;
-			break;
-		}
-		default:
-			system("cls");
-			cout << "Очепятка!" << endl;
-			_getwch();
-			break;
-		}
-
 	}
-
 }
 
 
@@ -209,7 +209,6 @@ Person* ConsoleApp::findPerson()
 	wchar_t* firstnamecontact = nullptr;
 	wchar_t* fathernamecontact = nullptr;
 	inputContact(lastnamecontact,firstnamecontact,fathernamecontact);
-
 	Person* p;
 	try 
 	{
@@ -383,37 +382,6 @@ void ConsoleApp::addAddress()
 	delete[] nameStreet;
 }
 
-
-void ConsoleApp::deletePhoneNumber()
-{
-	cout << "------------------------------------------------" << endl;
-	cout << "------- Удалить телефонный номер контакту ------" << endl;
-	cout << "------------------------------------------------" << endl;
-	cout << "Пример ввода -[ +7(999)462-12-42 ]" << endl;
-	
-	wchar_t* phoneNumber = new wchar_t[20];
-	
-	phoneNumber = get_a_number();
-
-	if (con->deletePhoneNumberContact(
-		this->currentPerson,
-		phoneNumber)) success();
-	else fail();
-
-	delete[] phoneNumber;
-}
-
-//изменить
-void ConsoleApp::deleteAddress()
-{
-	cout << "------------------------------------------------" << endl;
-	cout << "------------ Удалить адрес контакту -----------" << endl;
-	cout << "------------------------------------------------" << endl;
-
-	if (con->deleteAddress(this->currentPerson)) success();
-	else fail();
-}
-
 void ConsoleApp::updatePhoneNumber()
 {
 	cout << "------------------------------------------------" << endl;
@@ -453,20 +421,12 @@ bool ConsoleApp::toRunMenuTwo()
 	{
 		cin >> tmp;
 		if (tmp == 0)
-		{
-			return false;
-		}
+			return false;		
 		else if (tmp == 1)
-		{
 			return true;
-
-		}
-		else {
+		else
 			cout << "Очепятка" << endl;
-		}
 	}
-	
-	
 }
 
 void ConsoleApp::fail()
@@ -510,23 +470,22 @@ void ConsoleApp::drawPhoneNumber(PhoneNumber* pn)
 		wcout << pn->getNumber() << "\t";
 		switch (pn->getType())
 		{
-		case 1:
-		{
-			wcout << L"mobile" << endl;
-			break;
+			case 1:
+			{
+				wcout << L"mobile" << endl;
+				break;
+			}
+			case 2:
+			{
+				wcout << L"work" << endl;
+				break;
+			}
+			case 3:
+			{
+				wcout << L"home" << endl;
+				break;
+			}
 		}
-		case 2:
-		{
-			wcout << L"work" << endl;
-			break;
-		}
-		case 3:
-		{
-			wcout << L"home" << endl;
-			break;
-		}
-		}
-
 	}
 	else
 		wcout << L"Ошибка чтения!. Пустой телефон.\n";
@@ -625,6 +584,3 @@ void ConsoleApp::noTableConfig()
 	_getwch();
 	system("cls");
 }
-
-
-

@@ -53,8 +53,7 @@ public:
 	bool addAddress(
 		Person* p,
 		Address* ad);
-	bool deleteAddress(
-		Person* p);
+
 	Person* findPerson(
 		SQLWCHAR* lastNameContact,
 		SQLWCHAR* firstNameContact,

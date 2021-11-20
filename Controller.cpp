@@ -1,6 +1,5 @@
 #include "Controller.h"
 
-
 Controller::Controller(Model* model)
 {
 	this->model = model;
@@ -54,9 +53,7 @@ Person* Controller::addСontact(
 	Person* temp = nullptr;
 
 	if (lastNameContact == NULL || firstNameContact == NULL || fatherNameContact == NULL)
-		throw - 1;
-		
-	
+		throw - 1;	
 	
 	temp = &model->insertPerson(p);
 
@@ -81,9 +78,8 @@ bool Controller::toСhangeContact(
 	SQLWCHAR* newfatherNameContact)
 {
 	if (newlastNameContact == NULL || newfirstNameContact == NULL || newfatherNameContact == NULL || p == NULL)
-	{
 		return false;
-	}
+	
 	Person newp(newlastNameContact, newfirstNameContact, newfatherNameContact);
 	model->updatePerson(p, newp);
 	return true;
@@ -97,14 +93,6 @@ bool Controller::addPhoneNumberContact(Person* p, PhoneNumber* pn)
 	newPer.addPhoneNumber(pn);
 
 	model->updatePerson(p, newPer);
-	return true;
-}
-
-bool Controller::deletePhoneNumberContact(Person* p, SQLWCHAR* number)
-{
-	if (p == NULL || number == NULL)
-		return false;
-	//?????
 	return true;
 }
 
@@ -130,7 +118,6 @@ void Controller::findFIOALL(SQLWCHAR* lastNameContact,
 
 	for (int i = 0; i < tmp.size(); i++)
 	{
-		//Person* p = tmp[i];
 		this->consoleApp->drawPerson(tmp[i]);
 		consoleApp->drawPhoneNumbers(tmp[i]->getNumbers());
 	}
@@ -148,11 +135,6 @@ bool Controller::addAddress(Person* p, Address* ad)
 
 	model->updatePerson(p, newPer);
 	return true;
-}
-
-bool Controller::deleteAddress(Person* p)
-{
-	return false;////????????????
 }
 
 //Если по критериям поиска находим 1 совпадение, то возврат адреса объекта,
@@ -183,30 +165,26 @@ Person* Controller::findPerson(
 	if(count == 0 || count > 1)
 	{
 		tmp = &model->findPerson(p, false, count);
-		if (count == 0) {
+		if (count == 0) 
 			throw - 1;
-		}
 
 		if (count == 1)
-		{
 			return tmp;
-		}
+
 		if (count > 1) 
 		{
-
 			wchar_t* number;
 			number = this->consoleApp->get_a_number();
 			int type = this->consoleApp->get_a_type_number();
 			PhoneNumber ph(number, type);
 			tmp = &model->findPerson(p, ph, count);
 
-			if (count == 0) {
+			if (count == 0)
 				throw - 1;
-			}
+
 			if (count == 1) 
-			{
 				return tmp;
-			}
+
 			if (count > 1) {
 				wchar_t* address;
 				int numHome;
@@ -217,17 +195,13 @@ Person* Controller::findPerson(
 				Address ad(address,numHome,numApartment);
 				tmp = &model->findPerson(p, ph, ad, count);
 				if (count == 0) 
-				{
 					throw - 1;
-				}
+				
 				if (count == 1)
-				{
 					return tmp;
-				}
+
 				if (count > 1)
-				{
 					throw - 2;
-				}
 			}
 		}
 	}

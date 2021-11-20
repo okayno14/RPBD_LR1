@@ -2,10 +2,10 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
+
 #include "Model.h"
 #include "Controller.h"
 using namespace std;
-
 
 class Controller;
 
@@ -37,7 +37,6 @@ public:
 	void updateFIOcontacte();
 	void addAddress();
 	void addPhoneNumber();
-	void deletePhoneNumber();
 	void deleteAddress();
 	void updatePhoneNumber();
 
@@ -63,5 +62,4 @@ public:
 	int get_a_apartment();
 	int get_a_numberhome();
 	void inputContact(wchar_t*& lastnamecontact, wchar_t*& firstnamecontact, wchar_t*& fathernamecontact);
-	
 };

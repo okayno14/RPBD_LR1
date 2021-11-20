@@ -83,7 +83,6 @@ void Model::tryDB()
 	}
 }
 
-
 Person& Model::insertPerson(Person p)
 {
 	personTable.push_back(p);
@@ -91,18 +90,14 @@ Person& Model::insertPerson(Person p)
 	sync(&res);
 	return res;
 }
-void Model::updatePerson(Person* pOld, Address* add)
-{
-}
-void Model::updatePerson(Person* pOld, PhoneNumber* pn)
-{
-}
+
 void Model::updatePerson(Person* pOld, Person* fio)
 {
 	wcscpy_s(pOld->lastName, fio->lastName);
 	wcscpy_s(pOld->firstName, fio->firstName);
 	wcscpy_s(pOld->fatherName, fio->fatherName);
 }
+
 int Model::getState(Person* p)
 {
 	bool bd = p->id > -1;
@@ -162,11 +157,10 @@ void Model::upload(Person* p)
 	if(p->address!=nullptr) 
 		sync(p->address);
 	//синхронизация телефонов
-	for (
+	for(
 		std::vector<PhoneNumber*>::iterator i = p->phoneNumbers.begin();
 		i != p->phoneNumbers.end();
-		++i
-		)
+		++i)
 		sync(*i);
 };
 
@@ -220,7 +214,6 @@ PhoneNumber& Model::findPhone(PhoneNumber pn, int& ctr)
 		ctr = sd;
 	else
 		ctr = bd;
-	//ctr = bd;
 	return *res;	
 }
 
@@ -579,12 +572,8 @@ void Model::deletePerson(Person* p)
 						deletePhone(pn[i]);
 				}
 			}
-		}
-			
-			
+		}			
 	}
-	
-
 }
 
 //Метод делает атомарную операцию поиска 1 контакта.
@@ -638,9 +627,7 @@ Person& Model::findPerson(Person p, bool isEmpty, int& ctr)
 			personTable.back().isSynced = 1;
 			res = &personTable.back();
 		}
-	}	
-	
-	//ctr = bd;
+	}
 	if (sd == bd)
 		ctr = bd;
 	else if (bd == 0)
@@ -693,9 +680,6 @@ Person& Model::findPerson(Person p, PhoneNumber pn, int& ctr)
 			res = &personTable.back();
 		}
 	}
-	
-	
-	//ctr = bd;
 	if (sd == bd)
 		ctr = bd;
 	else if (bd == 0)
@@ -735,7 +719,6 @@ Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
 	{
 		//Поиск совпадений в базе
 		pMap.setBuf(&p);
-		//bd = pMap.findObjj();
 		bd = pMap.findObj(&pn, &add);
 
 		//Если найденный элемент есть только в БД
@@ -750,9 +733,6 @@ Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
 			res = &personTable.back();
 		}
 	}
-
-	
-	//ctr = bd;
 	if (sd == bd)
 		ctr = bd;
 	else if (bd == 0)
@@ -766,9 +746,7 @@ std::vector<Person*> Model::findBy4(std::vector<int> nums)
 {
 	//вызов синхронизации
 	syncAll();
-
 	std::vector<Person*> res;
-
 	//поиск в сд
 	if (dbc == nullptr) 
 	{
@@ -837,9 +815,7 @@ std::vector<Person*> Model::findBy4(std::vector<int> nums)
 				personTable.back().isSynced = 1;
 				res.push_back(&personTable.back());
 			}
-
 		}
-
 	}
 	return res;
 }
@@ -866,8 +842,6 @@ std::vector<Person*> Model::find_List_FIO(Person p)
 	else
 	{
 		std::vector<Person> bd;
-		
-		
 		pMap.setBuf(&p);
 		bd = pMap.findListFIO();
 
@@ -913,9 +887,7 @@ std::vector<Person*> Model::find_List_FIO(Person p)
 				personTable.back().isSynced = 1;
 				res.push_back(&personTable.back());
 			}
-
 		}
-
 	}
 	return res;
 }
