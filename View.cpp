@@ -509,22 +509,45 @@ bool ConsoleApp::drawPhoneNumbers(std::vector<PhoneNumber*> args)
 	}
 }
 
+bool ConsoleApp::checkFormat(const wchar_t* number)
+{	
+	if (
+		number[1] == L'(' &&
+		number[5] == L')' &&
+		number[9] == L'-' &&
+		number[12] == L'-' &&
+		number[15] == L'\0')
+		return true;
+	
+	return false;
+}
+
 /*ввод номера телефона*/
 wchar_t* ConsoleApp::get_a_number()
 {
-	wchar_t* numder = new wchar_t[20];
+	wchar_t* number = new wchar_t[20];
 	cout << "¬ведите номер телефона" << endl
 		<< "X(XXX)XXX-XX-XX" << endl;
- 	wcin >> numder;
-	return numder;
+	wcin.width(20);
+	wcin >> number;
+
+	while (!checkFormat(number))
+	{
+		cout << "¬ведите заново:" << endl;
+		wcin.width(20);
+		wcin >> number;
+	}
+
+	return number;
 }
 
 wchar_t* ConsoleApp::get_a_addressName()
 {
-	wchar_t* numder = new wchar_t[20];
-	cout << "¬ведите название улицы проживаи€" << endl;
-	wcin >> numder;
-	return numder;
+	wchar_t* street = new wchar_t[20];
+	cout << "¬ведите название улицы проживани€" << endl;
+	wcin.width(20);
+	wcin >> street;
+	return street;
 }
 
 int ConsoleApp::get_a_type_number()
@@ -564,10 +587,13 @@ void ConsoleApp::inputContact(wchar_t* & lastnamecontact, wchar_t*& firstnamecon
 	firstnamecontact = new wchar_t[strSZ];
 	fathernamecontact = new wchar_t[strSZ];
 	cout << "¬ведите фамилию контакта : ";
+	wcin.width(20);
 	wcin >> lastnamecontact;
 	cout << "¬ведите им€ контакта : ";
+	wcin.width(20);
 	wcin >> firstnamecontact;
 	cout << "¬ведите отчество контакта : ";
+	wcin.width(20);
 	wcin >> fathernamecontact;
 }
 

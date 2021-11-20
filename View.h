@@ -54,6 +54,7 @@ public:
 	void drawAddress(Address* add);
 	void drawPhoneNumber(PhoneNumber* pn);
 	bool drawPhoneNumbers(std::vector<PhoneNumber*> args);
+	bool checkFormat(const wchar_t* number);
 
 	/*методы для инпута данных*/
 	wchar_t* get_a_number();
