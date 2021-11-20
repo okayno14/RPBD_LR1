@@ -18,19 +18,17 @@ private:
 	Person* currentPerson;
 public:
 	ConsoleApp();
-
-	/*доп методы для отображения меню программы*/
-	void Menu();
-	void MenuPC();
-
-
 	void setController(Controller* con);
 	
-	/*остовные раны для управления приложением*/
+	//Отрисовка меню
+	void Menu();
+	void MenuPC();	
+	
+	//Обработчики меню
 	void run();
 	void runPC();
 
-	/*солянка для вызова внутри switch*/
+	//Методы, используемые обработчиками
 	Person* findPerson();
 	Person* addContact();
 	void deleteContact();
@@ -43,12 +41,13 @@ public:
 	void deleteAddress();
 	void updatePhoneNumber();
 
-	//вывод инфы о состоянии модели
+	//Сигналы для юзера
 	void offlineStatus();
 	void noTableConfig();
-
 	void success();	
 	void fail();
+	void noRes();
+	void clones();
 	
 	/*вспомогательные методы*/
 	bool toRunMenuTwo();

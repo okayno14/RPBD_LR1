@@ -88,15 +88,7 @@ Person& Model::insertPerson(Person p)
 {
 	personTable.push_back(p);
 	Person& res = personTable.back();
-	//std:: cout << p.id << std::endl;
-	//foo(&res);
-	
 	sync(&res);
-	//std::cout << p.id << std::endl;
-	//std::list<Person>::reverse_iterator i = personTable.rbegin();
-	//return (*i);
-	
-	//return personTable.back();
 	return res;
 }
 void Model::updatePerson(Person* pOld, Address* add)

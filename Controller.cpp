@@ -117,6 +117,8 @@ void Controller::findContactBy4NumberPhone(std::vector<int> number4)
 		this->consoleApp->drawPerson(p);
 		consoleApp->drawPhoneNumbers(p->getNumbers());
 	}
+	if (tmp.size() == 0)
+		consoleApp->noRes();
 }
 
 void Controller::findFIOALL(SQLWCHAR* lastNameContact,
@@ -132,6 +134,8 @@ void Controller::findFIOALL(SQLWCHAR* lastNameContact,
 		this->consoleApp->drawPerson(tmp[i]);
 		consoleApp->drawPhoneNumbers(tmp[i]->getNumbers());
 	}
+	if (tmp.size() == 0)
+		consoleApp->noRes();
 }
 
 bool Controller::addAddress(Person* p, Address* ad)
@@ -151,6 +155,9 @@ bool Controller::deleteAddress(Person* p)
 	return false;////????????????
 }
 
+//Если по критериям поиска находим 1 совпадение, то возврат адреса объекта,
+//Если ничего не найдено, то выбрасывается -1
+//Если после всех фильтров найдено много записей, то выбрасывается -2
 Person* Controller::findPerson(
 	SQLWCHAR* lastNameContact,
 	SQLWCHAR* firstNameContact, 
@@ -219,7 +226,6 @@ Person* Controller::findPerson(
 				}
 				if (count > 1)
 				{
-					cout << "Атака клонов" << endl;
 					throw - 2;
 				}
 			}

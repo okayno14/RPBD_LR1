@@ -70,7 +70,7 @@ void ConsoleApp::run()
 					runPC();
 			}
 			catch (...) {
-				cout << "Контактов не обнаружено" << endl;
+			
 			}
 			_getwch();
 			system("cls");
@@ -90,8 +90,6 @@ void ConsoleApp::run()
 			{
 				cout << "Ошибка!" << endl;
 			}
-			
-			//_getwch();
 			system("cls");
 			break;
 		}
@@ -116,7 +114,6 @@ void ConsoleApp::run()
 			break;
 		}
 		default:
-			//Sleep(2000);
 			cout << "Очепятка!" << endl;
 			_getwch();
 			system("cls");
@@ -218,12 +215,18 @@ Person* ConsoleApp::findPerson()
 	{
 		p = con->findPerson(lastnamecontact, firstnamecontact, fathernamecontact);
 	}
-	catch (...)
+	catch (int errCode)
 	{
 		p = nullptr;
 		delete[] lastnamecontact;
 		delete[] firstnamecontact;
 		delete[] fathernamecontact;
+
+		if (errCode == -1)
+			noRes();
+		if (errCode == -2)
+			clones();
+
 		throw - 1;
 	}
 	delete[] lastnamecontact;
@@ -238,16 +241,11 @@ Person* ConsoleApp::addContact()
 	cout << "------------------------------------------------" << endl;
 	cout << "---------------| Добавление контакта |----------" << endl;
 	cout << "------------------------------------------------" << endl;
-	//cout << ">>";
-	wchar_t* lastnamecontact = new wchar_t[20];
-	wchar_t* firstnamecontact = new wchar_t[20];
-	wchar_t* fathernamecontact = new wchar_t[20];
-	cout << "Введите фамилию контакта : ";
-	wcin >> lastnamecontact;
-	cout << "Введите имя контакта : ";
-	wcin >> firstnamecontact;
-	cout << "Введите отчество контакта : ";
-	wcin >> fathernamecontact;
+	
+	wchar_t* lastnamecontact = nullptr;
+	wchar_t* firstnamecontact = nullptr;
+	wchar_t* fathernamecontact = nullptr;
+	inputContact(lastnamecontact, firstnamecontact, fathernamecontact);
 	try
 	{
 		p = con->addСontact(lastnamecontact, firstnamecontact, fathernamecontact);
@@ -273,8 +271,7 @@ void ConsoleApp::deleteContact()
 	if (con->deleteContact(this->currentPerson))
 		success();
 	else
-		fail();
-	
+		fail();	
 }
 
 void ConsoleApp::addPhoneNumber()
@@ -299,7 +296,6 @@ void ConsoleApp::addPhoneNumber()
 	delete pn;
 }
 
-/*redactori*/
 /*числа на вход поступают в виде vector int*/
 void ConsoleApp::findto4()
 {
@@ -309,7 +305,6 @@ void ConsoleApp::findto4()
 	cout << "------------------------------------------------" << endl;
 	cout << "Введите 4-е символа телефонного номера контакта : ";
 	std::vector<int> vec;
-	//string ch;
 	int chetirechisl;
 	while (true)
 	{
@@ -330,57 +325,39 @@ void ConsoleApp::findto4()
 
 void ConsoleApp::findList_FIO()
 {
-	wchar_t* newlastnamecontact = new wchar_t[20];
-	wchar_t* newfirstnamecontact = new wchar_t[20];
-	wchar_t* newfathernamecontact = new wchar_t[20];
+	wchar_t* lastnamecontact = nullptr;
+	wchar_t* firstnamecontact = nullptr;
+	wchar_t* fathernamecontact = nullptr;
+	inputContact(lastnamecontact, firstnamecontact, fathernamecontact);
 
-	cout << "Введите ФИО контакта" << endl;
-	cout << "Введите фамилию контакта : ";
-	wcin >> newlastnamecontact;
-	cout << "Введите имя контакта : ";
-	wcin >> newfirstnamecontact;
-	cout << "Введите отчество контакта : ";
-	wcin >> newfathernamecontact;
-
-	//Person p(newlastnamecontact, newfirstnamecontact, newfathernamecontact);
-
-	con->findFIOALL(newlastnamecontact, newfirstnamecontact, newfathernamecontact);
+	con->findFIOALL(lastnamecontact, firstnamecontact, fathernamecontact);
 	
-	delete[] newlastnamecontact;
-	delete[] newfirstnamecontact;
-	delete[] newfathernamecontact;
+	delete[] lastnamecontact;
+	delete[] firstnamecontact;
+	delete[] fathernamecontact;
 }
 
-//Сделать для ввода ФИО спец. метод, который возвращает указатели на массивы с именами
 void ConsoleApp::updateFIOcontacte()
 {
 	cout << "------------------------------------------------" << endl;
 	cout << "------------- Изменить ФИО контакту ------------" << endl;
 	cout << "------------------------------------------------" << endl;
 	
-	wchar_t* newlastnamecontact = new wchar_t[20];
-	wchar_t* newfirstnamecontact = new wchar_t[20];
-	wchar_t* newfathernamecontact = new wchar_t[20];
-	
-	cout << "Введите новое ФИО контакта" << endl;
-	cout << "Введите фамилию контакта : ";
-	wcin >> newlastnamecontact;
-	cout << "Введите имя контакта : ";
-	wcin >> newfirstnamecontact;
-	cout << "Введите отчество контакта : ";
-	wcin >> newfathernamecontact;
+	wchar_t* lastnamecontact = nullptr;
+	wchar_t* firstnamecontact = nullptr;
+	wchar_t* fathernamecontact = nullptr;
+	inputContact(lastnamecontact, firstnamecontact, fathernamecontact);
 
 	if (con->toСhangeContact(
 		this->currentPerson,
-		newlastnamecontact,
-		newfirstnamecontact,
-		newfathernamecontact)) success();
+		lastnamecontact,
+		firstnamecontact,
+		fathernamecontact)) success();
 	else fail();
-
-	
-	delete[] newlastnamecontact;
-	delete[] newfirstnamecontact;
-	delete[] newfathernamecontact;
+		
+	delete[] lastnamecontact;
+	delete[] firstnamecontact;
+	delete[] fathernamecontact;
 }
 
 void ConsoleApp::addAddress()
@@ -423,7 +400,7 @@ void ConsoleApp::deletePhoneNumber()
 		phoneNumber)) success();
 	else fail();
 
-	delete phoneNumber;
+	delete[] phoneNumber;
 }
 
 //изменить
@@ -495,6 +472,16 @@ bool ConsoleApp::toRunMenuTwo()
 void ConsoleApp::fail()
 {
 	cout << "Fail" << endl;
+}
+
+void ConsoleApp::noRes()
+{
+	wcout << L"Совпадений не найдено\n";
+}
+
+void ConsoleApp::clones()
+{
+	cout << "Атака клонов" << endl;
 }
 
 void ConsoleApp::drawPerson(Person* pt)
