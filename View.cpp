@@ -618,3 +618,10 @@ void ConsoleApp::noTableConfig()
 	_getwch();
 	system("cls");
 }
+
+void ConsoleApp::noConnectionConfig()
+{
+	cout << "Нет конфигурационного файла подключения к БД\n";
+	_getwch();
+	system("cls");
+}

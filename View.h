@@ -43,6 +43,7 @@ public:
 	//Сигналы для юзера
 	void offlineStatus();
 	void noTableConfig();
+	void noConnectionConfig();
 	void success();	
 	void fail();
 	void noRes();

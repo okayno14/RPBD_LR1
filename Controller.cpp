@@ -32,6 +32,7 @@ Controller::Controller(ConsoleApp* view)
 			case -3: 
 			{
 				//нет конфига подключения к бд
+				consoleApp->noConnectionConfig();
 				break;
 			}
 		}
