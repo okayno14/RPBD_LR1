@@ -528,8 +528,7 @@ void Model::updatePerson(Person* pOld, Person pNew)
 	{
 		adMap.setBuf(bufA);
 		if (findReferences(bufA) == 0)
-			
-			Address(bufA);
+			deleteAddress(bufA);
 	}
 	for (int i = 0; i < bufP.size(); i++) 
 	{
