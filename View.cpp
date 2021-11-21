@@ -9,7 +9,6 @@ ConsoleApp::ConsoleApp()
 	this->runTimeProgram = true;
 	setlocale(LC_ALL, "Russian");
 	system("color 0F");
-
 };
 
 void ConsoleApp::Menu()
@@ -51,7 +50,6 @@ void ConsoleApp::setController(Controller* con)
 
 void ConsoleApp::run()
 {
-	
 	while (this->runTimeProgram)
 	{
 		Menu();
@@ -59,71 +57,68 @@ void ConsoleApp::run()
 		system("cls");
 		switch (MainMenu)
 		{
-
-		case 1: {
-			system("cls");
-			try {
-				this->currentPerson = findPerson();
-				drawPerson(this->currentPerson);// вывод контакта на экран
-
-				if (toRunMenuTwo())
-					runPC();
-			}
-			catch (...) {
-				cout << "Контактов не обнаружено" << endl;
-			}
-			_getwch();
-			system("cls");
-			break;
-		}
-		case 2: {
-			system("cls");
-			try
+			case 1: 
 			{
-				this->currentPerson = addContact();
+				system("cls");
+				try {
+					this->currentPerson = findPerson();
+					drawPerson(this->currentPerson);// вывод контакта на экран
 
-				if (toRunMenuTwo())
-					runPC();
-
+					if (toRunMenuTwo())
+						runPC();
+				}
+				catch (...) {
+			
+				}
+				_getwch();
+				system("cls");
+				break;
 			}
-			catch (...)
+			case 2:
 			{
-				cout << "Ошибка!" << endl;
+				system("cls");
+				try
+				{
+					this->currentPerson = addContact();
+
+					if (toRunMenuTwo())
+						runPC();
+
+				}
+				catch (...)
+				{
+					cout << "Ошибка!" << endl;
+				}
+				system("cls");
+				break;
 			}
-			
-			//_getwch();
-			system("cls");
-			break;
-		}
-		case 3: {
-			system("cls");
-			findto4();
-			_getwch();
-			system("cls");
-			
-			break;
-		}
-		case 4: 
-		{
-			system("cls");
-			this->findList_FIO();
-			_getwch();
-			system("cls");
-			break;
-		}
-		case 0: {
-			this->runTimeProgram = false;
-			break;
-		}
-		default:
-			//Sleep(2000);
-			cout << "Очепятка!" << endl;
-			_getwch();
-			system("cls");
-			break;
+			case 3: 
+			{
+				system("cls");
+				findto4();
+				_getwch();
+				system("cls");			
+				break;
+			}
+			case 4: 
+			{
+				system("cls");
+				this->findList_FIO();
+				_getwch();
+				system("cls");
+				break;
+			}
+			case 0: {
+				this->runTimeProgram = false;
+				break;
+			}
+			default:
+				cout << "Очепятка!" << endl;
+				_getwch();
+				system("cls");
+				break;
 		}
 	}
-
 	system("pause");
 }
 
@@ -136,69 +131,71 @@ void ConsoleApp::runPC()
 		cin >> MainMenu;
 		switch (MainMenu)
 		{
-		case 1: {
-			system("cls");
-			updateFIOcontacte();
-			_getwch();
-			system("cls");
-			break;
+			case 1: 
+			{
+				system("cls");
+				updateFIOcontacte();
+				_getwch();
+				system("cls");
+				break;
+			}
+			case 2: 
+			{
+				system("cls");
+				addAddress();
+				_getwch();
+				system("cls");			
+				break;
+			}
+			case 4: 
+			{
+				system("cls");
+				addPhoneNumber();
+				_getwch();
+				system("cls");
+				break;
+			}
+			case 5: 
+			{
+				system("cls");
+				updatePhoneNumber();
+				_getwch();
+				system("cls");
+				break;
+			}
+			case 6: 
+			{
+				system("cls");
+				deleteContact();
+				_getwch();
+				exitWhileLocal = false;
+				system("cls");
+				break;
+			}
+			case 7: 
+			{
+				drawPhoneNumbers(currentPerson->getNumbers());
+				_getwch();
+				break;
+			}
+			case 8: 
+			{
+				drawAddress(currentPerson->getAddress());
+				_getwch();
+				break;
+			}
+			case 0: {
+				system("cls");
+				exitWhileLocal = false;
+				break;
+			}
+			default:
+				system("cls");
+				cout << "Очепятка!" << endl;
+				_getwch();
+				break;
 		}
-		case 2: {
-			system("cls");
-			addAddress();
-			_getwch();
-			system("cls");
-			
-			break;
-		}
-		case 4: {
-			system("cls");
-			addPhoneNumber();
-			_getwch();
-			system("cls");
-			break;
-		}
-		case 5: {
-			system("cls");
-			updatePhoneNumber();
-			_getwch();
-			system("cls");
-			break;
-		}
-		case 6: {
-			system("cls");
-			deleteContact();
-			_getwch();
-			exitWhileLocal = false;
-			system("cls");
-			break;
-		}
-		case 7: 
-		{
-			drawPhoneNumbers(currentPerson->getNumbers());
-			_getwch();
-			break;
-		}
-		case 8: 
-		{
-			drawAddress(currentPerson->getAddress());
-			_getwch();
-			break;
-		}
-		case 0: {
-			system("cls");
-			exitWhileLocal = false;
-			break;
-		}
-		default:
-			system("cls");
-			cout << "Очепятка!" << endl;
-			_getwch();
-			break;
-		}
-
 	}
-
 }
 
 
@@ -207,25 +204,30 @@ Person* ConsoleApp::findPerson()
 	cout << "------------------------------------------------" << endl
 		<< "----------------| Поиск контакта |--------------" << endl
 		<< "------------------------------------------------" << endl;
-	wchar_t* lastnamecontact = new wchar_t[20];
-	wchar_t* firstnamecontact = new wchar_t[20];
-	wchar_t* fathernamecontact = new wchar_t[20];
-	cout << "Введите фамилию контакта : ";
-	wcin >> lastnamecontact;
-	cout << "Введите имя контакта : ";
-	wcin >> firstnamecontact;
-	cout << "Введите отчество контакта : ";
-	wcin >> fathernamecontact;
+
+	wchar_t* lastnamecontact = nullptr;
+	wchar_t* firstnamecontact = nullptr;
+	wchar_t* fathernamecontact = nullptr;
+	inputContact(lastnamecontact,firstnamecontact,fathernamecontact);
 	Person* p;
-	try {
+	try 
+	{
 		p = con->findPerson(lastnamecontact, firstnamecontact, fathernamecontact);
 	}
-	catch (...)
+	catch (int errCode)
 	{
+		p = nullptr;
+		delete[] lastnamecontact;
+		delete[] firstnamecontact;
+		delete[] fathernamecontact;
+
+		if (errCode == -1)
+			noRes();
+		if (errCode == -2)
+			clones();
+
 		throw - 1;
 	}
-	
-
 	delete[] lastnamecontact;
 	delete[] firstnamecontact;
 	delete[] fathernamecontact;
@@ -238,16 +240,11 @@ Person* ConsoleApp::addContact()
 	cout << "------------------------------------------------" << endl;
 	cout << "---------------| Добавление контакта |----------" << endl;
 	cout << "------------------------------------------------" << endl;
-	//cout << ">>";
-	wchar_t* lastnamecontact = new wchar_t[20];
-	wchar_t* firstnamecontact = new wchar_t[20];
-	wchar_t* fathernamecontact = new wchar_t[20];
-	cout << "Введите фамилию контакта : ";
-	wcin >> lastnamecontact;
-	cout << "Введите имя контакта : ";
-	wcin >> firstnamecontact;
-	cout << "Введите отчество контакта : ";
-	wcin >> fathernamecontact;
+	
+	wchar_t* lastnamecontact = nullptr;
+	wchar_t* firstnamecontact = nullptr;
+	wchar_t* fathernamecontact = nullptr;
+	inputContact(lastnamecontact, firstnamecontact, fathernamecontact);
 	try
 	{
 		p = con->addСontact(lastnamecontact, firstnamecontact, fathernamecontact);
@@ -273,8 +270,7 @@ void ConsoleApp::deleteContact()
 	if (con->deleteContact(this->currentPerson))
 		success();
 	else
-		fail();
-	
+		fail();	
 }
 
 void ConsoleApp::addPhoneNumber()
@@ -299,7 +295,6 @@ void ConsoleApp::addPhoneNumber()
 	delete pn;
 }
 
-/*redactori*/
 /*числа на вход поступают в виде vector int*/
 void ConsoleApp::findto4()
 {
@@ -309,7 +304,6 @@ void ConsoleApp::findto4()
 	cout << "------------------------------------------------" << endl;
 	cout << "Введите 4-е символа телефонного номера контакта : ";
 	std::vector<int> vec;
-	//string ch;
 	int chetirechisl;
 	while (true)
 	{
@@ -324,30 +318,22 @@ void ConsoleApp::findto4()
 	vec.push_back((chetirechisl % 1000) / 100);
 	vec.push_back((chetirechisl % 100) / 10);
 	vec.push_back(chetirechisl % 10);
+	
 	con->findContactBy4NumberPhone(vec);
 }
 
 void ConsoleApp::findList_FIO()
 {
-	wchar_t* newlastnamecontact = new wchar_t[20];
-	wchar_t* newfirstnamecontact = new wchar_t[20];
-	wchar_t* newfathernamecontact = new wchar_t[20];
+	wchar_t* lastnamecontact = nullptr;
+	wchar_t* firstnamecontact = nullptr;
+	wchar_t* fathernamecontact = nullptr;
+	inputContact(lastnamecontact, firstnamecontact, fathernamecontact);
 
-	cout << "Введите ФИО контакта" << endl;
-	cout << "Введите фамилию контакта : ";
-	wcin >> newlastnamecontact;
-	cout << "Введите имя контакта : ";
-	wcin >> newfirstnamecontact;
-	cout << "Введите отчество контакта : ";
-	wcin >> newfathernamecontact;
-
-	Person p(newlastnamecontact, newfirstnamecontact, newfathernamecontact);
-
-	con->findFIOALL(p);
+	con->findFIOALL(lastnamecontact, firstnamecontact, fathernamecontact);
 	
-	delete[] newlastnamecontact;
-	delete[] newfirstnamecontact;
-	delete[] newfathernamecontact;
+	delete[] lastnamecontact;
+	delete[] firstnamecontact;
+	delete[] fathernamecontact;
 }
 
 void ConsoleApp::updateFIOcontacte()
@@ -356,29 +342,21 @@ void ConsoleApp::updateFIOcontacte()
 	cout << "------------- Изменить ФИО контакту ------------" << endl;
 	cout << "------------------------------------------------" << endl;
 	
-	wchar_t* newlastnamecontact = new wchar_t[20];
-	wchar_t* newfirstnamecontact = new wchar_t[20];
-	wchar_t* newfathernamecontact = new wchar_t[20];
-	
-	cout << "Введите новое ФИО контакта" << endl;
-	cout << "Введите имя контакта : ";
-	wcin >> newlastnamecontact;
-	cout << "Введите фамилию контакта : ";
-	wcin >> newfirstnamecontact;
-	cout << "Введите отчество контакта : ";
-	wcin >> newfathernamecontact;
+	wchar_t* lastnamecontact = nullptr;
+	wchar_t* firstnamecontact = nullptr;
+	wchar_t* fathernamecontact = nullptr;
+	inputContact(lastnamecontact, firstnamecontact, fathernamecontact);
 
 	if (con->toСhangeContact(
 		this->currentPerson,
-		newlastnamecontact,
-		newfirstnamecontact,
-		newfathernamecontact)) success();
+		lastnamecontact,
+		firstnamecontact,
+		fathernamecontact)) success();
 	else fail();
-
-	
-	delete[] newlastnamecontact;
-	delete[] newfirstnamecontact;
-	delete[] newfathernamecontact;
+		
+	delete[] lastnamecontact;
+	delete[] firstnamecontact;
+	delete[] fathernamecontact;
 }
 
 void ConsoleApp::addAddress()
@@ -402,37 +380,6 @@ void ConsoleApp::addAddress()
 	else fail();
 
 	delete[] nameStreet;
-}
-
-
-void ConsoleApp::deletePhoneNumber()
-{
-	cout << "------------------------------------------------" << endl;
-	cout << "------- Удалить телефонный номер контакту ------" << endl;
-	cout << "------------------------------------------------" << endl;
-	cout << "Пример ввода -[ +7(999)462-12-42 ]" << endl;
-	
-	wchar_t* phoneNumber = new wchar_t[20];
-	
-	phoneNumber = get_a_number();
-
-	if (con->deletePhoneNumberContact(
-		this->currentPerson,
-		phoneNumber)) success();
-	else fail();
-
-	delete phoneNumber;
-}
-
-//изменить
-void ConsoleApp::deleteAddress()
-{
-	cout << "------------------------------------------------" << endl;
-	cout << "------------ Удалить адрес контакту -----------" << endl;
-	cout << "------------------------------------------------" << endl;
-
-	if (con->deleteAddress(this->currentPerson)) success();
-	else fail();
 }
 
 void ConsoleApp::updatePhoneNumber()
@@ -474,25 +421,27 @@ bool ConsoleApp::toRunMenuTwo()
 	{
 		cin >> tmp;
 		if (tmp == 0)
-		{
-			return false;
-		}
+			return false;		
 		else if (tmp == 1)
-		{
 			return true;
-
-		}
-		else {
+		else
 			cout << "Очепятка" << endl;
-		}
 	}
-	
-	
 }
 
 void ConsoleApp::fail()
 {
 	cout << "Fail" << endl;
+}
+
+void ConsoleApp::noRes()
+{
+	wcout << L"Совпадений не найдено\n";
+}
+
+void ConsoleApp::clones()
+{
+	cout << "Атака клонов" << endl;
 }
 
 void ConsoleApp::drawPerson(Person* pt)
@@ -521,23 +470,22 @@ void ConsoleApp::drawPhoneNumber(PhoneNumber* pn)
 		wcout << pn->getNumber() << "\t";
 		switch (pn->getType())
 		{
-		case 1:
-		{
-			wcout << L"mobile" << endl;
-			break;
+			case 1:
+			{
+				wcout << L"mobile" << endl;
+				break;
+			}
+			case 2:
+			{
+				wcout << L"work" << endl;
+				break;
+			}
+			case 3:
+			{
+				wcout << L"home" << endl;
+				break;
+			}
 		}
-		case 2:
-		{
-			wcout << L"work" << endl;
-			break;
-		}
-		case 3:
-		{
-			wcout << L"home" << endl;
-			break;
-		}
-		}
-
 	}
 	else
 		wcout << L"Ошибка чтения!. Пустой телефон.\n";
@@ -561,22 +509,48 @@ bool ConsoleApp::drawPhoneNumbers(std::vector<PhoneNumber*> args)
 	}
 }
 
+bool ConsoleApp::checkFormat(const wchar_t* number)
+{	
+	if (
+		number[1] == L'(' &&
+		number[5] == L')' &&
+		number[9] == L'-' &&
+		number[12] == L'-' &&
+		number[15] == L'\0')
+		return true;
+	
+	return false;
+}
+
 /*ввод номера телефона*/
 wchar_t* ConsoleApp::get_a_number()
 {
-	wchar_t* numder = new wchar_t[20];
+	wchar_t* number = new wchar_t[20];
 	cout << "Введите номер телефона" << endl
 		<< "X(XXX)XXX-XX-XX" << endl;
- 	wcin >> numder;
-	return numder;
+	wcin.width(20);
+	wcin >> number;
+	wcin.ignore(MAXINT, '\n');
+
+	while (!checkFormat(number))
+	{
+		cout << "Введите заново:" << endl;
+		wcin.width(20);
+		wcin >> number;
+		wcin.ignore(MAXINT, '\n');
+	}
+
+	return number;
 }
 
 wchar_t* ConsoleApp::get_a_addressName()
 {
-	wchar_t* numder = new wchar_t[20];
-	cout << "Введите название улицы проживаия" << endl;
-	wcin >> numder;
-	return numder;
+	wchar_t* street = new wchar_t[20];
+	cout << "Введите название улицы проживания" << endl;
+	wcin.width(20);
+	wcin >> street;
+	wcin.ignore(MAXINT,'\n');
+	return street;
 }
 
 int ConsoleApp::get_a_type_number()
@@ -610,6 +584,27 @@ int ConsoleApp::get_a_numberhome()
 	return num;
 }
 
+void ConsoleApp::inputContact(wchar_t* & lastnamecontact, wchar_t*& firstnamecontact, wchar_t*& fathernamecontact)
+{
+	lastnamecontact = new wchar_t[strSZ];
+	firstnamecontact = new wchar_t[strSZ];
+	fathernamecontact = new wchar_t[strSZ];
+	cout << "Введите фамилию контакта : ";
+	wcin.width(20);
+	wcin >> lastnamecontact;
+	wcin.ignore(MAXINT, '\n');
+	
+	cout << "Введите имя контакта : ";
+	wcin.width(20);
+	wcin >> firstnamecontact;
+	wcin.ignore(MAXINT, '\n');
+	
+	cout << "Введите отчество контакта : ";
+	wcin.width(20);
+	wcin >> fathernamecontact;
+	wcin.ignore(MAXINT, '\n');
+}
+
 void ConsoleApp::offlineStatus()
 {
 	wcout << L"Ошибка подключения к бд. Приложение работает в оффлайн режиме.\n";
@@ -624,5 +619,9 @@ void ConsoleApp::noTableConfig()
 	system("cls");
 }
 
-
-
+void ConsoleApp::noConnectionConfig()
+{
+	cout << "Нет конфигурационного файла подключения к БД\n";
+	_getwch();
+	system("cls");
+}

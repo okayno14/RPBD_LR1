@@ -14,33 +14,32 @@ class DataBaseConnection
 {
 	friend class Model;
 protected:
-	SQLHENV handleEnv;
-	SQLRETURN retcode;
 	static SQLWCHAR dsn[CONN_DATA_SZ];
 	static SQLWCHAR user[CONN_DATA_SZ];
 	static SQLWCHAR password[CONN_DATA_SZ];
-	//Сделать доступ через get и заприватить
-	SQLHDBC hDBC;
-
 	static DataBaseConnection* database_;
 
-	DataBaseConnection();
-
-	void checkErr();
-
+	SQLHENV handleEnv;
+	SQLRETURN retcode;
+	SQLHDBC hDBC;
 	SQLWCHAR info[SQL_MAX_MESSAGE_LENGTH] = L"default";
 	SQLSMALLINT infoL;
-
 	std::wstringstream cerr;
-public:
 
+	DataBaseConnection();
+	void checkErr();
+public:
 	bool status;
-	SQLHDBC* getHDBC() { return &hDBC; }
-	DataBaseConnection(DataBaseConnection& other) = delete;
-	void operator=(const DataBaseConnection&) = delete;
+	
 	static DataBaseConnection* getInstance();
+	
+	DataBaseConnection(DataBaseConnection& other) = delete;
 	~DataBaseConnection();
 	
+	bool checkConnection();
+	void operator=(const DataBaseConnection&) = delete;
+	
+	SQLHDBC* getHDBC() { return &hDBC; }
 };
 
 

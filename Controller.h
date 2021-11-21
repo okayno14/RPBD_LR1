@@ -46,13 +46,14 @@ public:
 		SQLWCHAR* number);
 	
 	void findContactBy4NumberPhone(std::vector<int> number4);
-	void findFIOALL(Person p);
+	void findFIOALL(SQLWCHAR* lastNameContact,
+		SQLWCHAR* firstNameContact,
+		SQLWCHAR* fatherNameContact);
 
 	bool addAddress(
 		Person* p,
 		Address* ad);
-	bool deleteAddress(
-		Person* p);
+
 	Person* findPerson(
 		SQLWCHAR* lastNameContact,
 		SQLWCHAR* firstNameContact,

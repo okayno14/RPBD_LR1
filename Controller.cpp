@@ -1,6 +1,5 @@
 #include "Controller.h"
 
-
 Controller::Controller(Model* model)
 {
 	this->model = model;
@@ -33,6 +32,7 @@ Controller::Controller(ConsoleApp* view)
 			case -3: 
 			{
 				//нет конфига подключения к бд
+				consoleApp->noConnectionConfig();
 				break;
 			}
 		}
@@ -54,9 +54,7 @@ Person* Controller::addСontact(
 	Person* temp = nullptr;
 
 	if (lastNameContact == NULL || firstNameContact == NULL || fatherNameContact == NULL)
-		throw - 1;
-		
-	
+		throw - 1;	
 	
 	temp = &model->insertPerson(p);
 
@@ -81,10 +79,9 @@ bool Controller::toСhangeContact(
 	SQLWCHAR* newfatherNameContact)
 {
 	if (newlastNameContact == NULL || newfirstNameContact == NULL || newfatherNameContact == NULL || p == NULL)
-	{
 		return false;
-	}
-	Person newp(newlastNameContact, newfirstNameContact, newfatherNameContact);
+	Person newp = *p;
+	newp.editFIO(newlastNameContact, newfirstNameContact, newfatherNameContact);
 	model->updatePerson(p, newp);
 	return true;
 }
@@ -100,14 +97,6 @@ bool Controller::addPhoneNumberContact(Person* p, PhoneNumber* pn)
 	return true;
 }
 
-bool Controller::deletePhoneNumberContact(Person* p, SQLWCHAR* number)
-{
-	if (p == NULL || number == NULL)
-		return false;
-	//?????
-	return true;
-}
-
 void Controller::findContactBy4NumberPhone(std::vector<int> number4)
 {
 	std::vector<Person*> tmp = model->findBy4(number4);
@@ -117,19 +106,24 @@ void Controller::findContactBy4NumberPhone(std::vector<int> number4)
 		this->consoleApp->drawPerson(p);
 		consoleApp->drawPhoneNumbers(p->getNumbers());
 	}
+	if (tmp.size() == 0)
+		consoleApp->noRes();
 }
 
-void Controller::findFIOALL(Person p)
+void Controller::findFIOALL(SQLWCHAR* lastNameContact,
+	SQLWCHAR* firstNameContact,
+	SQLWCHAR* fatherNameContact)
 {
+	Person p(lastNameContact, firstNameContact, fatherNameContact);
 	vector<Person*>tmp = model->find_List_FIO(p);
 
 	for (int i = 0; i < tmp.size(); i++)
 	{
-		Person* p = tmp[i];
-		this->consoleApp->drawPerson(p);
-		consoleApp->drawPhoneNumbers(p->getNumbers());
+		this->consoleApp->drawPerson(tmp[i]);
+		consoleApp->drawPhoneNumbers(tmp[i]->getNumbers());
 	}
-
+	if (tmp.size() == 0)
+		consoleApp->noRes();
 }
 
 bool Controller::addAddress(Person* p, Address* ad)
@@ -144,11 +138,9 @@ bool Controller::addAddress(Person* p, Address* ad)
 	return true;
 }
 
-bool Controller::deleteAddress(Person* p)
-{
-	return false;////????????????
-}
-
+//Если по критериям поиска находим 1 совпадение, то возврат адреса объекта,
+//Если ничего не найдено, то выбрасывается -1
+//Если после всех фильтров найдено много записей, то выбрасывается -2
 Person* Controller::findPerson(
 	SQLWCHAR* lastNameContact,
 	SQLWCHAR* firstNameContact, 
@@ -168,34 +160,33 @@ Person* Controller::findPerson(
 	if (count == 1)
 		return tmp;
 
-	if(count == 0 || count > 1)
+	//count >1 не имеет смысла,
+	//так как если пустых объектов несколько,
+	//то другие поиски не помогут разрушить конфликт
+	if(count == 0 || count >1)
 	{
 		tmp = &model->findPerson(p, false, count);
-		if (count == 0) {
+		if (count == 0) 
 			throw - 1;
-		}
 
 		if (count == 1)
-		{
 			return tmp;
-		}
+
 		if (count > 1) 
 		{
-
 			wchar_t* number;
 			number = this->consoleApp->get_a_number();
 			int type = this->consoleApp->get_a_type_number();
 			PhoneNumber ph(number, type);
 			tmp = &model->findPerson(p, ph, count);
 
-			if (count == 0) {
+			if (count == 0)
 				throw - 1;
-			}
+
 			if (count == 1) 
-			{
 				return tmp;
-			}
-			if (count > 1) {
+
+			if (count > 1 ) {
 				wchar_t* address;
 				int numHome;
 				int numApartment;
@@ -205,18 +196,13 @@ Person* Controller::findPerson(
 				Address ad(address,numHome,numApartment);
 				tmp = &model->findPerson(p, ph, ad, count);
 				if (count == 0) 
-				{
 					throw - 1;
-				}
+				
 				if (count == 1)
-				{
 					return tmp;
-				}
+
 				if (count > 1)
-				{
-					cout << "Атака клонов" << endl;
 					throw - 2;
-				}
 			}
 		}
 	}
@@ -240,7 +226,7 @@ bool Controller::updatePhoneNumber(Person* p, PhoneNumber* ph, int ch)
 		return false;
 
 	Person newPer = *p;
-	newPer.setPhoneNumber(ch-1,ph);
+	newPer.setPhoneNumber(ch,ph);
 
 	model->updatePerson(p, newPer);
 	return true;

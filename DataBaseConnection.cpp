@@ -6,14 +6,6 @@ SQLWCHAR DataBaseConnection::password[CONN_DATA_SZ];
 
 DataBaseConnection::DataBaseConnection() : status{ 0 }
 {
-	//dsn = (SQLWCHAR*)L"Pfdfdfffd";
-	//dsn = (SQLWCHAR*)L"Phonebook";
-	//dsn = (SQLWCHAR*)L"test";
-	//user = (SQLWCHAR*)L"postgres";
-	//password = (SQLWCHAR*)L"123";
-
-		
-
 	retcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &handleEnv);
 	checkErr();
 
@@ -29,7 +21,6 @@ DataBaseConnection::DataBaseConnection() : status{ 0 }
 
 	retcode = SQLConnect(hDBC, dsn, SQL_NTS, user, SQL_NTS, password, SQL_NTS);
 	checkErr();
-	//установить атрибуты коннекта
 
 	this->status = true;
 }
@@ -68,6 +59,30 @@ DataBaseConnection::~DataBaseConnection()
 	retcode = SQLFreeHandle(SQL_HANDLE_ENV, handleEnv);
 }
 
+bool DataBaseConnection::checkConnection()
+{
+	SQLUINTEGER	uIntVal(321312);		// Unsigned int attribute values
+	
+	retcode = SQLGetConnectAttr(hDBC,
+		SQL_ATTR_CONNECTION_DEAD,
+		(SQLPOINTER)&uIntVal,
+		(SQLINTEGER)sizeof(uIntVal),
+		NULL);
+	checkErr();	
+
+	switch (uIntVal)
+	{
+		case SQL_CD_TRUE:
+		{
+			return  false;
+		}
+		case SQL_CD_FALSE:
+		{
+			return true;
+		}
+	}
+}
+
 DataBaseConnection* DataBaseConnection::database_ = nullptr;
 DataBaseConnection* DataBaseConnection::getInstance()
 {
@@ -78,7 +93,6 @@ DataBaseConnection* DataBaseConnection::getInstance()
 	}
 	catch (std::wstring msg) 
 	{
-		//std::wcout << msg << std::endl;
 		int err = -2;
 		throw err;
 	}

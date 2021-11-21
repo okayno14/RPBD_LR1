@@ -4,7 +4,9 @@
 
 
 Model::Model()
-{};
+{
+	
+};
 
 void Model::tryDB()
 {
@@ -38,7 +40,7 @@ void Model::tryDB()
 		else { odbcCon.close(); throw - 3; }
 
 		dbc = DataBaseConnection::getInstance();
-
+		
 		adMap.setDBC(dbc);
 		pnMap.setDBC(dbc);
 		pMap.setDBC(dbc);
@@ -85,22 +87,32 @@ void Model::tryDB()
 
 Person& Model::insertPerson(Person p)
 {
-	personTable.push_back(p);	
-	sync(&personTable.back());
-	return personTable.back();
+	personTable.push_back(p);
+	Person& res = personTable.back();
+	sync(&res);
+	return res;
 }
-void Model::updatePerson(Person* pOld, Address* add)
+
+bool Model::checkConnect()
 {
+	//Если при входе нет объекта подключения,
+	//то попробуем 1 раз реконнектнуться
+	try {
+		if (dbc == nullptr)
+			dbc = DataBaseConnection::getInstance();
+	}
+	catch (...) { return false; }
+	
+	return dbc->checkConnection();
 }
-void Model::updatePerson(Person* pOld, PhoneNumber* pn)
-{
-}
+
 void Model::updatePerson(Person* pOld, Person* fio)
 {
 	wcscpy_s(pOld->lastName, fio->lastName);
 	wcscpy_s(pOld->firstName, fio->firstName);
 	wcscpy_s(pOld->fatherName, fio->fatherName);
 }
+
 int Model::getState(Person* p)
 {
 	bool bd = p->id > -1;
@@ -160,11 +172,10 @@ void Model::upload(Person* p)
 	if(p->address!=nullptr) 
 		sync(p->address);
 	//синхронизация телефонов
-	for (
+	for(
 		std::vector<PhoneNumber*>::iterator i = p->phoneNumbers.begin();
 		i != p->phoneNumbers.end();
-		++i
-		)
+		++i)
 		sync(*i);
 };
 
@@ -197,7 +208,7 @@ PhoneNumber& Model::findPhone(PhoneNumber pn, int& ctr)
 		}
 	}
 
-	if (dbc != nullptr)
+	if (checkConnect())
 	{
 		//Поиск совпадений в базе
 		pnMap.setBuf(&pn);
@@ -218,7 +229,6 @@ PhoneNumber& Model::findPhone(PhoneNumber pn, int& ctr)
 		ctr = sd;
 	else
 		ctr = bd;
-	//ctr = bd;
 	return *res;	
 }
 
@@ -244,7 +254,7 @@ int Model::getState(PhoneNumber* pn)
 void Model::sync(PhoneNumber* pn)
 {
 	int state = getState(pn);
-	if ((state == 2 || state == 3 || state == 6) && dbc != nullptr)
+	if ((state == 2 || state == 3 || state == 6) && checkConnect())
 	{
 		pnMap.setBuf(pn);
 		pnMap.insertObj();
@@ -319,7 +329,7 @@ Address& Model::findAddress(Address add, int& ctr)
 			res = &(*i);
 		}
 	}
-	if (dbc != nullptr)
+	if (checkConnect())
 	{
 		//Поиск совпадений в базе
 		adMap.setBuf(&add);
@@ -376,7 +386,7 @@ int Model::getState(Address* add)
 void Model::sync(Address* add)
 {
 	int state = getState(add);
-	if ((state == 2 || state == 3 || state == 6) && dbc != nullptr)
+	if ((state == 2 || state == 3 || state == 6) && checkConnect())
 	{
 		adMap.setBuf(add);
 		adMap.insertObj();
@@ -438,24 +448,24 @@ void Model::syncAll()
 		sync(&(*i));	
 };
 
-void Model::sync( Person* p)
+void Model::sync( Person* per)
 {
-	int state = getState(p);
-	if ( (state == 2 || state == 3) && dbc != nullptr ) 
+	int state = getState(per);
+	if ( (state == 2 || state == 3) && checkConnect())
 	{
-		pMap.setBuf(p);
-		upload(p);
+		pMap.setBuf(per);
+		upload(per);
 		pMap.insertObj();
-		if (state == 6) p->isSynced = 1;
+		if (state == 6) per->isSynced = 1;
 	}
 	if (state == 2)
-		p->isSynced = 1;
-	if (state == 6 && dbc != nullptr)
+		per->isSynced = 1;
+	if (state == 6 && checkConnect())
 	{
-		pMap.setBuf(p);
-		upload(p);
+		pMap.setBuf(per);
+		upload(per);
 		pMap.updateObj();
-		p->isSynced = 1;
+		per->isSynced = 1;
 	}
 };
 
@@ -524,8 +534,7 @@ void Model::updatePerson(Person* pOld, Person pNew)
 	{
 		adMap.setBuf(bufA);
 		if (findReferences(bufA) == 0)
-			
-			Address(bufA);
+			deleteAddress(bufA);
 	}
 	for (int i = 0; i < bufP.size(); i++) 
 	{
@@ -552,7 +561,7 @@ void Model::deletePerson(Person* p)
 			
 		int state = getState(p);
 		//онлайн часть удаления, если контакт есть в БД
-		if (state == 5 && dbc != nullptr) 
+		if (state == 5 && checkConnect())
 		{
 			pMap.setBuf(p);
 			pMap.deleteObj();
@@ -577,12 +586,8 @@ void Model::deletePerson(Person* p)
 						deletePhone(pn[i]);
 				}
 			}
-		}
-			
-			
+		}			
 	}
-	
-
 }
 
 //Метод делает атомарную операцию поиска 1 контакта.
@@ -615,7 +620,7 @@ Person& Model::findPerson(Person p, bool isEmpty, int& ctr)
 			sd++;
 		}
 	}
-	if (dbc != nullptr) 
+	if (checkConnect())
 	{
 		//Поиск совпадений в базе
 		pMap.setBuf(&p);
@@ -636,9 +641,7 @@ Person& Model::findPerson(Person p, bool isEmpty, int& ctr)
 			personTable.back().isSynced = 1;
 			res = &personTable.back();
 		}
-	}	
-	
-	//ctr = bd;
+	}
 	if (sd == bd)
 		ctr = bd;
 	else if (bd == 0)
@@ -673,7 +676,7 @@ Person& Model::findPerson(Person p, PhoneNumber pn, int& ctr)
 			sd++;
 		}
 	}
-	if (dbc != nullptr)
+	if (checkConnect())
 	{
 		//Поиск совпадений в базе
 		pMap.setBuf(&p);
@@ -691,9 +694,6 @@ Person& Model::findPerson(Person p, PhoneNumber pn, int& ctr)
 			res = &personTable.back();
 		}
 	}
-	
-	
-	//ctr = bd;
 	if (sd == bd)
 		ctr = bd;
 	else if (bd == 0)
@@ -729,11 +729,10 @@ Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
 		}
 	}
 
-	if (dbc != nullptr)
+	if (checkConnect())
 	{
 		//Поиск совпадений в базе
 		pMap.setBuf(&p);
-		//bd = pMap.findObjj();
 		bd = pMap.findObj(&pn, &add);
 
 		//Если найденный элемент есть только в БД
@@ -748,9 +747,6 @@ Person& Model::findPerson(Person p, PhoneNumber pn, Address add, int& ctr)
 			res = &personTable.back();
 		}
 	}
-
-	
-	//ctr = bd;
 	if (sd == bd)
 		ctr = bd;
 	else if (bd == 0)
@@ -764,11 +760,9 @@ std::vector<Person*> Model::findBy4(std::vector<int> nums)
 {
 	//вызов синхронизации
 	syncAll();
-
 	std::vector<Person*> res;
-
 	//поиск в сд
-	if (dbc == nullptr) 
+	if (!checkConnect())
 	{
 		//итерируемся по таблице контактов
 		for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
@@ -835,9 +829,7 @@ std::vector<Person*> Model::findBy4(std::vector<int> nums)
 				personTable.back().isSynced = 1;
 				res.push_back(&personTable.back());
 			}
-
 		}
-
 	}
 	return res;
 }
@@ -850,7 +842,7 @@ std::vector<Person*> Model::find_List_FIO(Person p)
 	std::vector<Person*> res;
 
 	//поиск в сд
-	if (dbc == nullptr)
+	if (!checkConnect())
 	{
 		//итерируемся по таблице контактов
 		for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
@@ -864,8 +856,6 @@ std::vector<Person*> Model::find_List_FIO(Person p)
 	else
 	{
 		std::vector<Person> bd;
-		
-		
 		pMap.setBuf(&p);
 		bd = pMap.findListFIO();
 
@@ -911,9 +901,7 @@ std::vector<Person*> Model::find_List_FIO(Person p)
 				personTable.back().isSynced = 1;
 				res.push_back(&personTable.back());
 			}
-
 		}
-
 	}
 	return res;
 }
