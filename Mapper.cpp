@@ -227,7 +227,8 @@ int PersonMapper::findObj(PhoneNumber* phone)
 "    lastname = ? and" 
 "    firstname = ? and" 
 "    fathername = ? and" 
-"    phonenumber.number = ?;";
+"    phonenumber.number = ? and"
+"    phonenumber.idtype = ?";
 	
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 	checkErr();
@@ -245,6 +246,17 @@ int PersonMapper::findObj(PhoneNumber* phone)
 		&(phone->number),
 		sizeof(SQLWCHAR) * strSZ,
 		NULL);
+	checkErr();
+	retcode = SQLBindParameter( hstmt,
+								5,
+								SQL_PARAM_INPUT,
+								SQL_C_SLONG,
+								SQL_INTEGER,
+								4,
+								0,
+								&(phone->idType),
+								0,
+								NULL);
 	checkErr();
 
 	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
