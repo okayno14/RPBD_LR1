@@ -1416,8 +1416,6 @@ void PhoneMapper::findObj(int id)
 //Поиск обьекта в таблице по номеру телефона
 int PhoneMapper::findObj()
 {
-	
-
 	statementText =
 		(SQLWCHAR*)L"SELECT"
 		" phoneNumber.id, type_of_phone.id, type_of_phone.typename "
@@ -1425,7 +1423,8 @@ int PhoneMapper::findObj()
 		" phoneNumber INNER JOIN type_of_phone"
 		" ON"
 		" phonenumber.idtype = type_of_phone.id "
-		" WHERE phoneNumber.number = ?";
+		" WHERE phoneNumber.number = ? AND"
+		" phoneNumber.idtype = ?";
 
 	retcode = SQLPrepare(hstmt, statementText, SQL_NTS);
 	checkErr();
@@ -1443,6 +1442,18 @@ int PhoneMapper::findObj()
 		sizeof(SQLWCHAR) * strSZ,
 		NULL
 	);
+	checkErr();
+
+	retcode = SQLBindParameter(hstmt,
+		2,
+		SQL_PARAM_INPUT,
+		SQL_C_SLONG,
+		SQL_INTEGER,
+		4,
+		0,
+		&(buf->idType),
+		0,
+		NULL);
 	checkErr();
 
 	retcode = SQLBindCol(hstmt, 1, SQL_C_SLONG, &(buf->id), 0, &(buf->idLen));
@@ -1470,11 +1481,10 @@ int PhoneMapper::findObj()
 	checkErr();
 	retcode = SQLCloseCursor(hstmt);
 	checkErr();
-	
+
 	commitTransaction();
 
 	return finded;
-	
 }
 
 void PhoneMapper::insertObj()
