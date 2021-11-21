@@ -67,6 +67,13 @@ void Person::setAddress(Address* add)
 	this->idAddress = add->getId();
 }
 
+void Person::editFIO(SQLWCHAR* lastName, SQLWCHAR* firstName, SQLWCHAR* fatherName)
+{
+	wcscpy_s(this->fatherName, fatherName);
+	wcscpy_s(this->lastName, lastName);
+	wcscpy_s(this->firstName, firstName);
+}
+
 std::vector<PhoneNumber*> Person::getNumbers()
 {
 	return phoneNumbers;

@@ -199,6 +199,8 @@ public:
 
 	Address* getAddress() { return this->address; }
 
+	void editFIO(SQLWCHAR* lastName, SQLWCHAR* firstName, SQLWCHAR* fatherName);
+
 	std::vector<PhoneNumber*> getNumbers();	
 };
 

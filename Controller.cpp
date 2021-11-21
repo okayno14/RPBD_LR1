@@ -80,8 +80,8 @@ bool Controller::toÑhangeContact(
 {
 	if (newlastNameContact == NULL || newfirstNameContact == NULL || newfatherNameContact == NULL || p == NULL)
 		return false;
-	
-	Person newp(newlastNameContact, newfirstNameContact, newfatherNameContact);
+	Person newp = *p;
+	newp.editFIO(newlastNameContact, newfirstNameContact, newfatherNameContact);
 	model->updatePerson(p, newp);
 	return true;
 }
