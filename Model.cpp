@@ -95,8 +95,13 @@ Person& Model::insertPerson(Person p)
 
 bool Model::checkConnect()
 {
+	//Если при входе нет объекта подключения,
+	//то попробуем 1 раз реконнектнуться
 	if (dbc == nullptr)
 		dbc = DataBaseConnection::getInstance();
+	//Если реконнект не помог, то полагаем, что пытаться далее бесполезно
+	if (dbc == nullptr)
+		return false;
 	return dbc->checkConnection();
 }
 
