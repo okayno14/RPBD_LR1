@@ -30,11 +30,16 @@ protected:
 	void checkErr();
 public:
 	bool status;
-	SQLHDBC* getHDBC() { return &hDBC; }
-	DataBaseConnection(DataBaseConnection& other) = delete;
-	void operator=(const DataBaseConnection&) = delete;
+	
 	static DataBaseConnection* getInstance();
-	~DataBaseConnection();	
+	
+	DataBaseConnection(DataBaseConnection& other) = delete;
+	~DataBaseConnection();
+	
+	bool checkConnection();
+	void operator=(const DataBaseConnection&) = delete;
+	
+	SQLHDBC* getHDBC() { return &hDBC; }
 };
 
 

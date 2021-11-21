@@ -59,6 +59,30 @@ DataBaseConnection::~DataBaseConnection()
 	retcode = SQLFreeHandle(SQL_HANDLE_ENV, handleEnv);
 }
 
+bool DataBaseConnection::checkConnection()
+{
+	SQLUINTEGER	uIntVal(321312);		// Unsigned int attribute values
+	
+	retcode = SQLGetConnectAttr(hDBC,
+		SQL_ATTR_CONNECTION_DEAD,
+		(SQLPOINTER)&uIntVal,
+		(SQLINTEGER)sizeof(uIntVal),
+		NULL);
+	checkErr();	
+
+	switch (uIntVal)
+	{
+		case SQL_CD_TRUE:
+		{
+			return  false;
+		}
+		case SQL_CD_FALSE:
+		{
+			return true;
+		}
+	}
+}
+
 DataBaseConnection* DataBaseConnection::database_ = nullptr;
 DataBaseConnection* DataBaseConnection::getInstance()
 {

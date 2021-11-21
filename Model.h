@@ -371,6 +371,7 @@ public:
 		std::vector<Person*> find_List_FIO(Person p);
 
 private:
+		bool checkConnect();
 		void updatePerson(Person* pOld, Person* fio);
 		//Получить состояние Контакта из СД
 		int getState(Person* p);
