@@ -48,7 +48,7 @@ void Person::addPhoneNumber(PhoneNumber* pn)
 
 void Person::setPhoneNumber(int pos, PhoneNumber* pn)
 {
-	if (pos < phoneNumbers.size())
+	if (pos < phoneNumbers.size() && pos >= 0)
 	{
 		phoneNumbers[pos] = pn;
 		idPhones[pos] = pn->getId();

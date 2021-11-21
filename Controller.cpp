@@ -226,7 +226,7 @@ bool Controller::updatePhoneNumber(Person* p, PhoneNumber* ph, int ch)
 		return false;
 
 	Person newPer = *p;
-	newPer.setPhoneNumber(ch-1,ph);
+	newPer.setPhoneNumber(ch,ph);
 
 	model->updatePerson(p, newPer);
 	return true;
