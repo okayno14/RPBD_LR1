@@ -163,7 +163,7 @@ Person* Controller::findPerson(
 	//count >1 не имеет смысла,
 	//так как если пустых объектов несколько,
 	//то другие поиски не помогут разрушить конфликт
-	if(count == 0)
+	if(count == 0 || count >1)
 	{
 		tmp = &model->findPerson(p, false, count);
 		if (count == 0) 
@@ -186,7 +186,7 @@ Person* Controller::findPerson(
 			if (count == 1) 
 				return tmp;
 
-			if (count > 1) {
+			if (count > 1 ) {
 				wchar_t* address;
 				int numHome;
 				int numApartment;
