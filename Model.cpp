@@ -762,7 +762,7 @@ std::vector<Person*> Model::findBy4(std::vector<int> nums)
 	syncAll();
 	std::vector<Person*> res;
 	//поиск в сд
-	if (checkConnect())
+	if (!checkConnect())
 	{
 		//итерируемся по таблице контактов
 		for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
@@ -842,7 +842,7 @@ std::vector<Person*> Model::find_List_FIO(Person p)
 	std::vector<Person*> res;
 
 	//поиск в сд
-	if (checkConnect())
+	if (!checkConnect())
 	{
 		//итерируемся по таблице контактов
 		for (std::list<Person>::iterator i = personTable.begin(); i != personTable.end(); ++i)
